@@ -110,29 +110,14 @@ testthat::test_that(
   desc = "expr_contingency_tab works - data with NAs",
   code = {
 
-
     # introduce NAs
     # check that 2-by-2 doesn't produce continuity correction
     set.seed(123)
-    df <-
-      purrr::map_df(
-        .x = mtcars,
-        .f = ~ .[sample(
-          x = c(TRUE, NA),
-          prob = c(0.8, 0.2),
-          size = length(.),
-          replace = TRUE
-        )]
-      ) %>%
-      dplyr::filter(.data = ., cyl != "4")
-
-    # ggstatsplot output
-    set.seed(123)
     using_function1 <-
       suppressWarnings(statsExpressions::expr_contingency_tab(
-        data = df,
-        x = am,
-        y = "cyl",
+        data = ggplot2::msleep,
+        x = vore,
+        y = "conservation",
         conf.level = .990,
         conf.type = "perc",
         nboot = 15,
@@ -150,25 +135,25 @@ testthat::test_that(
           "(",
           "NA",
           ") = ",
-          "3.19",
+          "15.75",
           ", ",
           italic("p"),
           " = ",
-          "0.107",
+          "0.392",
           ", ",
           italic("V")["Cramer"],
           " = ",
-          "0.43",
+          "0.32",
           ", CI"["99%"],
           " [",
-          "0.02",
+          "0.28",
           ", ",
-          "0.83",
+          "0.46",
           "]",
           ", ",
           italic("n")["obs"],
           " = ",
-          17L
+          52L
         )
       )
 
@@ -267,7 +252,6 @@ testthat::test_that(
   desc = "paired expr_contingency_tab works - with NAs",
   code = {
 
-
     # create data structure
     paired_data <-
       structure(
@@ -290,22 +274,16 @@ testthat::test_that(
       )
 
     # expanding the dataframe
-    paired_data %<>%
-      tidyr::uncount(data = ., weights = Freq)
+    paired_data %<>% tidyr::uncount(data = ., weights = Freq)
 
     # introduce NAs
     # check that 2-by-2 doesn't produce continuity correction
     set.seed(123)
-    paired_data %<>%
-      purrr::map_df(
-        .x = .,
-        .f = ~ .[sample(
-          x = c(TRUE, NA),
-          prob = c(0.8, 0.2),
-          size = length(.),
-          replace = TRUE
-        )]
-      )
+    paired_data[1, 1] <- NA
+    paired_data[12, 1] <- NA
+    paired_data[22, 1] <- NA
+    paired_data[24, 1] <- NA
+    paired_data[65, 1] <- NA
 
     # ggstatsplot output
     set.seed(123)
@@ -333,25 +311,25 @@ testthat::test_that(
           "(",
           "1",
           ") = ",
-          "8.895",
+          "13.333",
           ", ",
           italic("p"),
           " = ",
-          "0.003",
+          "< 0.001",
           ", ",
           italic("g")["Cohen"],
           " = ",
-          "-0.342",
+          "-0.333",
           ", CI"["90%"],
           " [",
-          "-0.458",
+          "-0.454",
           ", ",
-          "-0.192",
+          "-0.204",
           "]",
           ", ",
           italic("n")["pairs"],
           " = ",
-          67L
+          95L
         )
       )
 
