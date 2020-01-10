@@ -11,13 +11,13 @@ checkmark
 ci
 codecov
 Codecov
+conf
 covr
 covrpage
 Covrpage
 Cramer's
 Cramér's
 Cramér’s
-cran
 disgustingness
 DOI
 effct
@@ -33,7 +33,6 @@ github
 Github
 Gitter
 gla
-gof
 Gunel
 HFHD
 Hillsdale
@@ -67,9 +66,7 @@ plotmath
 psy
 rcompanion
 Rdoc
-reproducibility
 robcor
-saythanks
 setosa
 spearman
 sphericity
@@ -85,6 +82,7 @@ virginica
 Welch
 Welch's
 Welch’s
+widehat
 wilcox
 Winsorized
 WRS

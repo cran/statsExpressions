@@ -18,6 +18,7 @@ testthat::test_that(
         y = Class,
         stat.title = "Testing",
         k = 5,
+        bias.correct = FALSE,
         conf.level = 0.99,
         conf.type = "basic",
         nboot = 5,
@@ -40,7 +41,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
           "0.29412",
           ", CI"["99%"],
@@ -61,13 +62,14 @@ testthat::test_that(
 
     # with counts
     set.seed(123)
-    using_function2 <- statsExpressions::expr_contingency_tab(
-      data = as.data.frame(Titanic),
-      x = Sex,
-      y = Survived,
-      counts = "Freq",
-      messages = FALSE
-    )
+    using_function2 <-
+      statsExpressions::expr_contingency_tab(
+        data = as.data.frame(Titanic),
+        x = Sex,
+        y = Survived,
+        counts = "Freq",
+        messages = FALSE
+      )
 
     results2 <-
       ggplot2::expr(
@@ -83,7 +85,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
           "0.46",
           ", CI"["95%"],
@@ -123,7 +125,7 @@ testthat::test_that(
         conf.type = "perc",
         nboot = 15,
         messages = FALSE,
-        simulate.p.value = TRUE
+        simulate.p.value = TRUE # this should get ignored
       ))
 
     # expected output
@@ -134,22 +136,22 @@ testthat::test_that(
           NULL,
           chi["Pearson"]^2,
           "(",
-          "NA",
+          "15",
           ") = ",
           "15.75",
           ", ",
           italic("p"),
           " = ",
-          "0.392",
+          "0.399",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
-          "0.32",
+          "0.06",
           ", CI"["99%"],
           " [",
-          "0.28",
+          "0.00",
           ", ",
-          "0.46",
+          "0.39",
           "]",
           ", ",
           italic("n")["obs"],
@@ -222,7 +224,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("g")["Cohen"]),
+          widehat(italic("g"))["Cohen"],
           " = ",
           "-0.33333",
           ", CI"["95%"],
@@ -315,7 +317,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("g")["Cohen"]),
+          widehat(italic("g"))["Cohen"],
           " = ",
           "-0.333",
           ", CI"["90%"],
@@ -336,7 +338,7 @@ testthat::test_that(
   }
 )
 
-# paired data 3-by-3  ---------------------------------------------
+# paired data 4-by-4  ---------------------------------------------
 
 testthat::test_that(
   desc = "paired data 4-by-4",
@@ -370,18 +372,19 @@ testthat::test_that(
 
     # ggstatsplot output
     set.seed(123)
-    subtitle1 <- suppressWarnings(statsExpressions::expr_contingency_tab(
-      data = df,
-      x = Var1,
-      y = Var2,
-      counts = "Freq",
-      paired = TRUE,
-      k = 4,
-      conf.level = 0.99,
-      conf.type = "basic",
-      nboot = 50,
-      messages = FALSE
-    ))
+    subtitle1 <-
+      suppressWarnings(statsExpressions::expr_contingency_tab(
+        data = df,
+        x = Var1,
+        y = Var2,
+        counts = "Freq",
+        paired = TRUE,
+        k = 4,
+        conf.level = 0.99,
+        conf.type = "basic",
+        nboot = 50,
+        messages = FALSE
+      ))
 
     # expected output
     set.seed(123)
@@ -399,14 +402,14 @@ testthat::test_that(
           " = ",
           "NaN",
           ", ",
-          widehat(italic("g")["Cohen"]),
+          widehat(italic("g"))["Cohen"],
           " = ",
-          "0.4344",
+          "0.2954",
           ", CI"["99%"],
           " [",
-          "0.3838",
+          "0.2046",
           ", ",
-          "0.5092",
+          "0.3898",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -417,6 +420,58 @@ testthat::test_that(
 
     # testing overall call
     testthat::expect_identical(subtitle1, results1)
+
+    # edge case
+    dfEx <-
+      data.frame(
+        cat1 = rep(c("A", "B"), 10),
+        cat2 = c(rep("C", 10), rep("D", 10))
+      )
+
+    # subtitle
+    set.seed(123)
+    subtitle2 <-
+      statsExpressions::expr_contingency_tab(
+        data = dfEx,
+        x = cat1,
+        y = cat2,
+        paired = TRUE,
+        nboot = 10,
+        messages = FALSE
+      )
+
+    results2 <-
+      ggplot2::expr(
+        paste(
+          NULL,
+          chi["McNemar"]^2,
+          "(",
+          "1",
+          ") = ",
+          "0.00",
+          ", ",
+          italic("p"),
+          " = ",
+          "1.000",
+          ", ",
+          widehat(italic("g"))["Cohen"],
+          " = ",
+          "0.00",
+          ", CI"["95%"],
+          " [",
+          "-0.26",
+          ", ",
+          "0.40",
+          "]",
+          ", ",
+          italic("n")["pairs"],
+          " = ",
+          20L
+        )
+      )
+
+    # testing overall call
+    testthat::expect_identical(subtitle2, results2)
   }
 )
 
@@ -457,7 +512,7 @@ testthat::test_that(
           " = ",
           "0.28884",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
           "0.18750",
           ", CI"["99%"],
@@ -499,7 +554,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
           "0.57",
           ", CI"["95%"],
@@ -554,7 +609,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
           "0.573",
           ", CI"["95%"],
@@ -608,7 +663,7 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
           "0.38",
           ", CI"["95%"],
@@ -658,10 +713,15 @@ testthat::test_that(
       y = c("a", "a", "a", "a", "b", "b")
     )
 
+    # subtitle
+    set.seed(123)
+    sub <- suppressWarnings(
+      statsExpressions::expr_contingency_tab(df, x, y, messages = FALSE)
+    )
+
+    # test
     testthat::expect_identical(
-      suppressWarnings(
-        statsExpressions::expr_contingency_tab(df, x, y, messages = FALSE)
-      ),
+      sub,
       ggplot2::expr(
         paste(
           NULL,
@@ -675,14 +735,14 @@ testthat::test_that(
           " = ",
           "0.223",
           ", ",
-          widehat(italic("V")["Cramer"]),
+          widehat(italic("V"))["Cramer"],
           " = ",
-          "NaN",
+          "0.35",
           ", CI"["95%"],
           " [",
-          "NaN",
+          "-0.44",
           ", ",
-          "NaN",
+          "0.93",
           "]",
           ", ",
           italic("n")["obs"],
