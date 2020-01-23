@@ -22,28 +22,15 @@
 
 # function body
 bf_extractor <- function(bf.object, ...) {
-
-  # preparing the dataframe
-  bf_df <-
-    BayesFactor::extractBF(
-      x = bf.object,
-      logbf = FALSE,
-      onlybf = FALSE
-    ) %>%
+  BayesFactor::extractBF(
+    x = bf.object,
+    logbf = FALSE,
+    onlybf = FALSE
+  ) %>%
     tibble::as_tibble(.) %>%
     dplyr::select(.data = ., -time, -code) %>%
     dplyr::rename(.data = ., bf10 = bf) %>%
-    dplyr::mutate(
-      .data = .,
-      bf01 = 1 / bf10,
-      log_e_bf10 = log(bf10),
-      log_e_bf01 = -1 * log_e_bf10,
-      log_10_bf10 = log10(bf10),
-      log_10_bf01 = -1 * log_10_bf10
-    )
-
-  # return the dataframe with Bayes Factors
-  return(bf_df)
+    bf_formatter(.)
 }
 
 #' @title Prepare caption with expression for Bayes Factor results
@@ -189,6 +176,9 @@ bf_corr_test <- function(data,
                          k = 2,
                          ...) {
 
+  # make sure both quoted and unquoted arguments are allowed
+  c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
+
   # ============================ data preparation ==========================
 
   # creating a dataframe
@@ -254,7 +244,7 @@ bf_corr_test <- function(data,
 #'
 #' @importFrom BayesFactor contingencyTableBF logMeanExpLogs
 #' @importFrom stats dmultinom rgamma
-#' @importFrom dplyr pull select rename mutate
+#' @importFrom dplyr pull select rename mutate tibble
 #' @importFrom tidyr uncount drop_na
 #'
 #' @seealso \code{\link{bf_corr_test}}, \code{\link{bf_oneway_anova}},
@@ -415,7 +405,7 @@ bf_contingency_tab <- function(data,
     # estimate log prob of data under null with Monte Carlo
     M <- 100000
 
-    # `rdirichlet` function
+    # `rdirichlet` function from `MCMCpack`
     rdirichlet_int <- function(n, alpha) {
       l <- length(alpha)
       x <- matrix(stats::rgamma(l * n, alpha), ncol = l, byrow = TRUE)
@@ -436,21 +426,10 @@ bf_contingency_tab <- function(data,
     # estimate log prob of data under alternative
     pr_y_h1 <- BayesFactor::logMeanExpLogs(tmp_pr_h1)
 
-    # computing Bayes Factor
-    bf_10 <- exp(pr_y_h1 - pr_y_h0)
-
-    # dataframe with results
+    # computing Bayes Factor and formatting the results
     bf_results <-
-      tibble::enframe(bf_10) %>%
-      dplyr::select(.data = ., bf10 = value) %>%
-      dplyr::mutate(
-        .data = .,
-        bf01 = 1 / bf10,
-        log_e_bf10 = log(bf10),
-        log_e_bf01 = -1 * log_e_bf10,
-        log_10_bf10 = log10(bf10),
-        log_10_bf01 = -1 * log_10_bf10
-      ) %>%
+      dplyr::tibble(bf10 = exp(pr_y_h1 - pr_y_h0)) %>%
+      bf_formatter(.) %>%
       dplyr::mutate(.data = ., prior.concentration = prior.concentration)
   }
 
@@ -791,8 +770,7 @@ bf_oneway_anova <- function(data,
                             ...) {
 
   # make sure both quoted and unquoted arguments are allowed
-  x <- rlang::ensym(x)
-  y <- rlang::ensym(y)
+  c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
 
   # ============================ data preparation ==========================
 
@@ -866,4 +844,141 @@ bf_oneway_anova <- function(data,
     "results" = bf_results,
     bf_message
   ))
+}
+
+
+#' @title Bayes factor message for random-effects meta-analysis
+#' @name bf_meta
+#'
+#' @importFrom metaBMA meta_random prior
+#'
+#' @inherit metaBMA::meta_random return Description
+#'
+#' @inheritParams expr_meta_parametric
+#' @inheritParams metaBMA::meta_random
+#' @inheritDotParams metaBMA::meta_random -y -SE
+#'
+#' @examples
+#'
+#' \donttest{
+#' # setup
+#' set.seed(123)
+#' library(metaBMA)
+#'
+#' # creating a dataframe
+#' (df <-
+#'   structure(
+#'     .Data = list(
+#'       study = c("1", "2", "3", "4", "5"),
+#'       estimate = c(
+#'         0.382047603321706,
+#'         0.780783111514665,
+#'         0.425607573765058,
+#'         0.558365541235078,
+#'         0.956473848429961
+#'       ),
+#'       std.error = c(
+#'         0.0465576338644502,
+#'         0.0330218199731529,
+#'         0.0362834986178494,
+#'         0.0480571500648261,
+#'         0.062215818388157
+#'       )
+#'     ),
+#'     row.names = c(NA, -5L),
+#'     class = c("tbl_df", "tbl", "data.frame")
+#'   ))
+#'
+#' # getting Bayes factor in favor of null hypothesis
+#' bf_meta(
+#'   data = df,
+#'   k = 3,
+#'   iter = 1500,
+#'   messages = TRUE
+#' )
+#' }
+#'
+#' @export
+
+# function body
+bf_meta <- function(data,
+                    d = prior("norm", c(mean = 0, sd = 0.3)),
+                    tau = prior("invgamma", c(shape = 1, scale = 0.15)),
+                    k = 2,
+                    caption = NULL,
+                    messages = TRUE,
+                    ...) {
+
+  # check the data contains needed column
+  meta_data_check(data)
+
+  #----------------------- meta-analysis -------------------------------
+
+  # extracting results from random-effects meta-analysis
+  meta_res <-
+    metaBMA::meta_random(
+      y = data$estimate,
+      SE = data$std.error,
+      d = d,
+      tau = tau,
+      ...
+    )
+
+  # print results from meta-analysis
+  if (isTRUE(messages)) print(meta_res)
+
+  #----------------------- preparing caption -------------------------------
+
+  # creating a dataframe with posterior estimates
+  df_estimates <-
+    tibble::as_tibble(meta_res$estimates, rownames = "term") %>%
+    dplyr::filter(.data = ., term == "d")
+
+  # prepare the Bayes factor message
+  bf_text <-
+    substitute(
+      atop(displaystyle(top.text),
+        expr = paste(
+          "In favor of null: ",
+          "log"["e"],
+          "(BF"["01"],
+          ") = ",
+          bf,
+          ", ",
+          italic("d")["mean"]^"posterior",
+          " = ",
+          d.pmean,
+          ", CI"["95%"],
+          " [",
+          d.pmean.LB,
+          ", ",
+          d.pmean.UB,
+          "]"
+        )
+      ),
+      env = list(
+        top.text = caption,
+        bf = specify_decimal_p(x = log(meta_res$BF["random_H0", "random_H1"]), k = k),
+        d.pmean = specify_decimal_p(x = df_estimates$mean[[1]], k = k),
+        d.pmean.LB = specify_decimal_p(x = df_estimates$hpd95_lower[[1]], k = k),
+        d.pmean.UB = specify_decimal_p(x = df_estimates$hpd95_upper[[1]], k = k)
+      )
+    )
+
+  # return the caption
+  return(bf_text)
+}
+
+#' @noRd
+#' @keywords internal
+
+bf_formatter <- function(data) {
+  dplyr::mutate(
+    .data = data,
+    bf01 = 1 / bf10,
+    log_e_bf10 = log(bf10),
+    log_e_bf01 = -1 * log_e_bf10,
+    log_10_bf10 = log10(bf10),
+    log_10_bf01 = -1 * log_10_bf10
+  )
 }

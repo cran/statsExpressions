@@ -5,12 +5,12 @@
 
 | Package                                                                                                                                                                   | Status                                                                                                                                                                                                 | Usage                                                                                                                                                       | GitHub                                                                                                                                                                   | References                                                                                                                                                                |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![CRAN\_Release\_Badge](http://www.r-pkg.org/badges/version-ago/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                  | [![Travis Build Status](https://travis-ci.org/IndrajeetPatil/statsExpressions.svg?branch=master)](https://travis-ci.org/IndrajeetPatil/statsExpressions)                                               | [![Daily downloads badge](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)     | [![GitHub version](https://img.shields.io/badge/GitHub-0.2.0.9000-orange.svg?style=flat-square)](https://github.com/IndrajeetPatil/statsExpressions/)                    | [![Website](https://img.shields.io/badge/website-statsExpressions-orange.svg?colorB=E91E63)](https://indrajeetpatil.github.io/statsExpressions/)                          |
-| [![CRAN Checks](https://cranchecks.info/badges/summary/statsExpressions)](https://cran.r-project.org/web/checks/check_results_statsExpressions.html)                      | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/IndrajeetPatil/statsExpressions?branch=master&svg=true)](https://ci.appveyor.com/project/IndrajeetPatil/statsExpressions) | [![Weekly downloads badge](https://cranlogs.r-pkg.org/badges/last-week/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)   | [![Forks](https://img.shields.io/badge/forks-1-blue.svg)](https://github.com/IndrajeetPatil/statsExpressions/)                                                           | [![Rdoc](https://www.rdocumentation.org/badges/version/statsExpressions)](https://www.rdocumentation.org/packages/statsExpressions)                                       |
-| [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)                                                                | [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/)                                                                                         | [![Monthly downloads badge](https://cranlogs.r-pkg.org/badges/last-month/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![Github Issues](https://img.shields.io/badge/issues-5-red.svg)](https://github.com/IndrajeetPatil/statsExpressions/issues)                                             | [![vignettes](https://img.shields.io/badge/vignettes-0.2.0-orange.svg?colorB=FF5722)](https://CRAN.R-project.org/package=statsExpressions/vignettes/)                     |
+| [![CRAN\_Release\_Badge](http://www.r-pkg.org/badges/version-ago/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                  | [![Build Status](https://travis-ci.org/IndrajeetPatil/statsExpressions.svg?branch=master)](https://travis-ci.org/IndrajeetPatil/statsExpressions)                                                      | [![Daily downloads badge](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)     | [![GitHub version](https://img.shields.io/badge/GitHub-0.2.1.9000-orange.svg?style=flat-square)](https://github.com/IndrajeetPatil/statsExpressions/)                    | [![Website](https://img.shields.io/badge/website-statsExpressions-orange.svg?colorB=E91E63)](https://indrajeetpatil.github.io/statsExpressions/)                          |
+| [![CRAN Checks](https://cranchecks.info/badges/summary/statsExpressions)](https://cran.r-project.org/web/checks/check_results_statsExpressions.html)                      | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/IndrajeetPatil/statsExpressions?branch=master&svg=true)](https://ci.appveyor.com/project/IndrajeetPatil/statsExpressions) | [![Weekly downloads badge](https://cranlogs.r-pkg.org/badges/last-week/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)   | [![Forks](https://img.shields.io/badge/forks-2-blue.svg)](https://github.com/IndrajeetPatil/statsExpressions/)                                                           | [![Rdoc](https://www.rdocumentation.org/badges/version/statsExpressions)](https://www.rdocumentation.org/packages/statsExpressions)                                       |
+| [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)                                                                | [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/)                                                                                         | [![Monthly downloads badge](https://cranlogs.r-pkg.org/badges/last-month/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![Github Issues](https://img.shields.io/badge/issues-5-red.svg)](https://github.com/IndrajeetPatil/statsExpressions/issues)                                             | [![vignettes](https://img.shields.io/badge/vignettes-0.2.1-orange.svg?colorB=FF5722)](https://CRAN.R-project.org/package=statsExpressions/vignettes/)                     |
 | [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions) | [![Coverage Status](https://coveralls.io/repos/github/IndrajeetPatil/statsExpressions/badge.svg?branch=master)](https://coveralls.io/github/IndrajeetPatil/statsExpressions?branch=master)             | [![Total downloads badge](https://cranlogs.r-pkg.org/badges/grand-total/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)  | [![Github Stars](https://img.shields.io/github/stars/IndrajeetPatil/statsExpressions.svg?style=social&label=Github)](https://github.com/IndrajeetPatil/statsExpressions) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2074621.svg)](https://doi.org/10.5281/zenodo.3386122)                                                                 |
-| [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)                                                          | [![Codecov test coverage](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/master/graph/badge.svg)](https://codecov.io/gh/IndrajeetPatil/statsExpressions?branch=master)                   | [![HitCount](http://hits.dwyl.io/IndrajeetPatil/statsExpressions.svg)](http://hits.dwyl.io/IndrajeetPatil/statsExpressions)                                 | [![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--10-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master)         | [![GitHub last commit](https://img.shields.io/github/last-commit/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master) |
-| [![status](https://tinyverse.netlify.com/badge/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                                    | [![Covrpage Summary](https://img.shields.io/badge/covrpage-Last_Build_2020_01_10-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/blob/master/tests/README.md)                     | [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/statsExpressions/community)                                                | [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)                                                               | [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/IndrajeetPatil/statsExpressions/issues)      |
+| [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)                                                          | [![Codecov test coverage](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/master/graph/badge.svg)](https://codecov.io/gh/IndrajeetPatil/statsExpressions?branch=master)                   | [![HitCount](http://hits.dwyl.io/IndrajeetPatil/statsExpressions.svg)](http://hits.dwyl.io/IndrajeetPatil/statsExpressions)                                 | [![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--22-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master)         | [![GitHub last commit](https://img.shields.io/github/last-commit/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master) |
+| [![status](https://tinyverse.netlify.com/badge/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                                    | [![Covrpage Summary](https://img.shields.io/badge/covrpage-Last_Build_2020_01_22-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/blob/master/tests/README.md)                     | [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/statsExpressions/community)                                                | [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)                                                               | [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/IndrajeetPatil/statsExpressions/issues)      |
 
 # Introduction
 
@@ -23,14 +23,14 @@ functions needed to create these expressions.
 
 # Installation
 
-To get the latest, stable `CRAN` release (`0.2.0`):
+To get the latest, stable `CRAN` release (`0.2.1`):
 
 ``` r
 install.packages(pkgs = "statsExpressions")
 ```
 
 You can get the **development** version of the package from `GitHub`
-(`0.2.0.9000`). To see what new changes (and bug fixes) have been made
+(`0.2.1.9000`). To see what new changes (and bug fixes) have been made
 to the package since the last release on `CRAN`, you can check the
 detailed log of changes here:
 <https://indrajeetpatil.github.io/statsExpressions/news/index.html>
@@ -77,10 +77,15 @@ updated after every new commit:
 
 # Summary of types of statistical analyses
 
-Currently, it supports only the most common types of statistical tests:
-**parametric**, **nonparametric**, **robust**, and **bayesian** versions
-of **t-test**/**anova**, **correlation** analyses, **contingency table**
-analysis, and **regression** analyses.
+Currently, it supports only the most common types of statistical tests.
+Specifically, **parametric**, **non-parametric**, **robust**, and
+**bayesian** versions of:
+
+  - **t-test**
+  - **anova**
+  - **correlation** tests
+  - **contingency table** analysis
+  - **meta-analysis**
 
 The table below summarizes all the different types of analyses currently
 supported in this package-
@@ -93,6 +98,7 @@ supported in this package-
 | Correlation between two variables                 | <font color="green">Yes</font> | <font color="green">Yes</font> | <font color="green">Yes</font> | <font color="green">Yes</font> |
 | Association between categorical variables         | <font color="green">Yes</font> | `NA`                           | `NA`                           | <font color="green">Yes</font> |
 | Equal proportions for categorical variable levels | <font color="green">Yes</font> | `NA`                           | `NA`                           | <font color="green">Yes</font> |
+| Random-effects meta-analysis                      | <font color="green">Yes</font> | <font color="red">No</font>    | <font color="green">Yes</font> | <font color="green">Yes</font> |
 
 # Statistical reporting
 
@@ -131,6 +137,8 @@ across various functions:
 | `expr_t_onesample`                       | Parametric     | One-sample *t*-test                                                                                                                                                                        | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                              | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
 | `expr_t_onesample`                       | Non-parametric | One-sample Wilcoxon signed rank test                                                                                                                                                       | *r*                                                                                                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
 | `expr_t_onesample`                       | Robust         | One-sample percentile bootstrap                                                                                                                                                            | robust estimator                                                                                                                                                                                      | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
+| `expr_meta_parametric`                   | Parametric     | Meta-analysis via random-effects models                                                                                                                                                    | ![\\beta](https://latex.codecogs.com/png.latex?%5Cbeta "\\beta")                                                                                                                                      | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
+| `expr_meta_robust`                       | Robust         | Meta-analysis via robust random-effects models                                                                                                                                             | ![\\beta](https://latex.codecogs.com/png.latex?%5Cbeta "\\beta")                                                                                                                                      | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
 
 # Primary functions
 
@@ -316,6 +324,34 @@ expr_contingency_tab(mtcars, am, cyl, messages = FALSE)
 #>     " = ", "0.46", ", CI"["95%"], " [", "0.08", ", ", "0.75", 
 #>     "]", ", ", italic("n")["obs"], " = ", 32L)
 ```
+
+## Example: Expressions for meta-analysis
+
+``` r
+# setup
+set.seed(123)
+library(metaviz)
+library(ggplot2)
+
+# rename columns to `statsExpressions` conventions
+df <- dplyr::rename(mozart, estimate = d, std.error = se)
+
+# meta-analysis forest plot with results random-effects meta-analysis
+viz_forest(
+  x = mozart[, c("d", "se")],
+  study_labels = mozart[, "study_name"],
+  xlab = "Cohen's d",
+  variant = "thick",
+  type = "cumulative"
+) + # use `statsExpressions` to create expression containing results 
+  labs(
+    title = "Meta-analysis of Pietschnig, Voracek, and Formann (2010) on the Mozart effect",
+    subtitle = expr_meta_parametric(df, k = 3)
+  ) + 
+  theme(text = element_text(size = 12))
+```
+
+<img src="man/figures/README-example_metaanalysis-1.png" width="100%" />
 
 # Usage in `ggstatsplot`
 
