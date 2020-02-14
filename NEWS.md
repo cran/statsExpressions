@@ -1,3 +1,9 @@
+# statsExpressions 0.3.1
+ 
+  - Adds a new function `corr_objects` to reduce dependency load of
+    `ggstatsplot`. This is an experimental function and should be avoided until
+    it stabilizes.
+
 # statsExpressions 0.3.0
 
 NEW FEATURES
