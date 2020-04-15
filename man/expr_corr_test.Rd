@@ -10,19 +10,18 @@ expr_corr_test(
   y,
   nboot = 100,
   beta = 0.1,
-  type = "pearson",
+  type = "parametric",
   bf.prior = 0.707,
   conf.level = 0.95,
   conf.type = "norm",
   k = 2,
   stat.title = NULL,
-  messages = TRUE,
   ...
 )
 }
 \arguments{
-\item{data}{A dataframe (or a tibble) from which variables specified are to
-be taken. A matrix or tables will \strong{not} be accepted.}
+\item{data}{for use with \code{formula}, a data frame containing all the
+data}
 
 \item{x}{The column in \code{data} containing the explanatory variable to be
 plotted on the \code{x}-axis. Can be entered either as a character string (e.g.,
@@ -45,8 +44,8 @@ Corresponding abbreviations are also accepted: \code{"p"} (for
 parametric/pearson's), \code{"np"} (nonparametric/spearman), \code{"r"} (robust),
 \code{"bf"} (for bayes factor), resp.}
 
-\item{bf.prior}{A numeric value between \code{0.5} and \code{2} (default \code{0.707}), the
-prior width to use in calculating Bayes Factors.}
+\item{bf.prior}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
+width to use in calculating Bayes factors.}
 
 \item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
 \verb{95\%} lower and upper confidence intervals (\code{0.95}).}
@@ -62,10 +61,7 @@ intervals required. The value should be any subset of the values \code{"norm"},
 added as a prefix in the subtitle. The default is \code{NULL}. An example of a
 \code{stat.title} argument will be something like \code{"Student's t-test: "}.}
 
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
-
-\item{...}{Currently ignored.}
+\item{...}{Additional arguments (ignored).}
 }
 \value{
 Expression containing results from correlation test with confidence
@@ -101,7 +97,4 @@ statsExpressions::expr_corr_test(
 \references{
 For more details, see-
 \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
-}
-\author{
-\href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 }

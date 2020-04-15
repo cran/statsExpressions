@@ -1,5 +1,3 @@
-context("expr_t_nonparametric")
-
 # between-subjects design -----------------------------------------------
 
 testthat::test_that(
@@ -25,7 +23,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          "log"["e"](italic("W")),
+          "log"["e"](italic("W")["Wilcoxon"]),
           " = ",
           "5.440",
           ", ",
@@ -87,7 +85,7 @@ testthat::test_that(
 
     # converting to long format
     df_bird %<>%
-      tibble::as_tibble(x = .) %>%
+      as_tibble(x = .) %>%
       tidyr::gather(
         data = .,
         key = "type",
@@ -123,7 +121,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          "log"["e"](italic("V")),
+          "log"["e"](italic("V")["Wilcoxon"]),
           " = ",
           "2.30259",
           ", ",

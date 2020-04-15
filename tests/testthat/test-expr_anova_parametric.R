@@ -1,5 +1,3 @@
-context("expr_anova_parametric - between-subjects")
-
 # parametric anova subtitles (without NAs) -----------------------------------
 
 testthat::test_that(
@@ -17,7 +15,6 @@ testthat::test_that(
         effsize.type = "partial_eta",
         k = 5,
         var.equal = FALSE,
-        nboot = 10,
         messages = FALSE
       )
 
@@ -26,7 +23,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Welch"],
           "(",
           "8",
           ",",
@@ -43,9 +40,9 @@ testthat::test_that(
           "0.15181",
           ", CI"["95%"],
           " [",
-          "0.02591",
+          "0.03902",
           ", ",
-          "0.21660",
+          "0.20834",
           "]",
           ", ",
           italic("n")["obs"],
@@ -87,7 +84,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Welch"],
           "(",
           "3",
           ",",
@@ -104,9 +101,9 @@ testthat::test_that(
           "0.085",
           ", CI"["95%"],
           " [",
-          "-0.008",
+          "0.000",
           ", ",
-          "0.258",
+          "0.178",
           "]",
           ", ",
           italic("n")["obs"],
@@ -136,7 +133,6 @@ testthat::test_that(
         y = "sleep_rem",
         effsize.type = "partial_omega",
         k = 4,
-        nboot = 10,
         messages = FALSE
       )
 
@@ -145,7 +141,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Welch"],
           "(",
           "3",
           ",",
@@ -162,9 +158,9 @@ testthat::test_that(
           "0.1438",
           ", CI"["95%"],
           " [",
-          "-0.0241",
+          "-0.0248",
           ", ",
-          "0.4012",
+          "0.2832",
           "]",
           ", ",
           italic("n")["obs"],
@@ -195,7 +191,6 @@ testthat::test_that(
         var.equal = TRUE,
         effsize.type = "partial_eta",
         k = 4,
-        nboot = 10,
         messages = FALSE
       )
 
@@ -204,7 +199,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Fisher"],
           "(",
           "3",
           ",",
@@ -221,9 +216,9 @@ testthat::test_that(
           "0.1926",
           ", CI"["95%"],
           " [",
-          "0.0129",
+          "0.0307",
           ", ",
-          "0.3387",
+          "0.3257",
           "]",
           ", ",
           italic("n")["obs"],
@@ -256,7 +251,6 @@ testthat::test_that(
         conf.level = 0.95,
         partial = FALSE,
         k = 4,
-        nboot = 10,
         messages = FALSE
       )
 
@@ -271,7 +265,6 @@ testthat::test_that(
         partial = FALSE,
         k = 4,
         conf.level = 0.99,
-        nboot = 10,
         messages = FALSE
       )
 
@@ -281,7 +274,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Welch"],
           "(",
           "3",
           ",",
@@ -298,9 +291,9 @@ testthat::test_that(
           "0.1926",
           ", CI"["95%"],
           " [",
-          "0.0319",
+          "0.0307",
           ", ",
-          "0.4387",
+          "0.3257",
           "]",
           ", ",
           italic("n")["obs"],
@@ -314,7 +307,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Welch"],
           "(",
           "3",
           ",",
@@ -331,9 +324,9 @@ testthat::test_that(
           "0.1438",
           ", CI"["99%"],
           " [",
-          "NA",
+          "-0.0248",
           ", ",
-          "0.3932",
+          "0.2832",
           "]",
           ", ",
           italic("n")["obs"],
@@ -366,7 +359,6 @@ testthat::test_that(
         x = "condition",
         y = value,
         paired = TRUE,
-        nboot = 20,
         k = 3,
         conf.level = 0.99,
         messages = TRUE
@@ -377,7 +369,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Fisher"],
           "(",
           "1.149",
           ",",
@@ -389,14 +381,14 @@ testthat::test_that(
           " = ",
           "< 0.001",
           ", ",
-          widehat(omega^2),
+          widehat(omega["p"]^2),
           " = ",
-          "0.707",
+          "0.838",
           ", CI"["99%"],
           " [",
-          "0.758",
+          "0.818",
           ", ",
-          "0.825",
+          "0.854",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -426,6 +418,7 @@ testthat::test_that(
         y = Taste,
         paired = TRUE,
         effsize.type = "biased",
+        partial = TRUE,
         sphericity.correction = FALSE,
         k = 4,
         conf.level = 0.99,
@@ -437,7 +430,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Fisher"],
           "(",
           "2",
           ",",
@@ -454,9 +447,9 @@ testthat::test_that(
           "0.2304",
           ", CI"["99%"],
           " [",
-          "0.0020",
+          "0.0534",
           ", ",
-          "0.4598",
+          "0.3894",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -479,7 +472,6 @@ testthat::test_that(
         effsize.type = "xxx",
         k = 5,
         conf.level = 0.90,
-        nboot = 15,
         messages = FALSE
       )
 
@@ -488,7 +480,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Fisher"],
           "(",
           "1.54700",
           ",",
@@ -500,14 +492,14 @@ testthat::test_that(
           " = ",
           "0.00844",
           ", ",
-          widehat(omega^2),
+          widehat(omega["p"]^2),
           " = ",
-          "0.01701",
+          "0.19031",
           ", CI"["90%"],
           " [",
-          "0.03464",
+          "0.00811",
           ", ",
-          "0.28869",
+          "0.35518",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -551,7 +543,7 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          italic("F"),
+          italic("F")["Fisher"],
           "(",
           "1.28",
           ",",
@@ -568,9 +560,9 @@ testthat::test_that(
           "0.82",
           ", CI"["50%"],
           " [",
-          "0.81",
+          "0.80",
           ", ",
-          "0.83",
+          "0.84",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -664,7 +656,7 @@ testthat::test_that(
       p_sub,
       ggplot2::expr(paste(
         NULL,
-        italic("F"),
+        italic("F")["Fisher"],
         "(",
         "6",
         ",",
@@ -676,12 +668,12 @@ testthat::test_that(
         " = ",
         "< 0.001",
         ", ",
-        widehat(omega^2),
+        widehat(omega["p"]^2),
         " = ",
-        "0.60",
+        "0.89",
         ", CI"["95%"],
         " [",
-        "0.77",
+        "0.81",
         ", ",
         "0.93",
         "]",

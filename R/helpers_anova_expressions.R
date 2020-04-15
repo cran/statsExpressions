@@ -1,12 +1,14 @@
 #' @title Making expression containing parametric ANOVA results
 #' @name expr_anova_parametric
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @return For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
-#' @note For repeated measures designs (`paired = TRUE`), only omega-squared and
-#'   partial eta-squared effect sizes are supported.
+#' @note For repeated measures designs (`paired = TRUE`), only partial
+#'   omega-squared and partial eta-squared are supported.
+#'
+#' @description The effect sizes and their confidence intervals are computed
+#'   using `effectsize::eta_squared` and `effectsize::omega_squared` functions.
 #'
 #' @inheritParams t1way_ci
 #' @param paired Logical that decides whether the experimental design is
@@ -25,13 +27,14 @@
 #' @inheritParams expr_template
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams stats::oneway.test
-#' @inheritParams groupedstats::lm_effsize_standardizer
-#'
+#' @inheritParams effectsize::eta_squared
 #'
 #' @importFrom dplyr select rename matches
-#' @importFrom rlang !! enquo eval_tidy expr ensym
-#' @importFrom stats aov oneway.test na.omit
+#' @importFrom rlang !! enquo eval_tidy expr ensym exec
+#' @importFrom stats aov oneway.test
 #' @importFrom ez ezANOVA
+#' @importFrom effectsize eta_squared omega_squared
+#' @importFrom broomExtra easystats_to_tidy_names
 #'
 #' @examples
 #' \donttest{
@@ -56,10 +59,9 @@
 #'   x = vore,
 #'   y = sleep_rem,
 #'   paired = FALSE,
-#'   effsize.type = "biased",
+#'   effsize.type = "eta",
 #'   partial = FALSE,
-#'   var.equal = TRUE,
-#'   nboot = 10
+#'   var.equal = TRUE
 #' )
 #'
 #' # -------------------- repeated measures ------------------------------
@@ -83,7 +85,6 @@ expr_anova_parametric <- function(data,
                                   effsize.type = "unbiased",
                                   partial = TRUE,
                                   conf.level = 0.95,
-                                  nboot = 100,
                                   var.equal = FALSE,
                                   sphericity.correction = TRUE,
                                   k = 2,
@@ -106,7 +107,7 @@ expr_anova_parametric <- function(data,
   effsize.type <- effsize_type_switch(effsize.type)
 
   # some of the effect sizes don't work properly for paired designs
-  if (isTRUE(paired)) partial <- ifelse(effsize.type == "unbiased", FALSE, TRUE)
+  if (isTRUE(paired)) partial <- TRUE
 
   # omega
   if (effsize.type == "unbiased") {
@@ -132,7 +133,7 @@ expr_anova_parametric <- function(data,
   data %<>%
     dplyr::select(.data = ., {{ x }}, {{ y }}) %>%
     dplyr::mutate(.data = ., {{ x }} := droplevels(as.factor({{ x }}))) %>%
-    tibble::as_tibble(x = .)
+    as_tibble(x = .)
 
   # -------------- within-subjects design --------------------------------
 
@@ -155,7 +156,7 @@ expr_anova_parametric <- function(data,
       message(cat(
         ipmisc::red("Warning: "),
         ipmisc::blue("No. of factor levels is greater than no. of observations per cell.\n"),
-        ipmisc::blue("No sphericity correction applied. Interpret the results with caution.\n")
+        ipmisc::blue("No sphericity correction applied. Interpret results with caution.\n")
       ),
       sep = ""
       )
@@ -184,7 +185,7 @@ expr_anova_parametric <- function(data,
     if (isTRUE(sphericity.correction)) {
       e_corr <- ez_df$`Sphericity Corrections`$GGe
       stats_df <-
-        tibble::as_tibble(cbind.data.frame(
+        as_tibble(cbind.data.frame(
           statistic = ez_df$ANOVA$F[2],
           parameter1 = e_corr * ez_df$ANOVA$DFn[2],
           parameter2 = e_corr * ez_df$ANOVA$DFd[2],
@@ -192,7 +193,7 @@ expr_anova_parametric <- function(data,
         ))
     } else {
       stats_df <-
-        tibble::as_tibble(cbind.data.frame(
+        as_tibble(cbind.data.frame(
           statistic = ez_df$ANOVA$F[2],
           parameter1 = ez_df$ANOVA$DFn[2],
           parameter2 = ez_df$ANOVA$DFd[2],
@@ -208,7 +209,7 @@ expr_anova_parametric <- function(data,
 
   if (isFALSE(paired)) {
     # remove NAs listwise for between-subjects design
-    data %<>% tidyr::drop_na(data = .)
+    data %<>% tidyr::drop_na(.)
 
     # sample size
     sample_size <- nrow(data)
@@ -242,43 +243,55 @@ expr_anova_parametric <- function(data,
       )
   }
 
-  # creating a standardized dataframe with effect size and its CIs
+  # ------------------- effect size computation ------------------------------
+
+  # function to compute effect sizes
+  if (effsize == "eta") {
+    .f <- effectsize::eta_squared
+  } else {
+    .f <- effectsize::omega_squared
+  }
+
+  # computing effect size
   effsize_df <-
-    aov_effsize(
+    rlang::exec(
+      .fn = .f,
       model = effsize_object,
-      effsize = effsize,
       partial = partial,
-      ci = conf.level,
-      iterations = nboot
-    )
+      ci.lvl = conf.level
+    ) %>%
+    broomExtra::easystats_to_tidy_names(.) %>% # renaming to standard term 'estimate'
+    dplyr::rename(.data = ., estimate = dplyr::matches("eta|omega")) %>%
+    dplyr::filter(.data = ., !is.na(estimate)) %>%
+    dplyr::filter(.data = ., !grepl(pattern = "Residuals", x = term, ignore.case = TRUE))
+
+  # test details
+  statistic.text <-
+    if (isTRUE(paired) || isTRUE(var.equal)) {
+      quote(italic("F")["Fisher"])
+    } else {
+      quote(italic("F")["Welch"])
+    }
 
   # preparing subtitle
-  subtitle <-
-    expr_template(
-      stat.title = stat.title,
-      no.parameters = 2L,
-      stats.df = stats_df,
-      effsize.df = effsize_df,
-      statistic.text = quote(italic("F")),
-      effsize.text = effsize.text,
-      n = sample_size,
-      n.text = n.text,
-      conf.level = conf.level,
-      k = k,
-      k.parameter = k.df1,
-      k.parameter2 = k.df2
-    )
-
-  # message about effect size measure
-  if (isTRUE(messages)) effsize_ci_message(nboot, conf.level)
-
-  # return the subtitle
-  return(subtitle)
+  expr_template(
+    stat.title = stat.title,
+    no.parameters = 2L,
+    stats.df = stats_df,
+    effsize.df = effsize_df,
+    statistic.text = statistic.text,
+    effsize.text = effsize.text,
+    n = sample_size,
+    n.text = n.text,
+    conf.level = conf.level,
+    k = k,
+    k.parameter = k.df1,
+    k.parameter2 = k.df2
+  )
 }
 
-#' @title Making text subtitle for nonparametric ANOVA.
+#' @title Making text subtitle for non-parametric ANOVA.
 #' @name expr_anova_nonparametric
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @details For paired designs, the effect size is Kendall's coefficient of
 #'   concordance (*W*), while for between-subjects designs, the effect size is
@@ -294,7 +307,7 @@ expr_anova_parametric <- function(data,
 #'
 #' @importFrom dplyr select
 #' @importFrom rlang !! enquo
-#' @importFrom stats friedman.test kruskal.test
+#' @importFrom stats friedman.test kruskal.test na.omit
 #' @importFrom broomExtra tidy
 #' @importFrom rcompanion epsilonSquared kendallW
 #'
@@ -349,7 +362,7 @@ expr_anova_nonparametric <- function(data,
   data %<>%
     dplyr::select(.data = ., {{ x }}, {{ y }}) %>%
     dplyr::mutate(.data = ., {{ x }} := droplevels(as.factor({{ x }}))) %>%
-    tibble::as_tibble(x = .)
+    as_tibble(x = .)
 
   # ------------------- within-subjects design ------------------------------
 
@@ -381,6 +394,7 @@ expr_anova_nonparametric <- function(data,
     )
     sample_size <- length(unique(data$rowid))
     n.text <- quote(italic("n")["pairs"])
+    statistic.text <- quote(chi["Friedman"]^2)
     effsize.text <- quote(widehat(italic("W"))["Kendall"])
   }
 
@@ -410,6 +424,7 @@ expr_anova_nonparametric <- function(data,
     )
     sample_size <- nrow(data)
     n.text <- quote(italic("n")["obs"])
+    statistic.text <- quote(chi["Kruskal-Wallis"]^2)
     effsize.text <- quote(widehat(epsilon^2))
   }
 
@@ -431,28 +446,23 @@ expr_anova_nonparametric <- function(data,
   if (isTRUE(messages)) effsize_ci_message(nboot, conf.level)
 
   # preparing subtitle
-  subtitle <-
-    expr_template(
-      stat.title = stat.title,
-      no.parameters = 1L,
-      stats.df = stats_df,
-      effsize.df = effsize_df,
-      statistic.text = quote(italic(chi)^2),
-      effsize.text = effsize.text,
-      n = sample_size,
-      n.text = n.text,
-      conf.level = conf.level,
-      k = k
-    )
-
-  # return the subtitle
-  return(subtitle)
+  expr_template(
+    stat.title = stat.title,
+    no.parameters = 1L,
+    stats.df = stats_df,
+    effsize.df = effsize_df,
+    statistic.text = statistic.text,
+    effsize.text = effsize.text,
+    n = sample_size,
+    n.text = n.text,
+    conf.level = conf.level,
+    k = k
+  )
 }
 
 #' @title Expression containing results from heteroscedastic one-way ANOVA for
 #'   trimmed means
 #' @name expr_anova_robust
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @return For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
@@ -528,7 +538,7 @@ expr_anova_robust <- function(data,
   data %<>%
     dplyr::select(.data = ., {{ x }}, {{ y }}) %>%
     dplyr::mutate(.data = ., {{ x }} := droplevels(as.factor({{ x }}))) %>%
-    tibble::as_tibble(x = .)
+    as_tibble(x = .)
 
   # -------------- within-subjects design --------------------------------
 
@@ -554,7 +564,7 @@ expr_anova_robust <- function(data,
     subtitle <-
       substitute(
         expr = paste(
-          italic("F"),
+          italic("F")["trimmed-means"],
           "(",
           df1,
           ",",
@@ -584,7 +594,7 @@ expr_anova_robust <- function(data,
 
   if (isFALSE(paired)) {
     # remove NAs listwise for between-subjects design
-    data %<>% tidyr::drop_na(data = .)
+    data %<>% tidyr::drop_na(.)
 
     # sample size
     sample_size <- nrow(data)
@@ -613,7 +623,7 @@ expr_anova_robust <- function(data,
         stat.title = stat.title,
         stats.df = stats_df,
         effsize.df = effsize_df,
-        statistic.text = quote(italic("F")),
+        statistic.text = quote(italic("F")["trimmed-means"]),
         effsize.text = quote(widehat(italic(xi))),
         n = sample_size,
         n.text = n.text,
@@ -633,7 +643,6 @@ expr_anova_robust <- function(data,
 
 #' @title Making expression containing Bayesian one-way ANOVA results.
 #' @name expr_anova_bayes
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @return For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
@@ -641,9 +650,7 @@ expr_anova_robust <- function(data,
 #' @inheritParams expr_anova_parametric
 #' @inheritParams expr_t_bayes
 #'
-#' @importFrom dplyr select
-#' @importFrom rlang !! enquo
-#' @importFrom stats lm oneway.test na.omit
+#' @importFrom tidyBF bf_oneway_anova
 #'
 #' @examples
 #' \donttest{
@@ -685,37 +692,14 @@ expr_anova_bayes <- function(data,
                              bf.prior = 0.707,
                              k = 2,
                              ...) {
-
-  # make sure both quoted and unquoted arguments are allowed
-  c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
-
-  # creating a dataframe
-  data %<>%
-    dplyr::select(.data = ., {{ x }}, {{ y }}) %>%
-    dplyr::mutate(.data = ., {{ x }} := droplevels(as.factor({{ x }}))) %>%
-    tibble::as_tibble(x = .)
-
-  # properly removing NAs if it's a paired design
-  # converting to long format and then getting it back in wide so that the
-  # rowid variable can be used as the block variable
-  if (isTRUE(paired)) data %<>% df_cleanup_paired(data = ., x = {{ x }}, y = {{ y }})
-
-  # remove NAs listwise for between-subjects design
-  if (isFALSE(paired)) data %<>% tidyr::drop_na(.)
-
   # bayes factor results
-  subtitle <-
-    bf_oneway_anova(
-      data = data,
-      x = {{ x }},
-      y = {{ y }},
-      paired = paired,
-      bf.prior = bf.prior,
-      k = k,
-      caption = NULL,
-      output = "h1"
-    )
-
-  # return the subtitle
-  return(subtitle)
+  tidyBF::bf_oneway_anova(
+    data = data,
+    x = {{ x }},
+    y = {{ y }},
+    paired = paired,
+    bf.prior = bf.prior,
+    k = k,
+    output = "h1"
+  )
 }

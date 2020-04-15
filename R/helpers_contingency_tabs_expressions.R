@@ -1,6 +1,5 @@
 #' @name expr_contingency_tab
 #' @title Making expression for contingency table and goodness of fit tests
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @return Expression for contingency analysis (Pearson's chi-square test for
 #'   independence for between-subjects design or McNemar's test for
@@ -41,7 +40,6 @@
 #'
 #' @importFrom dplyr select mutate rename filter
 #' @importFrom rlang !! enquo as_name ensym exec
-#' @importFrom tibble tribble as_tibble
 #' @importFrom tidyr uncount drop_na
 #' @importFrom stats mcnemar.test chisq.test
 #' @importFrom rcompanion cramerV cohenG cramerVFit
@@ -110,7 +108,7 @@ expr_contingency_tab <- function(data,
   data %<>%
     dplyr::select(.data = ., {{ x }}, {{ y }}, {{ counts }}) %>%
     tidyr::drop_na(data = .) %>%
-    tibble::as_tibble(x = .)
+    as_tibble(x = .)
 
   # x and y need to be factors; drop the unused levels of the factors
 
@@ -244,26 +242,22 @@ expr_contingency_tab <- function(data,
     effsize_df %<>% dplyr::filter(.data = ., Statistic == "g")
   }
 
-  # preparing subtitle
-  subtitle <-
-    expr_template(
-      no.parameters = 1L,
-      stats.df = broomExtra::tidy(stats_df),
-      effsize.df = effsize_df,
-      stat.title = stat.title,
-      statistic.text = statistic.text,
-      effsize.text = effsize.text,
-      n = sample_size,
-      n.text = n.text,
-      conf.level = conf.level,
-      k = k
-    )
-
   # message about effect size measure
   if (isTRUE(messages)) effsize_ci_message(nboot, conf.level)
 
-  # return the subtitle
-  return(subtitle)
+  # preparing subtitle
+  expr_template(
+    no.parameters = 1L,
+    stats.df = broomExtra::tidy(stats_df),
+    effsize.df = effsize_df,
+    stat.title = stat.title,
+    statistic.text = statistic.text,
+    effsize.text = effsize.text,
+    n = sample_size,
+    n.text = n.text,
+    conf.level = conf.level,
+    k = k
+  )
 }
 
 # aliases -----------------------------------------------------------------

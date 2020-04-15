@@ -1,6 +1,5 @@
 #' @title Message about bootstrapped confidence intervals for effect sizes.
 #' @name effsize_ci_message
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @inheritParams t1way_ci
 #'
@@ -31,18 +30,5 @@ effsize_type_switch <- function(effsize.type) {
     grepl("^u|^g|omega", effsize.type, TRUE) ~ "unbiased",
     grepl("^b|^d|eta", effsize.type, TRUE) ~ "biased",
     TRUE ~ "unbiased"
-  )
-}
-
-
-#' @noRd
-
-stats_type_switch <- function(type) {
-  dplyr::case_when(
-    grepl("^p", type, TRUE) ~ "parametric",
-    grepl("^n|^s", type, TRUE) ~ "nonparametric",
-    grepl("^r", type, TRUE) ~ "robust",
-    grepl("^b", type, TRUE) ~ "bayes",
-    TRUE ~ "parametric"
   )
 }

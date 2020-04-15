@@ -14,8 +14,10 @@ expr_meta_bayes(
 )
 }
 \arguments{
-\item{data}{data frame containing the variables for effect size \code{y},
-standard error \code{SE}, \code{labels}, and moderators per study.}
+\item{data}{A dataframe. It \strong{must} contain columns named \code{estimate} (effect
+sizes or outcomes)  and \code{std.error} (corresponding standard errors). These
+two columns will be used for \code{yi}  and \code{sei} arguments in \code{metafor::rma}
+(for parametric analysis) or \code{metaplus::metaplus} (for robust analysis).}
 
 \item{d}{\code{prior} distribution on the average effect size \code{d}. The
 prior probability density function is defined via \code{\link[metaBMA]{prior}}.}
@@ -28,17 +30,39 @@ probability density function is defined via \code{\link[metaBMA]{prior}}.}
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2}).}
 
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
+\item{messages}{Deprecated. Retained only for backward compatibility.}
 
-\item{...}{further arguments passed to \code{rstan::sampling} (see
-\code{\link[rstan]{stanmodel-method-sampling}}). Relevant MCMC settings
-concern the number of warmup samples that are discarded
-(\code{warmup=500}), the total number of iterations per chain
-(\code{iter=2000}), the number of MCMC chains (\code{chains=4}), whether
-multiple cores should be used (\code{cores=4}), and control arguments that
-make the sampling in Stan more robust, for instance:
-\code{control=list(adapt_delta=.97)}.}
+\item{...}{
+  Arguments passed on to \code{\link[metaBMA:meta_random]{metaBMA::meta_random}}
+  \describe{
+    \item{\code{labels}}{optional: character values with study labels. Can be a
+character vector or the quoted or unquoted name of the variable in
+\code{data}}
+    \item{\code{rscale_contin}}{scale parameter of the JZS prior for the continuous
+covariates.}
+    \item{\code{rscale_discrete}}{scale parameter of the JZS prior for discrete
+moderators.}
+    \item{\code{centering}}{whether continuous moderators are centered.}
+    \item{\code{logml}}{how to estimate the log-marginal likelihood: either by numerical
+integration (\code{"integrate"}) or by bridge sampling using MCMC/Stan
+samples (\code{"stan"}). To obtain high precision with \code{logml="stan"},
+many MCMC samples are required (e.g., \code{logml_iter=10000, warmup=1000}).}
+    \item{\code{summarize}}{how to estimate parameter summaries (mean, median, SD,
+etc.): Either by numerical integration (\code{summarize = "integrate"}) or
+based on MCMC/Stan samples (\code{summarize = "stan"}).}
+    \item{\code{ci}}{probability for the credibility/highest-density intervals.}
+    \item{\code{rel.tol}}{relative tolerance used for numerical integration using
+\code{\link[stats]{integrate}}. Use \code{rel.tol=.Machine$double.eps} for
+maximal precision (however, this might be slow).}
+    \item{\code{logml_iter}}{number of iterations (per chain) from the posterior
+distribution of \code{d} and \code{tau}. The samples are used for computing
+the marginal likelihood of the random-effects model with bridge sampling
+(if \code{logml="stan"}) and for obtaining parameter estimates (if
+\code{summarize="stan"}). Note that the argument \code{iter=2000} controls
+the number of iterations for estimation of the random-effect parameters per
+study in random-effects meta-analysis.}
+    \item{\code{silent_stan}}{whether to suppress the Stan progress bar.}
+  }}
 }
 \description{
 Making expression containing Bayesian random-effects meta-analysis.
@@ -47,43 +71,15 @@ Making expression containing Bayesian random-effects meta-analysis.
 \donttest{
 # setup
 set.seed(123)
-library(statsExpressions)
+library(metaplus)
 
-# let's create a dataframe
-df_results <-
-  structure(
-    .Data = list(estimate = c(
-      0.382047603321706, 0.780783111514665,
-      0.425607573765058, 0.558365541235078, 0.956473848429961
-    ), std.error = c(
-      0.0465576338644502,
-      0.0330218199731529, 0.0362834986178494, 0.0480571500648261, 0.062215818388157
-    ), t.value = c(
-      8.20590677855356, 23.6444603038067, 11.7300588415607,
-      11.6187818146078, 15.3734833553524
-    ), conf.low = c(
-      0.290515146096969,
-      0.715841986960399, 0.354354575031406, 0.46379116008131, 0.827446138277154
-    ), conf.high = c(
-      0.473580060546444, 0.845724236068931, 0.496860572498711,
-      0.652939922388847, 1.08550155858277
-    ), p.value = c(
-      3.28679518728519e-15,
-      4.04778497135963e-75, 7.59757330804449e-29, 5.45155840151592e-26,
-      2.99171217913312e-13
-    ), df.residual = c(
-      394L, 358L, 622L, 298L,
-      22L
-    )),
-    row.names = c(NA, -5L),
-    class = c("tbl_df", "tbl", "data.frame")
-  )
+# renaming to what `statsExpressions` expects
+df <- dplyr::rename(mag, estimate = yi, std.error = sei)
 
 # making subtitle
 expr_meta_bayes(
-  data = df_results,
+  data = df,
   k = 3,
-  messages = FALSE,
   # additional arguments given to `metaBMA`
   iter = 5000,
   summarize = "integrate",

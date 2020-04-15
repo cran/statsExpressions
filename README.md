@@ -5,11 +5,11 @@
 
 | Package                                                                                                                                                                   | Status                                                                                                                                                                                                 | Usage                                                                                                                                                                              | GitHub                                                                                                                                                                   | References                                                                                                                                                                |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![CRAN\_Release\_Badge](http://www.r-pkg.org/badges/version-ago/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                  | [![Build Status](https://travis-ci.org/IndrajeetPatil/statsExpressions.svg?branch=master)](https://travis-ci.org/IndrajeetPatil/statsExpressions)                                                      | [![Daily downloads badge](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                            | [![GitHub version](https://img.shields.io/badge/GitHub-0.3.1.9000-orange.svg?style=flat-square)](https://github.com/IndrajeetPatil/statsExpressions/)                    | [![Website](https://img.shields.io/badge/website-statsExpressions-orange.svg?colorB=E91E63)](https://indrajeetpatil.github.io/statsExpressions/)                          |
-| [![CRAN Checks](https://cranchecks.info/badges/summary/statsExpressions)](https://cran.r-project.org/web/checks/check_results_statsExpressions.html)                      | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/IndrajeetPatil/statsExpressions?branch=master&svg=true)](https://ci.appveyor.com/project/IndrajeetPatil/statsExpressions) | [![Weekly downloads badge](https://cranlogs.r-pkg.org/badges/last-week/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                          | [![Forks](https://img.shields.io/badge/forks-3-blue.svg)](https://github.com/IndrajeetPatil/statsExpressions/)                                                           | [![Rdoc](https://www.rdocumentation.org/badges/version/statsExpressions)](https://www.rdocumentation.org/packages/statsExpressions)                                       |
-| [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)                                                                | [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/)                                                                                         | [![Monthly downloads badge](https://cranlogs.r-pkg.org/badges/last-month/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                        | [![Github Issues](https://img.shields.io/badge/issues-6-red.svg)](https://github.com/IndrajeetPatil/statsExpressions/issues)                                             | [![vignettes](https://img.shields.io/badge/vignettes-0.3.1-orange.svg?colorB=FF5722)](https://CRAN.R-project.org/package=statsExpressions/vignettes/)                     |
+| [![CRAN\_Release\_Badge](http://www.r-pkg.org/badges/version-ago/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                  | [![Build Status](https://travis-ci.org/IndrajeetPatil/statsExpressions.svg?branch=master)](https://travis-ci.org/IndrajeetPatil/statsExpressions)                                                      | [![Daily downloads badge](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                            | [![GitHub version](https://img.shields.io/badge/GitHub-0.4.0.9000-orange.svg?style=flat-square)](https://github.com/IndrajeetPatil/statsExpressions/)                    | [![Website](https://img.shields.io/badge/website-statsExpressions-orange.svg?colorB=E91E63)](https://indrajeetpatil.github.io/statsExpressions/)                          |
+| [![CRAN Checks](https://cranchecks.info/badges/summary/statsExpressions)](https://cran.r-project.org/web/checks/check_results_statsExpressions.html)                      | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/IndrajeetPatil/statsExpressions?branch=master&svg=true)](https://ci.appveyor.com/project/IndrajeetPatil/statsExpressions) | [![Weekly downloads badge](https://cranlogs.r-pkg.org/badges/last-week/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                          | [![Forks](https://img.shields.io/badge/forks-5-blue.svg)](https://github.com/IndrajeetPatil/statsExpressions/)                                                           | [![Features](https://img.shields.io/badge/features-statsExpressions-orange.svg?colorB=2196F3)](https://indrajeetpatil.github.io/statsExpressions/reference/index.html)    |
+| [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.6.0-6666ff.svg)](https://cran.r-project.org/)                                                                | [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/)                                                                                         | [![Monthly downloads badge](https://cranlogs.r-pkg.org/badges/last-month/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                        | [![Github Issues](https://img.shields.io/badge/issues-6-red.svg)](https://github.com/IndrajeetPatil/statsExpressions/issues)                                             | [![vignettes](https://img.shields.io/badge/vignettes-0.4.0-orange.svg?colorB=FF5722)](https://CRAN.R-project.org/package=statsExpressions/vignettes/)                     |
 | [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions) | [![Coverage Status](https://coveralls.io/repos/github/IndrajeetPatil/statsExpressions/badge.svg?branch=master)](https://coveralls.io/github/IndrajeetPatil/statsExpressions?branch=master)             | [![Total downloads badge](https://cranlogs.r-pkg.org/badges/grand-total/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)                         | [![Github Stars](https://img.shields.io/github/stars/IndrajeetPatil/statsExpressions.svg?style=social&label=Github)](https://github.com/IndrajeetPatil/statsExpressions) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2074621.svg)](https://doi.org/10.5281/zenodo.3386122)                                                                 |
-| [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)                                                          | [![Codecov test coverage](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/master/graph/badge.svg)](https://codecov.io/gh/IndrajeetPatil/statsExpressions?branch=master)                   | [![Covrpage Summary](https://img.shields.io/badge/covrpage-Last_Build_2020_02_14-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/blob/master/tests/README.md) | [![Last-changedate](https://img.shields.io/badge/last%20change-2020--02--14-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master)         | [![GitHub last commit](https://img.shields.io/github/last-commit/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master) |
+| [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)                                                          | [![Codecov test coverage](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/master/graph/badge.svg)](https://codecov.io/gh/IndrajeetPatil/statsExpressions?branch=master)                   | [![Covrpage Summary](https://img.shields.io/badge/covrpage-Last_Build_2020_03_22-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/blob/master/tests/README.md) | [![Last-changedate](https://img.shields.io/badge/last%20change-2020--04--11-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master)         | [![GitHub last commit](https://img.shields.io/github/last-commit/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master) |
 | [![status](https://tinyverse.netlify.com/badge/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                                    | [![R build status](https://github.com/IndrajeetPatil/statsExpressions/workflows/R-CMD-check/badge.svg)](https://github.com/IndrajeetPatil/statsExpressions)                                            | [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/statsExpressions/community)                                                                       | [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)                                                               | [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/IndrajeetPatil/statsExpressions/issues)      |
 
 # Introduction
@@ -26,7 +26,7 @@ functions needed to create these expressions.
 To get the latest, stable `CRAN` release:
 
 ``` r
-install.packages(pkgs = "statsExpressions")
+install.packages("statsExpressions")
 ```
 
 You can get the **development** version of the package from `GitHub`. To
@@ -39,7 +39,7 @@ If you are in hurry and want to reduce the time of installation, prefer-
 
 ``` r
 # needed package to download from GitHub repo
-utils::install.packages(pkgs = "remotes")
+install.packages("remotes")
 
 # downloading the package from GitHub
 remotes::install_github(
@@ -113,32 +113,7 @@ for trimmed means (robust *t*-test):
 
 Here is a summary table of all the statistical tests currently supported
 across various functions:
-
-| Functions                                | Type           | Test                                                                                                                                                                                       | Effect size                                                                                                                                                                                           | 95% CI available?                                                                                          |
-| ---------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `expr_anova_parametric` (2 groups)       | Parametric     | Student’s and Welch’s *t*-test                                                                                                                                                             | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                              | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_parametric` (\> 2 groups)    | Parametric     | Fisher’s and Welch’s one-way ANOVA                                                                                                                                                         | ![\\eta^2, \\eta^2\_p, \\omega^2, \\omega^2\_p](https://latex.codecogs.com/png.latex?%5Ceta%5E2%2C%20%5Ceta%5E2_p%2C%20%5Comega%5E2%2C%20%5Comega%5E2_p "\\eta^2, \\eta^2_p, \\omega^2, \\omega^2_p") | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_nonparametric` (2 groups)    | Non-parametric | Mann-Whitney *U*-test                                                                                                                                                                      | *r*                                                                                                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_nonparametric` (\> 2 groups) | Non-parametric | Kruskal-Wallis Rank Sum Test                                                                                                                                                               | ![\\epsilon^2](https://latex.codecogs.com/png.latex?%5Cepsilon%5E2 "\\epsilon^2")                                                                                                                     | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_robust` (2 groups)           | Robust         | Yuen’s test for trimmed means                                                                                                                                                              | ![\\xi](https://latex.codecogs.com/png.latex?%5Cxi "\\xi")                                                                                                                                            | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_robust` (\> 2 groups)        | Robust         | Heteroscedastic one-way ANOVA for trimmed means                                                                                                                                            | ![\\xi](https://latex.codecogs.com/png.latex?%5Cxi "\\xi")                                                                                                                                            | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_parametric` (2 groups)       | Parametric     | Student’s *t*-test                                                                                                                                                                         | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                              | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_parametric` (\> 2 groups)    | Parametric     | Fisher’s one-way repeated measures ANOVA                                                                                                                                                   | ![\\eta^2\_p, \\omega^2](https://latex.codecogs.com/png.latex?%5Ceta%5E2_p%2C%20%5Comega%5E2 "\\eta^2_p, \\omega^2")                                                                                  | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_nonparametric` (2 groups)    | Non-parametric | Wilcoxon signed-rank test                                                                                                                                                                  | *r*                                                                                                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_nonparametric` (\> 2 groups) | Non-parametric | Friedman rank sum test                                                                                                                                                                     | ![W\_{Kendall}](https://latex.codecogs.com/png.latex?W_%7BKendall%7D "W_{Kendall}")                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_robust` (2 groups)           | Robust         | Yuen’s test on trimmed means for dependent samples                                                                                                                                         | ![\\xi](https://latex.codecogs.com/png.latex?%5Cxi "\\xi")                                                                                                                                            | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_anova_robust` (\> 2 groups)        | Robust         | Heteroscedastic one-way repeated measures ANOVA for trimmed means                                                                                                                          | <font color="red">![\\times](https://latex.codecogs.com/png.latex?%5Ctimes "\\times")</font>                                                                                                          | <font color="red">![\\times](https://latex.codecogs.com/png.latex?%5Ctimes "\\times")</font>               |
-| `expr_contingency_tab` (unpaired)        | Parametric     | ![\\text{Pearson's}\~ \\chi^2 \~\\text{test}](https://latex.codecogs.com/png.latex?%5Ctext%7BPearson%27s%7D~%20%5Cchi%5E2%20~%5Ctext%7Btest%7D "\\text{Pearson's}~ \\chi^2 ~\\text{test}") | Cramér’s *V*                                                                                                                                                                                          | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_contingency_tab` (paired)          | Parametric     | McNemar’s test                                                                                                                                                                             | Cohen’s *g*                                                                                                                                                                                           | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_contingency_tab`                   | Parametric     | One-sample proportion test                                                                                                                                                                 | Cramér’s *V*                                                                                                                                                                                          | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_corr_test`                         | Parametric     | Pearson’s *r*                                                                                                                                                                              | *r*                                                                                                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_corr_test`                         | Non-parametric | ![\\text{Spearman's}\~ \\rho](https://latex.codecogs.com/png.latex?%5Ctext%7BSpearman%27s%7D~%20%5Crho "\\text{Spearman's}~ \\rho")                                                        | ![\\rho](https://latex.codecogs.com/png.latex?%5Crho "\\rho")                                                                                                                                         | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_corr_test`                         | Robust         | Percentage bend correlation                                                                                                                                                                | *r*                                                                                                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_t_onesample`                       | Parametric     | One-sample *t*-test                                                                                                                                                                        | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                              | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_t_onesample`                       | Non-parametric | One-sample Wilcoxon signed rank test                                                                                                                                                       | *r*                                                                                                                                                                                                   | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_t_onesample`                       | Robust         | One-sample percentile bootstrap                                                                                                                                                            | robust estimator                                                                                                                                                                                      | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_meta_parametric`                   | Parametric     | Meta-analysis via random-effects models                                                                                                                                                    | ![\\beta](https://latex.codecogs.com/png.latex?%5Cbeta "\\beta")                                                                                                                                      | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
-| `expr_meta_robust`                       | Robust         | Meta-analysis via robust random-effects models                                                                                                                                             | ![\\beta](https://latex.codecogs.com/png.latex?%5Cbeta "\\beta")                                                                                                                                      | <font color="green">![\\checkmark](https://latex.codecogs.com/png.latex?%5Ccheckmark "\\checkmark")</font> |
+<https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html>
 
 # Primary functions
 
@@ -148,56 +123,9 @@ website:
 
 Following are few examples of how these functions can be used.
 
-## Example: Expressions for one-sample *t*-test
+## Example: Expressions for one-way ANOVAs
 
-``` r
-# setup
-set.seed(123)
-library(ggplot2)
-library(statsExpressions)
-
-# create fake data
-df <- data.frame(x = rnorm(1000, 0.1, 0.5))
-
-# creating a histogram plot
-p <- ggplot(df, aes(x)) +
-  geom_histogram(alpha = 0.5) +
-  geom_vline(xintercept = mean(df$x), color = "red")
-
-# adding a caption with a non-parametric one-sample test
-p + labs(
-  title = "One-Sample Wilcoxon Signed Rank Test",
-  caption = expr_t_onesample(df, x, type = "nonparametric")
-)
-#> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
-```
-
-<img src="man/figures/README-example_t_one-1.png" width="100%" />
-
-## Example: Expressions for two-sample *t*-test
-
-``` r
-# setup
-set.seed(123)
-library(ggplot2)
-library(hrbrthemes)
-
-# create a plot
-p <-
-  ggplot(ToothGrowth, aes(supp, len)) +
-  geom_boxplot() +
-  theme_ipsum_rc()
-
-# adding a subtitle with
-p + labs(
-  title = "Two-Sample Welch's t-test",
-  subtitle = expr_t_parametric(ToothGrowth, supp, len)
-)
-```
-
-<img src="man/figures/README-example_t_two-1.png" width="100%" />
-
-## Example: Expressions for one-way ANOVA
+### Between-subjects design
 
 Let’s say we want to check differences in weight of the vehicle based on
 number of cylinders in the engine and wish to carry out Welch’s ANOVA:
@@ -212,12 +140,12 @@ library(statsExpressions)
 ggplot(iris, aes(x = Species, y = Sepal.Length)) +
   geom_boxplot() +
   labs(
-    title = "Welch's ANOVA",
-    subtitle = expr_anova_parametric(iris, Species, Sepal.Length, messages = FALSE)
+    title = "Fisher's one-way ANOVA",
+    subtitle = expr_anova_parametric(iris, Species, Sepal.Length, var.equal = TRUE)
   )
 ```
 
-<img src="man/figures/README-example_anova_parametric-1.png" width="100%" />
+<img src="man/figures/README-anova_parametric1-1.png" width="100%" />
 
 In case you change your mind and now want to carry out a robust ANOVA
 instead. Also, let’s use a different kind of a visualization:
@@ -230,27 +158,212 @@ library(statsExpressions)
 library(ggridges)
 
 # create a ridgeplot
-p <-
-  ggplot(iris, aes(x = Sepal.Length, y = Species)) +
+ggplot(iris, aes(x = Sepal.Length, y = Species)) +
   geom_density_ridges(
     jittered_points = TRUE, quantile_lines = TRUE,
-    scale = 0.9, vline_size = 1, vline_color = "red",
+    scale = 0.9, vline_size = 1, vline_color = "red",  
     position = position_raincloud(adjust_vlines = TRUE)
+  ) +
+  labs(
+    title = "A heteroscedastic one-way ANOVA for trimmed means",
+    subtitle = expr_anova_robust(iris, Species, Sepal.Length, messages = FALSE)
   )
-
-# create an expression containing details from the relevant test
-results <- expr_anova_robust(iris, Species, Sepal.Length, messages = FALSE)
-
-# display results on the plot
-p + labs(
-  title = "A heteroscedastic one-way ANOVA for trimmed means",
-  subtitle = results
-)
 ```
 
-<img src="man/figures/README-example_anova-1.png" width="100%" />
+<img src="man/figures/README-anova_rob1-1.png" width="100%" />
 
-## Example: Expressions for correlation analysis
+Needless to say, you can also use these functions to display results in
+`ggplot`-extension packages. For example, `ggpubr`:
+
+``` r
+set.seed(123)
+library(ggpubr)
+library(ggplot2)
+
+# plot
+ggboxplot(
+  ToothGrowth,
+  x = "dose",
+  y = "len",
+  color = "dose",
+  palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+  add = "jitter",
+  shape = "dose"
+) + # adding results from stats analysis using `statsExpressions`
+  labs(
+    title = "Kruskall-Wallis test",
+    subtitle = expr_anova_nonparametric(ToothGrowth, dose, len, type = "np")
+  )
+#> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
+```
+
+<img src="man/figures/README-ggpubr_anova-1.png" width="100%" />
+
+### Within-subjects design
+
+Let’s now see an example of a repeated measures one-way ANOVA.
+
+``` r
+# setup
+set.seed(123)
+library(ggplot2)
+library(WRS2)
+library(ggbeeswarm)
+library(statsExpressions)
+
+ggplot2::ggplot(WineTasting, aes(Wine, Taste, color = Wine)) +
+  geom_quasirandom() +
+  labs(
+    title = "Friedman's rank sum test",
+    subtitle = expr_anova_nonparametric(WineTasting, Wine, Taste, paired = TRUE, type = "np")
+  )
+#> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
+```
+
+<img src="man/figures/README-anova_parametric2-1.png" width="100%" />
+
+## Example: Expressions for two-sample tests
+
+### Between-subjects design
+
+``` r
+# setup
+set.seed(123)
+library(ggplot2)
+library(hrbrthemes)
+library(statsExpressions)
+
+# create a plot
+ggplot(ToothGrowth, aes(supp, len)) +
+  geom_boxplot() +
+  theme_ipsum_rc() +
+  # adding a subtitle with
+  labs(
+    title = "Two-Sample Welch's t-test",
+    subtitle = expr_t_parametric(ToothGrowth, supp, len)
+  )
+```
+
+<img src="man/figures/README-t_two-1.png" width="100%" />
+
+Example with `ggpubr`:
+
+``` r
+# setup
+set.seed(123)
+library(ggplot2)
+library(ggpubr)
+library(statsExpressions)
+
+# basic plot
+gghistogram(
+  data.frame(
+    sex = factor(rep(c("F", "M"), each = 200)),
+    weight = c(rnorm(200, 55), rnorm(200, 58))
+  ),
+  x = "weight",
+  add = "mean",
+  rug = TRUE,
+  fill = "sex",
+  palette = c("#00AFBB", "#E7B800"),
+  add_density = TRUE
+) + # displaying stats results
+  labs(
+    title = "Yuen's two-sample test for trimmed means",
+    subtitle = expr_t_robust(
+      data = data.frame(
+        sex = factor(rep(c("F", "M"), each = 200)),
+        weight = c(rnorm(200, 55), rnorm(200, 58))
+      ),
+      x = sex,
+      y = weight,
+      type = "robust",
+      messages = FALSE
+    )
+  )
+```
+
+<img src="man/figures/README-t_two_ggpubr-1.png" width="100%" />
+
+Another example with `ggiraphExtra`:
+
+``` r
+# setup
+set.seed(123)
+library(ggplot2)
+library(ggiraphExtra)
+library(gcookbook)
+library(statsExpressions)
+
+# plot
+ggDot(heightweight, aes(sex, heightIn, fill = sex),
+  boxfill = "white",
+  binwidth = 0.4
+) +
+  labs(
+    title = "Wilcoxon two-sample test",
+    subtitle = expr_t_nonparametric(heightweight, sex, heightIn, type = "np")
+  )
+#> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
+```
+
+<img src="man/figures/README-t_ggiraphExtra-1.png" width="100%" />
+
+### Within-subjects design
+
+We can also have a look at a repeated measures design and the related
+expressions.
+
+``` r
+# setup
+set.seed(123)
+library(ggplot2)
+library(statsExpressions)
+library(tidyr)
+library(PairedData)
+data(PrisonStress)
+
+# plot
+paired.plotProfiles(PrisonStress, "PSSbefore", "PSSafter", subjects = "Subject") +
+  # `statsExpressions` needs data in the tidy format
+  labs(
+    title = "Two-sample Wilcoxon paired test",
+    subtitle = expr_t_nonparametric(
+      data = pivot_longer(PrisonStress, starts_with("PSS"), "PSS", values_to = "stress"),
+      x = PSS,
+      y = stress,
+      paired = TRUE,
+      type = "nonparametric"
+    )
+  )
+#> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
+```
+
+<img src="man/figures/README-t_two_paired1-1.png" width="100%" />
+
+## Example: Expressions for one-sample tests
+
+``` r
+# setup
+set.seed(123)
+library(ggplot2)
+library(statsExpressions)
+
+# creating a histogram plot
+ggplot(mtcars, aes(wt)) +
+  geom_histogram(alpha = 0.5) +
+  geom_vline(xintercept = mean(mtcars$wt), color = "red") +
+  # adding a caption with a non-parametric one-sample test
+  labs(
+    title = "One-Sample Wilcoxon Signed Rank Test",
+    subtitle = expr_t_onesample(mtcars, wt, test.value = 3, type = "nonparametric")
+  )
+#> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
+```
+
+<img src="man/figures/README-t_one-1.png" width="100%" />
+
+## Example: Expressions for correlation analyses
 
 Let’s look at another example where we want to run correlation analysis:
 
@@ -261,24 +374,20 @@ library(ggplot2)
 library(statsExpressions)
 
 # create a ridgeplot
-p <-
-  ggplot(mtcars, aes(x = mpg, y = wt)) +
+ggplot(mtcars, aes(mpg, wt)) +
   geom_point() +
-  geom_smooth(method = "lm")
-
-# create an expression containing details from the relevant test
-results <- expr_corr_test(mtcars, mpg, wt, type = "nonparametric")
-
-# display results on the plot
-p + labs(
-  title = "Spearman's rank correlation coefficient",
-  subtitle = results
-)
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Spearman's rank correlation coefficient",
+    subtitle = expr_corr_test(mtcars, mpg, wt, type = "nonparametric")
+  )
 ```
 
-<img src="man/figures/README-example_corr-1.png" width="100%" />
+<img src="man/figures/README-corr-1.png" width="100%" />
 
 ## Example: Expressions for contingency table analysis
+
+For categorical/nominal data
 
 ``` r
 # setup
@@ -286,34 +395,24 @@ set.seed(123)
 library(ggplot2)
 library(statsExpressions)
 
-# data
-df <- as.data.frame(table(mpg$class))
-colnames(df) <- c("class", "freq")
-
 # basic pie chart
-p <-
-  ggplot(df, aes(x = "", y = freq, fill = factor(class))) +
+ggplot(as.data.frame(table(mpg$class)), aes(x = "", y = Freq, fill = factor(Var1))) +
   geom_bar(width = 1, stat = "identity") +
-  theme(
-    axis.line = element_blank(),
-    plot.title = element_text(hjust = 0.5)
-  )
-
-# cleaning up the chart and adding results from one-sample proportion test
-p +
+  theme(axis.line = element_blank()) +
+  # cleaning up the chart and adding results from one-sample proportion test
   coord_polar(theta = "y", start = 0) +
   labs(
-    fill = "class",
+    fill = "Class",
     x = NULL,
     y = NULL,
-    title = "Pie Chart of class",
-    subtitle = expr_onesample_proptest(df, class, counts = freq),
+    title = "Pie Chart of class (type of car)",
+    subtitle = expr_onesample_proptest(as.data.frame(table(mpg$class)), Var1, counts = Freq),
     caption = "One-sample goodness of fit proportion test"
   )
 #> Note: 95% CI for effect size estimate was computed with 100 bootstrap samples.
 ```
 
-<img src="man/figures/README-example_contingency-1.png" width="100%" />
+<img src="man/figures/README-gof-1.png" width="100%" />
 
 You can also use these function to get the expression in return without
 having to display them in plots:
@@ -340,9 +439,6 @@ set.seed(123)
 library(metaviz)
 library(ggplot2)
 
-# rename columns to `statsExpressions` conventions
-df <- dplyr::rename(mozart, estimate = d, std.error = se)
-
 # meta-analysis forest plot with results random-effects meta-analysis
 viz_forest(
   x = mozart[, c("d", "se")],
@@ -353,12 +449,12 @@ viz_forest(
 ) + # use `statsExpressions` to create expression containing results
   labs(
     title = "Meta-analysis of Pietschnig, Voracek, and Formann (2010) on the Mozart effect",
-    subtitle = expr_meta_parametric(df, k = 3)
+    subtitle = expr_meta_parametric(dplyr::rename(mozart, estimate = d, std.error = se))
   ) +
   theme(text = element_text(size = 12))
 ```
 
-<img src="man/figures/README-example_metaanalysis-1.png" width="100%" />
+<img src="man/figures/README-metaanalysis-1.png" width="100%" />
 
 # Usage in `ggstatsplot`
 

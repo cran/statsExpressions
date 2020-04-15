@@ -1,5 +1,3 @@
-context("expr_meta_bayes")
-
 # subtitle from meta-analysis -------------------------------------------
 
 testthat::test_that(
@@ -9,7 +7,6 @@ testthat::test_that(
 
     # setup
     set.seed(123)
-    library(metaBMA)
 
     # creating a dataframe
     df1 <-
@@ -36,15 +33,14 @@ testthat::test_that(
     # subtitle
     set.seed(123)
     results1 <-
-      capture.output(suppressWarnings(expr_meta_bayes(
+      suppressWarnings(expr_meta_bayes(
         data = df1,
         k = 3,
         messages = TRUE,
         iter = 1000
-      )))
+      ))
 
     # test
-    testthat::expect_identical(results1[8], "  random_H0         1  0.000546")
-    testthat::expect_identical(results1[9], "  random_H1      1832  1.000000")
+    testthat::expect_identical(as.character(results1$expr)[6], "7.513")
   }
 )

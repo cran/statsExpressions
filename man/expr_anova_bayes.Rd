@@ -19,8 +19,8 @@ dataframe \code{data}.}
 repeated measures/within-subjects or between-subjects. The default is
 \code{FALSE}.}
 
-\item{bf.prior}{A numeric value between \code{0.5} and \code{2} (default \code{0.707}), the
-prior width to use in calculating Bayes Factors.}
+\item{bf.prior}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
+width to use in calculating Bayes factors.}
 
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2}).}
@@ -64,7 +64,4 @@ statsExpressions::expr_anova_bayes(
   k = 4
 )
 }
-}
-\author{
-\href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 }

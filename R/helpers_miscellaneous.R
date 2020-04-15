@@ -1,6 +1,5 @@
 #' @title Template for subtitles with statistical details for tests
 #' @name expr_template
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @param no.parameters An integer that specifies that the number of parameters
 #'   for the statistical test. Can be `0` for non-parametric tests, `1` for
@@ -262,6 +261,8 @@ expr_template <- function(no.parameters,
 }
 
 #' @noRd
+#' @note Cleans outputs from `rcompanion` to make writing wrapper functions
+#'   easier. This doesn't have much usage outside of this package context.
 #'
 #' @importFrom dplyr rename_all recode
 #'
@@ -272,7 +273,7 @@ rcompanion_cleaner <- function(object) {
   if (inherits(object, "list")) object <- object[[1]]
 
   # rename columns uniformly
-  tibble::as_tibble(object) %>%
+  as_tibble(object) %>%
     dplyr::rename_all(
       .tbl = .,
       .funs = dplyr::recode,
@@ -291,6 +292,8 @@ rcompanion_cleaner <- function(object) {
 #' @noRd
 #'
 #' @importFrom rlang :=
+#' @importFrom dplyr rename mutate arrange
+#' @importFrom tidyr gather
 #'
 #' @keywords internal
 

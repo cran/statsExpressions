@@ -1,7 +1,6 @@
 #' @title Expression for one sample *t*-test and its non-parametric and
 #'   robust equivalents
 #' @name expr_t_onesample
-#' @author \href{https://github.com/IndrajeetPatil}{Indrajeet Patil}
 #'
 #' @param x A numeric variable.
 #' @param test.value A number specifying the value of the null hypothesis
@@ -16,7 +15,7 @@
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams t1way_ci
 #' @inheritParams expr_t_parametric
-#' @inheritParams bf_corr_test
+#' @inheritParams tidyBF::bf_corr_test
 #' @inheritParams expr_anova_parametric
 #'
 #' @return Expression containing results from a one-sample test. The exact test
@@ -26,10 +25,14 @@
 #' @references For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
-#' @importFrom dplyr select bind_rows summarize mutate mutate_at mutate_if
-#' @importFrom dplyr group_by n arrange
+#' @importFrom dplyr select mutate pull rename_all recode
 #' @importFrom WRS2 onesampb
 #' @importFrom rcompanion wilcoxonOneSampleR
+#' @importFrom ipmisc stats_type_switch
+#' @importFrom effectsize cohens_d hedges_g
+#' @importFrom stats t.test wilcox.test
+#' @importFrom rlang !! ensym new_formula exec
+#' @importFrom broomExtra easystats_to_tidy_names
 #'
 #' @examples
 #' \donttest{
@@ -82,7 +85,6 @@ expr_t_onesample <- function(data,
                              bf.prior = 0.707,
                              robust.estimator = "onestep",
                              effsize.type = "g",
-                             effsize.noncentral = TRUE,
                              conf.level = 0.95,
                              conf.type = "norm",
                              nboot = 100,
@@ -100,52 +102,48 @@ expr_t_onesample <- function(data,
   data %<>%
     dplyr::select(.data = ., {{ x }}) %>%
     tidyr::drop_na(data = .) %>%
-    tibble::as_tibble(x = .)
+    as_tibble(.)
 
   # sample size
   sample_size <- nrow(data)
 
   # standardize the type of statistics
-  stats.type <- stats_type_switch(type)
+  stats.type <- ipmisc::stats_type_switch(type)
 
   # ========================= parametric ====================================
 
   if (stats.type == "parametric") {
     # deciding which effect size to use (Hedge's g or Cohen's d)
     if (effsize.type %in% c("unbiased", "g")) {
-      hedges.correction <- TRUE
-      effsize.text <- quote(widehat(italic("g")))
+      effsize.text <- quote(widehat(italic("g"))["Hedge"])
+      .f <- effectsize::hedges_g
     } else {
-      hedges.correction <- FALSE
-      effsize.text <- quote(widehat(italic("d")))
+      effsize.text <- quote(widehat(italic("d"))["Cohen"])
+      .f <- effectsize::cohens_d
     }
 
-    # creating model object
-    mod_object <-
-      stats::t.test(
+    # setting up the t-test model and getting its summary
+    stats_df <-
+      broomExtra::tidy(stats::t.test(
         x = data %>% dplyr::pull({{ x }}),
         mu = test.value,
         conf.level = conf.level,
         alternative = "two.sided",
         na.action = na.omit
-      )
-
-    # tidy dataframe
-    stats_df <- broomExtra::tidy(mod_object)
+      ))
 
     # creating effect size info
     effsize_df <-
-      effsize_t_parametric(
-        formula = rlang::new_formula(NULL, {{ x }}),
-        data = data,
-        tobject = mod_object,
-        mu = test.value,
-        hedges.correction = hedges.correction,
-        conf.level = conf.level
-      )
+      rlang::exec(
+        .fn = .f,
+        x = data %>% dplyr::pull({{ x }}) - test.value,
+        correction = FALSE,
+        ci = conf.level
+      ) %>%
+      broomExtra::easystats_to_tidy_names(.)
 
     # preparing subtitle parameters
-    statistic.text <- quote(italic("t"))
+    statistic.text <- quote(italic("t")["Student"])
     no.parameters <- 1L
   }
 
@@ -182,7 +180,7 @@ expr_t_onesample <- function(data,
       rcompanion_cleaner(.)
 
     # preparing subtitle parameters
-    statistic.text <- quote("log"["e"](italic("V")))
+    statistic.text <- quote("log"["e"](italic("V")["Wilcoxon"]))
     no.parameters <- 0L
     effsize.text <- quote(widehat(italic("r")))
 
@@ -260,12 +258,11 @@ expr_t_onesample <- function(data,
   # running Bayesian one-sample t-test
   if (stats.type == "bayes") {
     subtitle <-
-      bf_one_sample_ttest(
+      tidyBF::bf_one_sample_ttest(
         data = data,
         x = {{ x }},
         test.value = test.value,
         bf.prior = bf.prior,
-        caption = NULL,
         output = "h1",
         k = k
       )
