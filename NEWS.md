@@ -1,3 +1,14 @@
+# statsExpressions 0.4.1
+
+BUG FIXES
+
+  - Major bug introduced in `0.4.0` release for `expr_anova_parametric`: 
+    changing `conf.level` doesn't work and function defaults to `0.90` CIs (#32).
+
+MINOR CHANGES
+
+  - Removes extra space contained in subtitles for Bayes Factor results (#31).
+
 # statsExpressions 0.4.0
 
 BREAKING CHANGES
