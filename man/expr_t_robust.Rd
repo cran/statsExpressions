@@ -10,12 +10,10 @@ expr_t_robust(
   y,
   tr = 0.1,
   paired = FALSE,
-  nboot = 100,
   conf.level = 0.95,
-  conf.type = "norm",
-  k = 2,
+  nboot = 100,
+  k = 2L,
   stat.title = NULL,
-  messages = TRUE,
   ...
 )
 }
@@ -38,15 +36,11 @@ try to play around with the value of \code{tr}, which is by default set to
 repeated measures/within-subjects or between-subjects. The default is
 \code{FALSE}.}
 
-\item{nboot}{Number of bootstrap samples for computing confidence interval
-for the effect size (Default: \code{100}).}
-
 \item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
 \verb{95\%} lower and upper confidence intervals (\code{0.95}).}
 
-\item{conf.type}{A vector of character strings representing the type of
-intervals required. The value should be any subset of the values \code{"norm"},
-\code{"basic"}, \code{"perc"}, \code{"bca"}. For more, see \code{?boot::boot.ci}.}
+\item{nboot}{Number of bootstrap samples for computing confidence interval
+for the effect size (Default: \code{100}).}
 
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2}).}
@@ -54,9 +48,6 @@ intervals required. The value should be any subset of the values \code{"norm"},
 \item{stat.title}{A character describing the test being run, which will be
 added as a prefix in the subtitle. The default is \code{NULL}. An example of a
 \code{stat.title} argument will be something like \code{"Student's t-test: "}.}
-
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
 
 \item{...}{Additional arguments (currently ignored).}
 }
@@ -67,6 +58,8 @@ Expression containing results from a robust \emph{t}-test
 \donttest{
 # for reproducibility
 set.seed(123)
+
+# between-subjects design -----------------------------------------------
 
 # with defaults
 statsExpressions::expr_t_robust(
@@ -85,15 +78,11 @@ statsExpressions::expr_t_robust(
   tr = 0.2
 )
 
-# within-subjects design
+# within-subjects design -----------------------------------------------
 statsExpressions::expr_t_robust(
-  data = dplyr::filter(
-    statsExpressions::intent_morality,
-    condition \%in\% c("accidental", "attempted"),
-    harm == "Poisoning"
-  ),
+  data = dplyr::filter(bugs_long, condition \%in\% c("LDLF", "LDHF")),
   x = condition,
-  y = rating,
+  y = desire,
   paired = TRUE,
   nboot = 25
 )

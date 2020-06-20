@@ -2,7 +2,7 @@
 #'   robust equivalents
 #' @name expr_t_onesample
 #'
-#' @param x A numeric variable.
+#' @param x A numeric variable from the dataframe `data`.
 #' @param test.value A number specifying the value of the null hypothesis
 #'   (Default: `0`).
 #' @param type Type of statistic expected (`"parametric"` or `"nonparametric"`
@@ -13,10 +13,10 @@
 #'   (`"onestep"` (Default), `"mom"`, or `"median"`). For more, see
 #'   `?WRS2::onesampb`.
 #' @param ... Additional arguments (currently ignored).
-#' @inheritParams t1way_ci
 #' @inheritParams expr_t_parametric
 #' @inheritParams tidyBF::bf_corr_test
 #' @inheritParams expr_anova_parametric
+#' @inheritParams expr_anova_nonparametric
 #'
 #' @return Expression containing results from a one-sample test. The exact test
 #'   and the effect size details contained will be dependent on the `type`
@@ -88,13 +88,9 @@ expr_t_onesample <- function(data,
                              conf.level = 0.95,
                              conf.type = "norm",
                              nboot = 100,
-                             k = 2,
+                             k = 2L,
                              stat.title = NULL,
-                             messages = TRUE,
                              ...) {
-
-  # check the dots
-  x <- rlang::ensym(x)
 
   # ====================== dataframe ========================================
 
@@ -153,13 +149,12 @@ expr_t_onesample <- function(data,
     # setting up the Mann-Whitney U-test and getting its summary
     stats_df <-
       broomExtra::tidy(
-        x = stats::wilcox.test(
+        stats::wilcox.test(
           x = data %>% dplyr::pull({{ x }}),
           alternative = "two.sided",
           na.action = na.omit,
           mu = test.value,
-          exact = FALSE,
-          correct = TRUE
+          exact = FALSE
         )
       ) %>%
       dplyr::mutate(.data = ., statistic = log(statistic))
@@ -183,9 +178,6 @@ expr_t_onesample <- function(data,
     statistic.text <- quote("log"["e"](italic("V")["Wilcoxon"]))
     no.parameters <- 0L
     effsize.text <- quote(widehat(italic("r")))
-
-    # message about effect size measure
-    if (isTRUE(messages)) effsize_ci_message(nboot, conf.level)
   }
 
   # preparing subtitle
@@ -217,9 +209,6 @@ expr_t_onesample <- function(data,
         nv = test.value,
         alpha = 1 - conf.level
       )
-
-    # displaying message about bootstrap
-    if (isTRUE(messages)) effsize_ci_message(nboot, conf.level)
 
     # preparing the subtitle
     subtitle <-

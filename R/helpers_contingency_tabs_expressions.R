@@ -31,12 +31,11 @@
 #'   is equal theoretical proportions across the levels of the nominal variable.
 #'   This means if there are two levels this will be `ratio = c(0.5,0.5)` or if
 #'   there are four levels this will be `ratio = c(0.25,0.25,0.25,0.25)`, etc.
-#' @param legend.title Title text for the legend.
 #' @param ... Additional arguments (currently ignored).
-#' @inheritParams t1way_ci
 #' @inheritParams expr_t_parametric
 #' @inheritParams stats::chisq.test
 #' @inheritParams expr_anova_parametric
+#' @inheritParams expr_anova_nonparametric
 #'
 #' @importFrom dplyr select mutate rename filter
 #' @importFrom rlang !! enquo as_name ensym exec
@@ -89,12 +88,10 @@ expr_contingency_tab <- function(data,
                                  nboot = 100,
                                  paired = FALSE,
                                  stat.title = NULL,
-                                 legend.title = NULL,
                                  conf.level = 0.95,
                                  conf.type = "norm",
                                  bias.correct = TRUE,
-                                 k = 2,
-                                 messages = TRUE,
+                                 k = 2L,
                                  ...) {
 
   # ensure the variables work quoted or unquoted
@@ -238,12 +235,7 @@ expr_contingency_tab <- function(data,
 
 
   # for Cohen's g
-  if ("Statistic" %in% names(effsize_df)) {
-    effsize_df %<>% dplyr::filter(.data = ., Statistic == "g")
-  }
-
-  # message about effect size measure
-  if (isTRUE(messages)) effsize_ci_message(nboot, conf.level)
+  if ("Statistic" %in% names(effsize_df)) effsize_df %<>% dplyr::filter(Statistic == "g")
 
   # preparing subtitle
   expr_template(

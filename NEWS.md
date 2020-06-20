@@ -1,3 +1,18 @@
+# statsExpressions 0.4.2
+
+MINOR CHANGES
+
+  - Thanks to Sarah, the package has a hexsticker. :)
+  
+  - Confidence intervals for Spearman's rho are computed using `correlation`
+    instead of `rcompanion`.
+    
+  - All relevant functions get rid of `messages` argument as the functions no
+    longer print a message when bootstrapped CIs are used.
+    
+  - The effect size measure for paired robust *t*-test is now changed to robust
+    (trimmed-Winsorized) standardized difference similar to Cohen's *d*.
+
 # statsExpressions 0.4.1
 
 BUG FIXES

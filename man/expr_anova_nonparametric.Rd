@@ -11,10 +11,9 @@ expr_anova_nonparametric(
   paired = FALSE,
   conf.type = "perc",
   conf.level = 0.95,
-  k = 2,
-  nboot = 100,
+  k = 2L,
+  nboot = 100L,
   stat.title = NULL,
-  messages = TRUE,
   ...
 )
 }
@@ -48,10 +47,7 @@ for the effect size (Default: \code{100}).}
 added as a prefix in the subtitle. The default is \code{NULL}. An example of a
 \code{stat.title} argument will be something like \code{"Student's t-test: "}.}
 
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
-
-\item{...}{Currently ignored.}
+\item{...}{Additional arguments (currently ignored).}
 }
 \value{
 For more details, see-

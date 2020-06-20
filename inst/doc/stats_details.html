@@ -12,20 +12,23 @@
 
 <meta name="author" content="Indrajeet Patil" />
 
-<meta name="date" content="2020-04-22" />
+<meta name="date" content="2020-06-19" />
 
 <title>Test and effect size details</title>
 
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
   }
 });
 </script>
@@ -228,7 +231,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Test and effect size details</h1>
 <h4 class="author">Indrajeet Patil</h4>
-<h4 class="date">2020-04-22</h4>
+<h4 class="date">2020-06-19</h4>
 
 
 <div id="TOC">
@@ -281,6 +284,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#parametric-5">parametric</a></li>
 <li><a href="#non-parametric-5">non-parametric</a></li>
 <li><a href="#robust-5">robust</a></li>
+</ul></li>
+<li><a href="#meta-analysis">Meta-analysis</a>
+<ul>
+<li><a href="#parametric-6">parametric</a></li>
+<li><a href="#robust-6">robust</a></li>
+<li><a href="#bayesian">Bayesian</a></li>
 </ul></li>
 <li><a href="#suggestions">Suggestions</a></li>
 <li><a href="#session-information">Session Information</a></li>
@@ -473,12 +482,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tbody>
 </table>
 <p>Note that the following recommendations on how to interpret the effect sizes are just suggestions and there is nothing universal about them. The interpretation of <strong>any</strong> effect size measures is always going to be relative to the discipline, the specific data, and the aims of the analyst. Here the guidelines are given for <em>small</em>, <em>medium</em>, and <em>large</em> effects and references should shed more information on the baseline discipline with respect to which these guidelines were recommended. This is important because what might be considered a small effect in psychology might be large for some other field like public health.</p>
+<p>(Additionally, you will also see which function is used internally to compute the effect size and their confidence intervals.)</p>
 </div>
 <div id="one-sample-tests" class="section level1">
 <h1>One-sample tests</h1>
 <div id="parametric" class="section level2">
 <h2>parametric</h2>
-<p><strong>Test</strong>: One-sample <em>t</em>-test <br> <strong>Effect size</strong>: Cohen’s <em>d</em>, Hedge’s <em>g</em></p>
+<p><strong>Test</strong>: One-sample <em>t</em>-test <br> <strong>Effect size</strong>: Cohen’s <em>d</em>, Hedge’s <em>g</em> <br> <strong>Function</strong>: <code>effectsize::cohens_d</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -509,7 +519,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="non-parametric" class="section level2">
 <h2>non-parametric</h2>
-<p><strong>Test</strong>: One-sample Wilcoxon Signed-rank Test <br> <strong>Effect size</strong>: <em>r</em> ( = <span class="math inline">\(Z/\sqrt(N_{obs})\)</span>)</p>
+<p><strong>Test</strong>: One-sample Wilcoxon Signed-rank Test <br> <strong>Effect size</strong>: <span class="math inline">\(r\)</span> ( = <span class="math inline">\(Z/\sqrt(N_{obs})\)</span>) <br> <strong>Function</strong>: <code>rcompanion::wilcoxonOneSampleR</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -533,7 +543,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="robust" class="section level2">
 <h2>robust</h2>
-<p><strong>Test</strong>: One-sample percentile bootstrap test <br> <strong>Effect size</strong>: robust location measure</p>
+<p><strong>Test</strong>: One-sample percentile bootstrap test <br> <strong>Effect size</strong>: robust location measure <br> <strong>Function</strong>: <code>WRS2::onesampb</code></p>
 </div>
 </div>
 <div id="two-sample-tests" class="section level1">
@@ -542,7 +552,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>within-subjects design</h2>
 <div id="parametric-1" class="section level3">
 <h3>parametric</h3>
-<p><strong>Test</strong>: Student’s dependent samples <em>t</em>-test <br> <strong>Effect size</strong>: Cohen’s <em>d</em>, Hedge’s <em>g</em></p>
+<p><strong>Test</strong>: Student’s dependent samples <em>t</em>-test <br> <strong>Effect size</strong>: Cohen’s <em>d</em>, Hedge’s <em>g</em> <br> <strong>Function</strong>: <code>effectsize::cohens_d</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -573,7 +583,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="non-parametric-1" class="section level3">
 <h3>non-parametric</h3>
-<p><strong>Test</strong>: Wilcoxon signed-rank test <br> <strong>Effect size</strong>: <em>r</em> ( = <span class="math inline">\(Z/\sqrt(N_{pairs})\)</span>)</p>
+<p><strong>Test</strong>: Wilcoxon signed-rank test <br> <strong>Effect size</strong>: <span class="math inline">\(r\)</span> ( = <span class="math inline">\(Z/\sqrt(N_{pairs})\)</span>) <br> <strong>Function</strong>: <code>rcompanion::wilcoxonPairedR</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -597,7 +607,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="robust-1" class="section level3">
 <h3>robust</h3>
-<p><strong>Test</strong>: Yuen’s dependent sample trimmed means <em>t</em>-test <br> <strong>Effect size</strong>: Explanatory measure of effect size (<span class="math inline">\(\xi\)</span>)</p>
+<p><strong>Test</strong>: Yuen’s dependent sample trimmed means <em>t</em>-test <br> <strong>Effect size</strong>: robust (trimmed-Winsorized) standardized difference similar to Cohen’s <em>d</em> <br> <strong>Function</strong>: <code>WRS2::dep.effect</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -610,7 +620,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\xi\)</span></td>
+<td><span class="math inline">\(\delta_{R}\)</span></td>
 <td>0.10 – &lt; 0.30</td>
 <td>0.30 – &lt; 0.50</td>
 <td>≥ 0.50</td>
@@ -618,14 +628,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tr>
 </tbody>
 </table>
-<p><strong>Reference</strong>: <a href="https://CRAN.R-project.org/package=WRS2/vignettes/WRS2.pdf" class="uri">https://CRAN.R-project.org/package=WRS2/vignettes/WRS2.pdf</a></p>
+<p><strong>Reference</strong>: - <a href="https://CRAN.R-project.org/package=WRS2/vignettes/WRS2.pdf" class="uri">https://CRAN.R-project.org/package=WRS2/vignettes/WRS2.pdf</a> - <a href="https://journals.sagepub.com/doi/10.1177/0013164406288161" class="uri">https://journals.sagepub.com/doi/10.1177/0013164406288161</a></p>
 </div>
 </div>
 <div id="between-subjects-design" class="section level2">
 <h2>between-subjects design</h2>
 <div id="parametric-2" class="section level3">
 <h3>parametric</h3>
-<p><strong>Test</strong>: Student’s and Welch’s independent samples <em>t</em>-test <br> <strong>Effect size</strong>: Cohen’s <em>d</em>, Hedge’s <em>g</em></p>
+<p><strong>Test</strong>: Student’s and Welch’s independent samples <em>t</em>-test <br> <strong>Effect size</strong>: Cohen’s <em>d</em>, Hedge’s <em>g</em> <br> <strong>Function</strong>: <code>effectsize::cohens_d</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -656,7 +666,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="non-parametric-2" class="section level3">
 <h3>non-parametric</h3>
-<p><strong>Test</strong>: Two-sample Mann–Whitney <em>U</em> Test <br> <strong>Effect size</strong>: <em>r</em> ( = <span class="math inline">\(Z/\sqrt(N_{obs})\)</span>)</p>
+<p><strong>Test</strong>: Two-sample Mann–Whitney <em>U</em> Test <br> <strong>Effect size</strong>: <span class="math inline">\(r\)</span> ( = <span class="math inline">\(Z/\sqrt(N_{obs})\)</span>) <br> <strong>Function</strong>: <code>rcompanion::wilcoxonR</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -681,7 +691,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="robust-2" class="section level3">
 <h3>robust</h3>
-<p><strong>Test</strong>: Yuen’s independent sample trimmed means <em>t</em>-test <br> <strong>Effect size</strong>: Explanatory measure of effect size (<span class="math inline">\(\xi\)</span>)</p>
+<p><strong>Test</strong>: Yuen’s independent sample trimmed means <em>t</em>-test <br> <strong>Effect size</strong>: Explanatory measure of effect size (<span class="math inline">\(\xi\)</span>) <br> <strong>Function</strong>: <code>WRS2::yuen.effect.ci</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -712,7 +722,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>within-subjects design</h2>
 <div id="parametric-3" class="section level3">
 <h3>parametric</h3>
-<p><strong>Test</strong>: Fisher’s repeated measures one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2\)</span></p>
+<p><strong>Test</strong>: Fisher’s repeated measures one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2\)</span> <br> <strong>Function</strong>: <code>effectsize::eta_squared</code> and <code>effectsize::omega_squared</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -748,7 +758,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="non-parametric-3" class="section level3">
 <h3>non-parametric</h3>
-<p><strong>Test</strong>: Friedman’s rank sum test <br> <strong>Effect size</strong>: Kendall’s <em>W</em></p>
+<p><strong>Test</strong>: Friedman’s rank sum test <br> <strong>Effect size</strong>: Kendall’s <em>W</em> <br> <strong>Function</strong>: <code>rcompanion::kendallW</code></p>
 <p>In the following table, <em>k</em> is the number of treatments, groups, or things being rated.</p>
 <table>
 <thead>
@@ -801,7 +811,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>between-subjects design</h2>
 <div id="parametric-4" class="section level3">
 <h3>parametric</h3>
-<p><strong>Test</strong>: Fisher’s or Welch’s one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2\)</span>, <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2\)</span>, <span class="math inline">\(\omega^2_p\)</span></p>
+<p><strong>Test</strong>: Fisher’s or Welch’s one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2\)</span>, <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2\)</span>, <span class="math inline">\(\omega^2_p\)</span> <br> <strong>Function</strong>: <code>effectsize::eta_squared</code> and <code>effectsize::omega_squared</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -851,7 +861,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="non-parametric-4" class="section level3">
 <h3>non-parametric</h3>
-<p><strong>Test</strong>: Kruskal–Wallis test <br> <strong>Effect size</strong>: <span class="math inline">\(\epsilon^2\)</span></p>
+<p><strong>Test</strong>: Kruskal–Wallis test <br> <strong>Effect size</strong>: <span class="math inline">\(\epsilon^2\)</span> <br> <strong>Function</strong>: <code>rcompanion::epsilonSquared</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -876,7 +886,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="robust-4" class="section level3">
 <h3>robust</h3>
-<p><strong>Test</strong>: Heteroscedastic one-way ANOVA for trimmed means <br> <strong>Effect size</strong>: Explanatory measure of effect size (<span class="math inline">\(\xi\)</span>)</p>
+<p><strong>Test</strong>: Heteroscedastic one-way ANOVA for trimmed means <br> <strong>Effect size</strong>: Explanatory measure of effect size (<span class="math inline">\(\xi\)</span>) <br> <strong>Function</strong>: <code>WRS2::t1way</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -905,7 +915,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Contingency table analyses</h1>
 <div id="association-test---unpaired" class="section level2">
 <h2>association test - unpaired</h2>
-<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared test <br> <strong>Effect size</strong>: Cramér’s <em>V</em></p>
+<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared test <br> <strong>Effect size</strong>: Cramér’s <em>V</em> <br> <strong>Function</strong>: <code>rcompanion::cramerV</code></p>
 <p>In the following table, <em>k</em> is the minimum number of categories in either rows or columns.</p>
 <table>
 <thead>
@@ -945,7 +955,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="association-test---paired" class="section level2">
 <h2>association test - paired</h2>
-<p><strong>Test</strong>: McNemar’s test <br> <strong>Effect size</strong>: Cohen’s <em>g</em></p>
+<p><strong>Test</strong>: McNemar’s test <br> <strong>Effect size</strong>: Cohen’s <em>g</em> <br> <strong>Function</strong>: <code>rcompanion::cohenG</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -970,7 +980,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="goodness-of-fit-test" class="section level2">
 <h2>goodness-of-fit test</h2>
-<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared goodness-of-fit test <br> <strong>Effect size</strong>: Cramér’s <em>V</em></p>
+<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared goodness-of-fit test <br> <strong>Effect size</strong>: Cramér’s <em>V</em> <br> <strong>Function</strong>: <code>rcompanion::cramerVFit</code></p>
 <p>In the following table, <em>k</em> is the number of categories.</p>
 <table>
 <thead>
@@ -1055,7 +1065,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Correlation analyses</h1>
 <div id="parametric-5" class="section level2">
 <h2>parametric</h2>
-<p><strong>Test</strong>: Pearson product-moment correlation coefficient <br> <strong>Effect size</strong>: Pearson’s correlation coefficient (<em>r</em>)</p>
+<p><strong>Test</strong>: Pearson product-moment correlation coefficient <br> <strong>Effect size</strong>: Pearson’s correlation coefficient (<em>r</em>) <br> <strong>Function</strong>: <code>correlation::correlation</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -1079,7 +1089,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="non-parametric-5" class="section level2">
 <h2>non-parametric</h2>
-<p><strong>Test</strong>: Spearman’s rank correlation coefficient <br> <strong>Effect size</strong>: Spearman’s rank correlation coefficient (<span class="math inline">\(\rho\)</span>)</p>
+<p><strong>Test</strong>: Spearman’s rank correlation coefficient <br> <strong>Effect size</strong>: Spearman’s rank correlation coefficient (<span class="math inline">\(\rho\)</span>) <br> <strong>Function</strong>: <code>correlation::correlation</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -1103,7 +1113,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="robust-5" class="section level2">
 <h2>robust</h2>
-<p><strong>Test</strong>: Percentage bend correlation coefficient <br> <strong>Effect size</strong>: Percentage bend correlation coefficient (<span class="math inline">\(\rho_{pb}\)</span>)</p>
+<p><strong>Test</strong>: Percentage bend correlation coefficient <br> <strong>Effect size</strong>: Percentage bend correlation coefficient (<span class="math inline">\(\rho_{pb}\)</span>) <br> <strong>Function</strong>: <code>correlation::correlation</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -1124,6 +1134,21 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div id="meta-analysis" class="section level1">
+<h1>Meta-analysis</h1>
+<div id="parametric-6" class="section level2">
+<h2>parametric</h2>
+<p><strong>Test</strong>: Parametric random-effects meta-analysis <br> <strong>Effect size</strong>: Regression estimate (<span class="math inline">\(\beta\)</span>) <br> <strong>Function</strong>: <code>metafor::rma</code></p>
+</div>
+<div id="robust-6" class="section level2">
+<h2>robust</h2>
+<p><strong>Test</strong>: Random-effects meta-analysis using a mixture of normals for the random effect <br> <strong>Effect size</strong>: Regression estimate (<span class="math inline">\(\beta\)</span>) <br> <strong>Function</strong>: <code>metaplus::metaplus</code></p>
+</div>
+<div id="bayesian" class="section level2">
+<h2>Bayesian</h2>
+<p><strong>Test</strong>: Bayesian random-effects meta-analysis <br> <strong>Effect size</strong>: Regression estimate (<span class="math inline">\(\beta\)</span>) <br> <strong>Function</strong>: <code>metaBMA::meta_random</code></p>
 </div>
 </div>
 <div id="suggestions" class="section level1">
