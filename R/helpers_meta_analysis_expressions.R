@@ -21,6 +21,7 @@
 #' @importFrom metafor rma
 #' @importFrom dplyr rename_all recode mutate
 #' @importFrom tidyBF meta_data_check
+#' @importFrom broomExtra tidy_parameters glance_performance
 #'
 #' @examples
 #' \donttest{
@@ -39,13 +40,6 @@
 #'   messages = FALSE
 #' )
 #'
-#' # getting tidy data frame with coefficients
-#' expr_meta_parametric(
-#'   data = df,
-#'   messages = FALSE,
-#'   output = "tidy"
-#' )
-#'
 #' # making caption
 #' expr_meta_parametric(
 #'   data = df,
@@ -53,20 +47,13 @@
 #'   messages = FALSE,
 #'   output = "caption"
 #' )
-#'
-#' # getting dataframe with model summary
-#' expr_meta_parametric(
-#'   data = df,
-#'   messages = FALSE,
-#'   output = "glance"
-#' )
 #' }
 #' @export
 
 # function body
 expr_meta_parametric <- function(data,
-                                 conf.level = 0.95,
                                  k = 2L,
+                                 conf.level = 0.95,
                                  output = "subtitle",
                                  caption = NULL,
                                  messages = TRUE,
@@ -90,18 +77,8 @@ expr_meta_parametric <- function(data,
 
   # create a dataframe with coefficients
   df_tidy <-
-    coef(summary(meta_res)) %>%
-    as_tibble(.) %>%
-    dplyr::rename_all(
-      .tbl = .,
-      .funs = dplyr::recode,
-      se = "std.error",
-      zval = "statistic",
-      pval = "p.value",
-      ci.lb = "conf.low",
-      ci.ub = "conf.high"
-    ) %>%
-    dplyr::mutate(.data = ., term = "summary effect")
+    broomExtra::tidy_parameters(meta_res) %>%
+    dplyr::mutate(.data = ., term = "Overall")
 
   # preparing the subtitle
   subtitle <-
@@ -120,24 +97,8 @@ expr_meta_parametric <- function(data,
 
   #----------------------- model summary ------------------------------------
 
-  df_glance <-
-    with(
-      data = meta_res,
-      expr = tibble(
-        tau2 = tau2,
-        se.tau2 = se.tau2,
-        k = k,
-        p = p,
-        m = m,
-        QE = QE,
-        QEp = QEp,
-        QM = QM,
-        QMp = QMp,
-        I2 = I2,
-        H2 = H2,
-        int.only = int.only
-      )
-    )
+  # model summary
+  df_glance <- broomExtra::glance_performance(meta_res)
 
   # preparing the subtitle
   caption <-
@@ -166,11 +127,11 @@ expr_meta_parametric <- function(data,
       ),
       env = list(
         top.text = caption,
-        Q = specify_decimal_p(x = df_glance$QE, k = 0L),
-        df = specify_decimal_p(x = (df_glance$k - 1), k = 0L),
-        pvalue = specify_decimal_p(x = df_glance$QEp, k = k, p.value = TRUE),
-        tau2 = specify_decimal_p(x = df_glance$tau2, k = k),
-        I2 = paste(specify_decimal_p(x = df_glance$I2, k = 2L), "%", sep = "")
+        Q = specify_decimal_p(x = df_glance$cochran.qe, k = 0L),
+        df = specify_decimal_p(x = df_glance$df.residual, k = 0L),
+        pvalue = specify_decimal_p(x = df_glance$p.value.cochran.qe, k = k, p.value = TRUE),
+        tau2 = specify_decimal_p(x = df_glance$tau.squared, k = k),
+        I2 = paste(specify_decimal_p(x = df_glance$i.squared, k = 2L), "%", sep = "")
       )
     )
 
@@ -181,7 +142,7 @@ expr_meta_parametric <- function(data,
     EXPR = output,
     "subtitle" = subtitle,
     "caption" = caption,
-    "subtitle"
+    subtitle
   ))
 }
 
@@ -221,7 +182,7 @@ expr_meta_parametric <- function(data,
 # function body
 expr_meta_robust <- function(data,
                              random = "mixture",
-                             k = 2,
+                             k = 2L,
                              messages = TRUE,
                              ...) {
   # check the data contains needed column
@@ -307,7 +268,7 @@ expr_meta_robust <- function(data,
 expr_meta_bayes <- function(data,
                             d = prior("norm", c(mean = 0, sd = 0.3)),
                             tau = prior("invgamma", c(shape = 1, scale = 0.15)),
-                            k = 2,
+                            k = 2L,
                             messages = TRUE,
                             ...) {
   # check the data contains needed column
@@ -321,5 +282,5 @@ expr_meta_bayes <- function(data,
     k = k,
     caption = NULL,
     output = "h1"
-  )
+  )$expr
 }

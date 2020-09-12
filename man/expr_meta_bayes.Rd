@@ -8,7 +8,7 @@ expr_meta_bayes(
   data,
   d = prior("norm", c(mean = 0, sd = 0.3)),
   tau = prior("invgamma", c(shape = 1, scale = 0.15)),
-  k = 2,
+  k = 2L,
   messages = TRUE,
   ...
 )
@@ -28,7 +28,7 @@ prior probability density function is defined via \code{\link[metaBMA]{prior}}.}
 probability density function is defined via \code{\link[metaBMA]{prior}}.}
 
 \item{k}{Number of digits after decimal point (should be an integer)
-(Default: \code{k = 2}).}
+(Default: \code{k = 2L}).}
 
 \item{messages}{Deprecated. Retained only for backward compatibility.}
 

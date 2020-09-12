@@ -8,18 +8,18 @@ expr_corr_test(
   data,
   x,
   y,
+  k = 2L,
+  conf.level = 0.95,
   beta = 0.1,
   type = "parametric",
   bf.prior = 0.707,
-  conf.level = 0.95,
-  k = 2L,
   stat.title = NULL,
   ...
 )
 }
 \arguments{
-\item{data}{for use with \code{formula}, a data frame containing all the
-data}
+\item{data}{A dataframe (or a tibble) from which variables specified are to
+be taken. A matrix or tables will \strong{not} be accepted.}
 
 \item{x}{The column in \code{data} containing the explanatory variable to be
 plotted on the \code{x}-axis. Can be entered either as a character string (e.g.,
@@ -28,6 +28,12 @@ plotted on the \code{x}-axis. Can be entered either as a character string (e.g.,
 \item{y}{The column in \code{data} containing the response (outcome) variable to
 be plotted on the \code{y}-axis. Can be entered either as a character string
 (e.g., \code{"y"}) or as a bare expression (e.g, \code{y}).}
+
+\item{k}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2L}).}
+
+\item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
 
 \item{beta}{bending constant (Default: \code{0.1}). For more, see \code{?WRS2::pbcor}.}
 
@@ -42,17 +48,12 @@ parametric/pearson), \code{"np"} (nonparametric/spearman), \code{"r"} (robust),
 \item{bf.prior}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
 width to use in calculating Bayes factors.}
 
-\item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
-\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
-
-\item{k}{Number of digits after decimal point (should be an integer)
-(Default: \code{k = 2}).}
-
 \item{stat.title}{A character describing the test being run, which will be
 added as a prefix in the subtitle. The default is \code{NULL}. An example of a
 \code{stat.title} argument will be something like \code{"Student's t-test: "}.}
 
-\item{...}{Additional arguments (ignored).}
+\item{...}{Additional arguments passed to
+\code{\link[parameters:model_parameters.BFBayesFactor]{parameters::model_parameters.BFBayesFactor()}}.}
 }
 \value{
 Expression containing results from correlation test with confidence
