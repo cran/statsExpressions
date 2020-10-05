@@ -300,7 +300,7 @@ expr_t_nonparametric <- function(data,
     sample_size <- nrow(data)
     n.text <- quote(italic("n")["obs"])
     .f <- rcompanion::wilcoxonR
-    statistic.text <- quote("log"["e"](italic("W")["Wilcoxon"]))
+    statistic.text <- quote("log"["e"](italic("W")["Mann-Whitney"]))
   }
 
   # setting up the test and getting its summary
@@ -389,8 +389,7 @@ expr_t_nonparametric <- function(data,
 #'   data = dplyr::filter(bugs_long, condition %in% c("LDLF", "LDHF")),
 #'   x = condition,
 #'   y = desire,
-#'   paired = TRUE,
-#'   nboot = 25
+#'   paired = TRUE
 #' )
 #' }
 #' @export

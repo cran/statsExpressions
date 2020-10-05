@@ -23,13 +23,13 @@ testthat::test_that(
       ggplot2::expr(
         paste(
           NULL,
-          "log"["e"](italic("W")["Wilcoxon"]),
+          "log"["e"](italic("W")["Mann-Whitney"]),
           " = ",
           "5.440",
           ", ",
           italic("p"),
           " = ",
-          "< 0.001",
+          "4.35e-05",
           ", ",
           widehat(italic("r")),
           " = ",
