@@ -22,7 +22,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           italic("t")["Student"],
           "(",
           "78",
@@ -69,7 +68,6 @@ testthat::test_that(
     results2 <-
       ggplot2::expr(
         paste(
-          NULL,
           italic("t")["Student"],
           "(",
           "78",
@@ -126,7 +124,6 @@ testthat::test_that(
     results <-
       ggplot2::expr(
         paste(
-          NULL,
           "log"["e"](italic("V")["Wilcoxon"]),
           " = ",
           "6.6247",
@@ -169,7 +166,6 @@ testthat::test_that(
     results2 <-
       ggplot2::expr(
         paste(
-          NULL,
           "log"["e"](italic("V")["Wilcoxon"]),
           " = ",
           "5.5683",
@@ -277,7 +273,7 @@ testthat::test_that(
         type = "bf",
         messages = FALSE,
         output = "h1"
-      )$expr
+      )
 
     # testing overall call
     testthat::expect_identical(using_function, results)
@@ -305,9 +301,27 @@ testthat::test_that(
         k = 4,
         messages = FALSE,
         output = "h1"
-      )$expr
+      )
 
     # testing overall call
     testthat::expect_identical(using_function2, results2)
+  }
+)
+
+
+# dataframe -----------------------------------------------------------
+
+testthat::test_that(
+  desc = "dataframe",
+  code = {
+    testthat::expect_is(
+      statsExpressions::expr_t_onesample(
+        data = dplyr::sample_frac(movies_long, 0.05),
+        x = length,
+        test.value = 120,
+        output = "dataframe"
+      ),
+      "tbl_df"
+    )
   }
 )

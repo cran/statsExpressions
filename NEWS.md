@@ -1,3 +1,47 @@
+# statsExpressions 0.6.0
+
+BREAKING CHANGES
+
+  - Removes the alias `expr_onesample_proptest`.
+  
+  - The `expr_template` function retires `effsize.df` argument. Now all details
+    need to be entered only in `stats.df`.
+    
+  - All meta-analyses are now carried out using `expr_meta_random` and the
+    individual functions have been removed. 
+
+MAJOR CHANGES
+
+  - All effect sizes for contingency tabs are now calculated via `effectsize`
+    instead of `rcompanion`. This would lead to slight differences in effect
+    sizes and their CIs but the computations will be faster. Additionally, the
+    lower bound will never be negative and will be restricted to [0,1].
+    
+  - `expr_contingency_tab` function has been made less robust. It now fails
+    instead of returning `NULL` when it is not supposed to work. This is done to
+    be consistent with the other functions in the package which also fail
+    instead of returning `NULL`.
+    
+  - `expr_anova_parametric` always applies sphericity correction for *p*-values
+    for repeated measures ANOVA.
+    
+  - `expr_anova_parametric` retires non-partial variants of effect sizes
+    (eta-squared and omega-squared, i.e.) for parametric analyses.
+
+  - The *t*-test and ANOVA tests get `subject.id` argument relevant for repeated
+    measures design.
+
+MINOR CHANGES
+
+  - Retires the vestigial `stat.title` argument. It was originally intended to
+    give more info on the tests, but now the expressions themselves contain
+    these details.
+    
+  - For paired ANOVA designs, `partial = TRUE` is recognized by effect sizes.
+  
+  - Retires `bias.correct` argument for contingency table analysis. It is rarely
+    justifiable to use the biased version of Cramer's *V*.
+
 # statsExpressions 0.5.1
 
 MINOR CHANGES

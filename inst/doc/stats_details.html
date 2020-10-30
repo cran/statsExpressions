@@ -12,7 +12,7 @@
 
 <meta name="author" content="Indrajeet Patil" />
 
-<meta name="date" content="2020-10-05" />
+<meta name="date" content="2020-10-30" />
 
 <title>Test and effect size details</title>
 
@@ -29,6 +29,45 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -37,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 
 
@@ -237,7 +276,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Test and effect size details</h1>
 <h4 class="author">Indrajeet Patil</h4>
-<h4 class="date">2020-10-05</h4>
+<h4 class="date">2020-10-30</h4>
 
 
 <div id="TOC">
@@ -297,6 +336,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#robust-6">robust</a></li>
 <li><a href="#bayesian">Bayesian</a></li>
 </ul></li>
+<li><a href="#dataframe-as-output">Dataframe as output</a></li>
 <li><a href="#suggestions">Suggestions</a></li>
 <li><a href="#session-information">Session Information</a></li>
 </ul>
@@ -335,7 +375,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td><code>expr_anova_parametric</code> (&gt; 2 groups)</td>
 <td>Parametric</td>
 <td>Fisher’s and Welch’s one-way ANOVA</td>
-<td><span class="math inline">\(\eta^2, \eta^2_p, \omega^2, \omega^2_p\)</span></td>
+<td><span class="math inline">\(\eta^2_p, \omega^2_p\)</span></td>
 <td><font color="green"><span class="math inline">\(\checkmark\)</span></font></td>
 </tr>
 <tr class="odd">
@@ -472,14 +512,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td><font color="green"><span class="math inline">\(\checkmark\)</span></font></td>
 </tr>
 <tr class="even">
-<td><code>expr_meta_parametric</code></td>
+<td><code>expr_meta_random</code></td>
 <td>Parametric</td>
 <td>Meta-analysis via random-effects models</td>
 <td><span class="math inline">\(\beta\)</span></td>
 <td><font color="green"><span class="math inline">\(\checkmark\)</span></font></td>
 </tr>
 <tr class="odd">
-<td><code>expr_meta_robust</code></td>
+<td><code>expr_meta_random</code></td>
 <td>Robust</td>
 <td>Meta-analysis via robust random-effects models</td>
 <td><span class="math inline">\(\beta\)</span></td>
@@ -728,7 +768,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>within-subjects design</h2>
 <div id="parametric-3" class="section level3">
 <h3>parametric</h3>
-<p><strong>Test</strong>: Fisher’s repeated measures one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2\)</span> <br> <strong>Function</strong>: <code>effectsize::eta_squared</code> and <code>effectsize::omega_squared</code></p>
+<p><strong>Test</strong>: Fisher’s repeated measures one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2_p\)</span> <br> <strong>Function</strong>: <code>effectsize::eta_squared</code> and <code>effectsize::omega_squared</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -812,7 +852,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>between-subjects design</h2>
 <div id="parametric-4" class="section level3">
 <h3>parametric</h3>
-<p><strong>Test</strong>: Fisher’s or Welch’s one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2\)</span>, <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2\)</span>, <span class="math inline">\(\omega^2_p\)</span> <br> <strong>Function</strong>: <code>effectsize::eta_squared</code> and <code>effectsize::omega_squared</code></p>
+<p><strong>Test</strong>: Fisher’s or Welch’s one-way ANOVA <br> <strong>Effect size</strong>: <span class="math inline">\(\eta^2_p\)</span>, <span class="math inline">\(\omega^2_p\)</span> <br> <strong>Function</strong>: <code>effectsize::eta_squared</code> and <code>effectsize::omega_squared</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -911,7 +951,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Contingency table analyses</h1>
 <div id="association-test---unpaired" class="section level2">
 <h2>association test - unpaired</h2>
-<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared test <br> <strong>Effect size</strong>: Cramér’s <em>V</em> <br> <strong>Function</strong>: <code>rcompanion::cramerV</code></p>
+<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared test <br> <strong>Effect size</strong>: Cramér’s <em>V</em> <br> <strong>Function</strong>: <code>effectsize::cramers_v</code></p>
 <p>In the following table, <em>k</em> is the minimum number of categories in either rows or columns.</p>
 <table>
 <thead>
@@ -951,7 +991,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="association-test---paired" class="section level2">
 <h2>association test - paired</h2>
-<p><strong>Test</strong>: McNemar’s test <br> <strong>Effect size</strong>: Cohen’s <em>g</em> <br> <strong>Function</strong>: <code>rcompanion::cohenG</code></p>
+<p><strong>Test</strong>: McNemar’s test <br> <strong>Effect size</strong>: Cohen’s <em>g</em> <br> <strong>Function</strong>: <code>effectsize::cohens_g</code></p>
 <table>
 <thead>
 <tr class="header">
@@ -976,7 +1016,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="goodness-of-fit-test" class="section level2">
 <h2>goodness-of-fit test</h2>
-<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared goodness-of-fit test <br> <strong>Effect size</strong>: Cramér’s <em>V</em> <br> <strong>Function</strong>: <code>rcompanion::cramerVFit</code></p>
+<p><strong>Test</strong>: Pearson’s <span class="math inline">\(\chi^2\)</span>-squared goodness-of-fit test <br> <strong>Effect size</strong>: Cramér’s <em>V</em> <br> <strong>Function</strong>: <code>effectsize::cramers_v</code></p>
 <p>In the following table, <em>k</em> is the number of categories.</p>
 <table>
 <thead>
@@ -1146,6 +1186,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Bayesian</h2>
 <p><strong>Test</strong>: Bayesian random-effects meta-analysis <br> <strong>Effect size</strong>: Regression estimate (<span class="math inline">\(\beta\)</span>) <br> <strong>Function</strong>: <code>metaBMA::meta_random</code></p>
 </div>
+</div>
+<div id="dataframe-as-output" class="section level1">
+<h1>Dataframe as output</h1>
+<p>Although the primary focus of this package is to get expressions containing statistical results, one can also use it to extract dataframes containing these details.</p>
+<p>For a more detailed summary of these dataframe: <a href="https://indrajeetpatil.github.io/statsExpressions//articles/web_only/dataframe_outputs.html" class="uri">https://indrajeetpatil.github.io/statsExpressions//articles/web_only/dataframe_outputs.html</a></p>
 </div>
 <div id="suggestions" class="section level1">
 <h1>Suggestions</h1>

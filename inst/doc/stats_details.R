@@ -1,6 +1,8 @@
-## ----setup, include = FALSE, warning = FALSE, message = FALSE-----------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
 )
 

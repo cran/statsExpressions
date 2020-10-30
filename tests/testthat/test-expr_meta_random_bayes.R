@@ -1,7 +1,7 @@
 # subtitle from meta-analysis -------------------------------------------
 
 testthat::test_that(
-  desc = "expr_meta_bayes works",
+  desc = "expr_meta_random works",
   code = {
     testthat::skip_if(getRversion() < "3.6")
 
@@ -33,14 +33,25 @@ testthat::test_that(
     # subtitle
     set.seed(123)
     results1 <-
-      suppressWarnings(expr_meta_bayes(
+      suppressWarnings(expr_meta_random(
         data = df1,
+        type = "bayes",
         k = 3,
-        messages = TRUE,
         iter = 1000
       ))
 
+    # subtitle
+    set.seed(123)
+    df <-
+      suppressWarnings(expr_meta_random(
+        data = df1,
+        type = "bayes",
+        iter = 1000,
+        output = "dataframe"
+      ))
+
     # test
-    testthat::expect_identical(as.character(results1)[5], "7.513")
+    testthat::expect_identical(as.character(results1)[5], "-7.513")
+    testthat::expect_is(df, "tbl_df")
   }
 )

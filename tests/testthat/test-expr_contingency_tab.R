@@ -16,8 +16,6 @@ testthat::test_that(
         k = 5,
         bias.correct = FALSE,
         conf.level = 0.99,
-        conf.type = "basic",
-        nboot = 5,
         messages = FALSE
       ))
 
@@ -26,7 +24,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          "Testing",
           chi["Pearson"]^2,
           "(",
           "3",
@@ -39,12 +36,12 @@ testthat::test_that(
           ", ",
           widehat(italic("V"))["Cramer"],
           " = ",
-          "0.29412",
+          "0.29186",
           ", CI"["99%"],
           " [",
-          "0.26922",
+          "0.23516",
           ", ",
-          "0.31248",
+          "0.34527",
           "]",
           ", ",
           italic("n")["obs"],
@@ -70,7 +67,6 @@ testthat::test_that(
     results2 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["Pearson"]^2,
           "(",
           "1",
@@ -110,7 +106,6 @@ testthat::test_that(
     testthat::skip_if(getRversion() < "3.6")
 
     # introduce NAs
-    # check that 2-by-2 doesn't produce continuity correction
     set.seed(123)
     using_function1 <-
       suppressWarnings(statsExpressions::expr_contingency_tab(
@@ -118,10 +113,7 @@ testthat::test_that(
         x = vore,
         y = "conservation",
         conf.level = .990,
-        conf.type = "perc",
-        nboot = 15,
-        messages = FALSE,
-        simulate.p.value = TRUE # this should get ignored
+        messages = FALSE
       ))
 
     # expected output
@@ -129,7 +121,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["Pearson"]^2,
           "(",
           "15",
@@ -147,7 +138,7 @@ testthat::test_that(
           " [",
           "0.00",
           ", ",
-          "0.39",
+          "0.00",
           "]",
           ", ",
           italic("n")["obs"],
@@ -209,7 +200,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["McNemar"]^2,
           "(",
           "1",
@@ -222,12 +212,12 @@ testthat::test_that(
           ", ",
           widehat(italic("g"))["Cohen"],
           " = ",
-          "-0.33333",
+          "0.33333",
           ", CI"["95%"],
           " [",
-          "-0.49302",
+          "0.16436",
           ", ",
-          "-0.18628",
+          "0.42663",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -292,7 +282,6 @@ testthat::test_that(
           paired = TRUE,
           k = 3,
           conf.level = 0.90,
-          conf.type = "perc",
           messages = FALSE
         )
       )
@@ -302,7 +291,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["McNemar"]^2,
           "(",
           "1",
@@ -315,12 +303,12 @@ testthat::test_that(
           ", ",
           widehat(italic("g"))["Cohen"],
           " = ",
-          "-0.333",
+          "0.333",
           ", CI"["90%"],
           " [",
-          "-0.454",
+          "0.195",
           ", ",
-          "-0.204",
+          "0.416",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -387,7 +375,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["McNemar"]^2,
           "(",
           "6",
@@ -400,12 +387,12 @@ testthat::test_that(
           ", ",
           widehat(italic("g"))["Cohen"],
           " = ",
-          "0.2954",
+          "0.2955",
           ", CI"["99%"],
           " [",
-          "0.2046",
+          "0.1659",
           ", ",
-          "0.3898",
+          "0.3835",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -431,15 +418,12 @@ testthat::test_that(
         data = dfEx,
         x = cat1,
         y = cat2,
-        paired = TRUE,
-        nboot = 10,
-        messages = FALSE
+        paired = TRUE
       )
 
     results2 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["McNemar"]^2,
           "(",
           "1",
@@ -457,7 +441,7 @@ testthat::test_that(
           " [",
           "-0.26",
           ", ",
-          "0.40",
+          "0.26",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -471,9 +455,7 @@ testthat::test_that(
   }
 )
 
-# expr_contingency_tab_gof -----------------------------------------
-
-# checking subtitle (without counts) -----------------------------------------
+# one-sample test (without counts) -----------------------------------------
 
 testthat::test_that(
   desc = "Goodness of Fit expr_contingency_tab works without counts",
@@ -483,21 +465,19 @@ testthat::test_that(
     # ggstatsplot output
     set.seed(123)
     using_function1 <-
-      statsExpressions::expr_onesample_proptest(
+      suppressWarnings(statsExpressions::expr_contingency_tab(
         data = mtcars,
         x = "am",
-        legend.title = "Engine",
         conf.level = 0.99,
         messages = FALSE,
         k = 5
-      )
+      ))
 
     # expected output
     set.seed(123)
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["gof"]^2,
           "(",
           "1",
@@ -510,12 +490,12 @@ testthat::test_that(
           ", ",
           widehat(italic("V"))["Cramer"],
           " = ",
-          "0.18750",
+          "0.05472",
           ", CI"["99%"],
           " [",
-          "-0.21551",
+          "0.00000",
           ", ",
-          "0.52301",
+          "0.49920",
           "]",
           ", ",
           italic("n")["obs"],
@@ -540,7 +520,6 @@ testthat::test_that(
     results2 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["gof"]^2,
           "(",
           "1",
@@ -556,9 +535,9 @@ testthat::test_that(
           "0.57",
           ", CI"["95%"],
           " [",
-          "0.54",
+          "0.47",
           ", ",
-          "0.61",
+          "0.62",
           "]",
           ", ",
           italic("n")["obs"],
@@ -582,7 +561,7 @@ testthat::test_that(
     # ggstatsplot output
     set.seed(123)
     using_function1 <-
-      statsExpressions::expr_onesample_proptest(
+      statsExpressions::expr_contingency_tab(
         data = as.data.frame(Titanic),
         x = Sex,
         counts = "Freq",
@@ -595,7 +574,6 @@ testthat::test_that(
     results1 <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["gof"]^2,
           "(",
           "1",
@@ -611,9 +589,9 @@ testthat::test_that(
           "0.573",
           ", CI"["95%"],
           " [",
-          "0.541",
+          "0.465",
           ", ",
-          "0.607",
+          "0.615",
           "]",
           ", ",
           italic("n")["obs"],
@@ -637,11 +615,10 @@ testthat::test_that(
     # from function
     set.seed(123)
     using_function <-
-      statsExpressions::expr_onesample_proptest(
+      statsExpressions::expr_contingency_tab(
         data = ggplot2::msleep,
         x = vore,
         ratio = c(0.2, 0.2, 0.3, 0.3),
-        conf.type = "perc",
         messages = TRUE
       )
 
@@ -649,7 +626,6 @@ testthat::test_that(
     expected <-
       ggplot2::expr(
         paste(
-          NULL,
           chi["gof"]^2,
           "(",
           "3",
@@ -662,12 +638,12 @@ testthat::test_that(
           ", ",
           widehat(italic("V"))["Cramer"],
           " = ",
-          "0.38",
+          "0.27",
           ", CI"["95%"],
           " [",
-          "0.29",
+          "0.11",
           ", ",
-          "0.51",
+          "0.38",
           "]",
           ", ",
           italic("n")["obs"],
@@ -687,22 +663,6 @@ testthat::test_that(
   desc = "works even in edge cases",
   code = {
     testthat::skip_if(getRversion() < "3.6")
-    set.seed(123)
-
-    # creating a dataframe
-    df <- dplyr::filter(mtcars, am == "0")
-
-    # subtitle
-    testthat::expect_null(statsExpressions::expr_onesample_proptest(
-      data = df,
-      x = am
-    ), NULL)
-
-    testthat::expect_null(statsExpressions::expr_onesample_proptest(
-      data = df,
-      y = am,
-      x = cyl,
-    ), NULL)
 
     # too few observations
     df <- data.frame(
@@ -721,7 +681,6 @@ testthat::test_that(
       sub,
       ggplot2::expr(
         paste(
-          NULL,
           chi["Pearson"]^2,
           "(",
           "2",
@@ -737,9 +696,9 @@ testthat::test_that(
           "0.35",
           ", CI"["95%"],
           " [",
-          "-0.44",
+          "0.00",
           ", ",
-          "0.93",
+          "0.95",
           "]",
           ", ",
           italic("n")["obs"],
@@ -747,6 +706,62 @@ testthat::test_that(
           6L
         )
       )
+    )
+
+    # another dataset
+    df1 <- dplyr::filter(mtcars, am == "0")
+
+    set.seed(123)
+    sub1 <- expr_contingency_tab(df1, am, cyl)
+
+    # test
+    testthat::expect_identical(
+      sub1,
+      ggplot2::expr(
+        paste(
+          chi["gof"]^2,
+          "(",
+          "2",
+          ") = ",
+          "7.68",
+          ", ",
+          italic("p"),
+          " = ",
+          "0.021",
+          ", ",
+          widehat(italic("V"))["Cramer"],
+          " = ",
+          "0.41",
+          ", CI"["95%"],
+          " [",
+          "0.00",
+          ", ",
+          "0.67",
+          "]",
+          ", ",
+          italic("n")["obs"],
+          " = ",
+          19L
+        )
+      )
+    )
+  }
+)
+
+
+# dataframe -----------------------------------------------------------
+
+testthat::test_that(
+  desc = "dataframe",
+  code = {
+    testthat::expect_is(
+      statsExpressions::expr_contingency_tab(
+        data = as.data.frame(HairEyeColor),
+        x = Eye,
+        counts = Freq,
+        output = "dataframe"
+      ),
+      "tbl_df"
     )
   }
 )

@@ -12,7 +12,7 @@
 #' @param robust.estimator If `type = "robust"`, a robust estimator to be used
 #'   (`"onestep"` (Default), `"mom"`, or `"median"`). For more, see
 #'   `?WRS2::onesampb`.
-#' @param ... Additional arguments (currently ignored).
+#' @param ... Additional arguments passed to `tidyBF::bf_ttest`.
 #' @inheritParams expr_t_parametric
 #' @inheritParams tidyBF::bf_corr_test
 #' @inheritParams expr_anova_parametric
@@ -30,18 +30,18 @@
 #' @importFrom rcompanion wilcoxonOneSampleR
 #' @importFrom ipmisc stats_type_switch
 #' @importFrom effectsize cohens_d hedges_g
-#' @importFrom stats t.test wilcox.test
+#' @importFrom stats t.test wilcox.test na.omit
 #' @importFrom rlang !! ensym new_formula exec
-#' @importFrom broomExtra easystats_to_tidy_names
 #'
 #' @examples
 #' \donttest{
 #' # for reproducibility
 #' set.seed(123)
+#' library(statsExpressions)
 #'
 #' # ----------------------- parametric ---------------------------------------
 #'
-#' statsExpressions::expr_t_onesample(
+#' expr_t_onesample(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -50,7 +50,7 @@
 #'
 #' # ----------------------- non-parametric -----------------------------------
 #'
-#' statsExpressions::expr_t_onesample(
+#' expr_t_onesample(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -59,7 +59,7 @@
 #'
 #' # ----------------------- robust --------------------------------------------
 #'
-#' statsExpressions::expr_t_onesample(
+#' expr_t_onesample(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -68,7 +68,7 @@
 #'
 #' # ----------------------- Bayes Factor -----------------------------------
 #'
-#' statsExpressions::expr_t_onesample(
+#' expr_t_onesample(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -89,7 +89,7 @@ expr_t_onesample <- function(data,
                              robust.estimator = "onestep",
                              effsize.type = "g",
                              nboot = 100L,
-                             stat.title = NULL,
+                             output = "expression",
                              ...) {
 
   # ====================== dataframe ========================================
@@ -99,9 +99,6 @@ expr_t_onesample <- function(data,
     dplyr::select(.data = ., {{ x }}) %>%
     tidyr::drop_na(data = .) %>%
     as_tibble(.)
-
-  # sample size
-  sample_size <- nrow(data)
 
   # standardize the type of statistics
   stats.type <- ipmisc::stats_type_switch(type)
@@ -136,7 +133,7 @@ expr_t_onesample <- function(data,
         correction = FALSE,
         ci = conf.level
       ) %>%
-      broomExtra::easystats_to_tidy_names(.)
+      insight::standardize_names(data = ., style = "broom")
 
     # preparing subtitle parameters
     statistic.text <- quote(italic("t")["Student"])
@@ -148,15 +145,14 @@ expr_t_onesample <- function(data,
   if (stats.type == "nonparametric") {
     # setting up the Mann-Whitney U-test and getting its summary
     stats_df <-
-      broomExtra::tidy(
-        stats::wilcox.test(
-          x = data %>% dplyr::pull({{ x }}),
-          alternative = "two.sided",
-          na.action = na.omit,
-          mu = test.value,
-          exact = FALSE
-        )
+      stats::wilcox.test(
+        x = data %>% dplyr::pull({{ x }}),
+        alternative = "two.sided",
+        na.action = na.omit,
+        mu = test.value,
+        exact = FALSE
       ) %>%
+      broomExtra::tidy(.) %>%
       dplyr::mutate(.data = ., statistic = log(statistic))
 
     # effect size dataframe
@@ -168,8 +164,7 @@ expr_t_onesample <- function(data,
         conf = conf.level,
         type = conf.type,
         R = nboot,
-        histogram = FALSE,
-        digits = k,
+        digits = 5,
         reportIncomplete = TRUE
       ) %>%
       rcompanion_cleaner(.)
@@ -182,15 +177,18 @@ expr_t_onesample <- function(data,
 
   # preparing subtitle
   if (stats.type %in% c("parametric", "nonparametric")) {
+    # combining dataframes
+    stats_df <-
+      dplyr::bind_cols(dplyr::select(stats_df, -dplyr::matches("estimate|^conf")), effsize_df)
+
+    # expression
     subtitle <-
       expr_template(
-        stat.title = stat.title,
         no.parameters = no.parameters,
         stats.df = stats_df,
-        effsize.df = effsize_df,
         statistic.text = statistic.text,
         effsize.text = effsize.text,
-        n = sample_size,
+        n = nrow(data),
         n.text = quote(italic("n")["obs"]),
         conf.level = conf.level,
         k = k
@@ -201,13 +199,22 @@ expr_t_onesample <- function(data,
 
   if (stats.type == "robust") {
     # running one-sample percentile bootstrap
-    stats_df <-
+    mod <-
       WRS2::onesampb(
         x = data %>% dplyr::pull({{ x }}),
         est = robust.estimator,
         nboot = nboot,
         nv = test.value,
         alpha = 1 - conf.level
+      )
+
+    # create a dataframe
+    stats_df <-
+      tibble(
+        estimate = mod$estimate[[1]],
+        conf.low = mod$ci[[1]],
+        conf.high = mod$ci[[2]],
+        p.value = mod$p.value[[1]]
       )
 
     # preparing the subtitle
@@ -234,10 +241,10 @@ expr_t_onesample <- function(data,
         env = list(
           estimate = specify_decimal_p(x = stats_df$estimate[[1]], k = k),
           conf.level = paste(conf.level * 100, "%", sep = ""),
-          LL = specify_decimal_p(x = stats_df$ci[[1]], k = k),
-          UL = specify_decimal_p(x = stats_df$ci[[2]], k = k),
+          LL = specify_decimal_p(x = stats_df$conf.low[[1]], k = k),
+          UL = specify_decimal_p(x = stats_df$conf.high[[1]], k = k),
           p.value = specify_decimal_p(x = stats_df$p.value[[1]], k = k, p.value = TRUE),
-          n = sample_size
+          n = nrow(data)
         )
       )
   }
@@ -246,17 +253,23 @@ expr_t_onesample <- function(data,
 
   # running Bayesian one-sample t-test
   if (stats.type == "bayes") {
-    subtitle <-
+    stats_df <-
       tidyBF::bf_ttest(
         data = data,
         x = {{ x }},
         test.value = test.value,
         bf.prior = bf.prior,
-        output = "h1",
-        k = k
-      )$expr
+        output = output,
+        k = k,
+        ...
+      )
+
+    subtitle <- stats_df
   }
 
-  # return the subtitle
-  return(subtitle)
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    subtitle
+  )
 }

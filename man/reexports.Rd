@@ -3,10 +3,6 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{specify_decimal_p}
-\alias{signif_column}
-\alias{set_cwd}
-\alias{long_to_wide_converter}
 \alias{\%>\%}
 \alias{\%<>\%}
 \alias{\%$\%}
@@ -18,7 +14,7 @@
 \alias{as_tibble}
 \alias{bf_contingency_tab}
 \alias{bf_ttest}
-\alias{bf_meta}
+\alias{bf_meta_random}
 \alias{bf_corr_test}
 \alias{bf_oneway_anova}
 \alias{prior}
@@ -32,10 +28,10 @@ below to see their documentation.
 \describe{
   \item{correlation}{\code{\link[correlation]{correlation}}}
 
-  \item{ipmisc}{\code{\link[ipmisc:reexports]{\%$\%}}, \code{\link[ipmisc:reexports]{\%<-\%}}, \code{\link[ipmisc:reexports]{\%<>\%}}, \code{\link[ipmisc:reexports]{\%>\%}}, \code{\link[ipmisc:reexports]{as_tibble}}, \code{\link[ipmisc]{long_to_wide_converter}}, \code{\link[ipmisc]{set_cwd}}, \code{\link[ipmisc]{signif_column}}, \code{\link[ipmisc]{specify_decimal_p}}, \code{\link[ipmisc:reexports]{tibble}}}
+  \item{ipmisc}{\code{\link[ipmisc:reexports]{\%$\%}}, \code{\link[ipmisc:reexports]{\%<-\%}}, \code{\link[ipmisc:reexports]{\%<>\%}}, \code{\link[ipmisc:reexports]{\%>\%}}, \code{\link[ipmisc:reexports]{as_tibble}}, \code{\link[ipmisc:reexports]{tibble}}}
 
   \item{rlang}{\code{\link[rlang:op-na-default]{\%|\%}}, \code{\link[rlang:op-null-default]{\%||\%}}, \code{\link[rlang:nse-force]{:=}}}
 
-  \item{tidyBF}{\code{\link[tidyBF]{bf_contingency_tab}}, \code{\link[tidyBF]{bf_corr_test}}, \code{\link[tidyBF]{bf_meta}}, \code{\link[tidyBF]{bf_oneway_anova}}, \code{\link[tidyBF]{bf_ttest}}, \code{\link[tidyBF:reexports]{prior}}}
+  \item{tidyBF}{\code{\link[tidyBF]{bf_contingency_tab}}, \code{\link[tidyBF]{bf_corr_test}}, \code{\link[tidyBF]{bf_meta_random}}, \code{\link[tidyBF]{bf_oneway_anova}}, \code{\link[tidyBF]{bf_ttest}}, \code{\link[tidyBF:reexports]{prior}}}
 }}
 

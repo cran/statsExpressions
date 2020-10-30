@@ -1,7 +1,7 @@
 # subtitle from meta-analysis -------------------------------------------
 
 testthat::test_that(
-  desc = "expr_meta_parametric works",
+  desc = "expr_meta_random works",
   code = {
     testthat::skip_if(getRversion() < "3.6")
 
@@ -19,30 +19,38 @@ testthat::test_that(
     # subtitle output
     set.seed(123)
     using_function1 <-
-      expr_meta_parametric(
+      expr_meta_random(
         data = df_eg,
         k = 4,
-        messages = FALSE,
         output = "subtitle"
       )
 
     # caption output
     set.seed(123)
     using_function2 <-
-      expr_meta_parametric(
+      expr_meta_random(
         data = df_eg,
         k = 2,
         caption = "this is caption",
-        messages = FALSE,
         output = "caption"
       )
+
+    # dataframe output
+    set.seed(123)
+    df_res <-
+      expr_meta_random(
+        data = df_eg,
+        output = "dataframe"
+      )
+
+    # output
+    testthat::expect_is(df_res, "tbl_df")
 
     # expected subtitle output
     set.seed(123)
     results1 <-
       ggplot2::expr(
         paste(
-          "Summary effect: ",
           italic("z"),
           " = ",
           "2.1697",
@@ -51,7 +59,7 @@ testthat::test_that(
           " = ",
           "0.0300",
           ", ",
-          widehat(beta),
+          widehat(beta)["summary"]^"meta",
           " = ",
           "0.4377",
           ", CI"["95%"],
@@ -99,6 +107,6 @@ testthat::test_that(
     testthat::expect_identical(using_function2, results2)
 
     # error
-    testthat::expect_error(expr_meta_parametric(mtcars))
+    testthat::expect_error(expr_meta_random(mtcars))
   }
 )

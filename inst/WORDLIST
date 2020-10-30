@@ -5,7 +5,6 @@ APA
 AppVeyor
 bayes
 bayesian
-cbu
 changedate
 checkmark
 codecov
@@ -18,7 +17,6 @@ Cramér’s
 disgustingness
 doi
 DOI
-effectSize
 et
 freighteningness
 ggstatsplot
@@ -26,11 +24,8 @@ gh
 github
 Github
 Gitter
-gla
-Hartung
 hexsticker
 HFHD
-http
 https
 imdb
 IMDB
@@ -38,8 +33,6 @@ img
 indrajeetpatil
 IndrajeetPatil
 io
-justfit
-JZS
 LDLF
 LFHD
 Licence
@@ -47,7 +40,6 @@ lifecycle
 McNemar's
 mpaa
 MPAA
-mrc
 nd
 noncentrality
 normals
@@ -56,17 +48,13 @@ Otterstetter
 pb
 pearson
 plotmath
-psy
 rcompanion
 sagepub
 setosa
 spearman
 sphericity
-statswiki
-steve
 svg
 tibble
-uk
 versicolor
 virginica
 Welch
@@ -76,7 +64,6 @@ widehat
 wilcox
 Winsorized
 WRS
-www
 yellowgreen
 Yuen's
 Yuen’s

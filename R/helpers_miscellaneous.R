@@ -5,10 +5,8 @@
 #'   for the statistical test. Can be `0` for non-parametric tests, `1` for
 #'   tests based on *t*-statistic or chi-squared statistic, `2` for tests based
 #'   on *F*-statistic.
-#' @param stat.title A character describing the test being run, which will be
-#'   added as a prefix in the subtitle. The default is `NULL`. An example of a
-#'   `stat.title` argument will be something like `"Student's t-test: "`.
-#' @param stats.df A dataframe containing the following columns:
+#' @param stats.df A dataframe containing details from the statistical analysis
+#'   and should contain some of the the following columns:
 #' \itemize{
 #'   \item *statistic*: the numeric value of a statistic.
 #'   \item *parameter*: the numeric value of a parameter being modeled (often
@@ -18,23 +16,20 @@
 #' has two degrees of freedom (e.g., anova).
 #'   \item *p.value* the two-sided *p*-value associated with the observed
 #' statistic.
+#'  \item *estimate*: estimated value of the effect size.
+#'   \item *conf.low*:  lower bound for effect size estimate.
+#'   \item *conf.high*: upper bound for effect size estimate.
 #' }
 #' @param statistic.text A character that specifies the relevant test statistic.
 #'   For example, for tests with *t*-statistic, `statistic.text = "t"`. If you
 #'   want to use plotmath, you will have to quote the argument (e.g.,
 #'   `quote(italic("t"))`).
-#' @param effsize.df A dataframe containing the following columns:
-#' \itemize{
-#'   \item *estimate*: estimated value of the effect size.
-#'   \item *conf.low*:  lower bound for effect size estimate.
-#'   \item *conf.high*: upper bound for effect size estimate.
-#' }
 #' @param effsize.text A character that specifies the relevant effect size.
 #'   For example, for Cohen's *d* statistic, `effsize.text = "d"`. If you
 #'   want to use plotmath, you will have to quote the argument (e.g.,
 #'   `quote(italic("d"))`).
 #' @param k Number of digits after decimal point (should be an integer)
-#'   (Default: `k = 2`).
+#'   (Default: `k = 2L`).
 #' @param k.parameter,k.parameter2 Number of decimal places to display for the
 #'   parameters (default: `0`).
 #' @param n An integer specifying the sample size used for the test.
@@ -46,6 +41,8 @@
 #' @param ... Currently ignored.
 #' @inheritParams expr_anova_parametric
 #'
+#' @importFrom rlang is_null
+#'
 #' @examples
 #' set.seed(123)
 #'
@@ -54,12 +51,7 @@
 #'   cbind.data.frame(
 #'     statistic = 5.494,
 #'     parameter = 29.234,
-#'     p.value = 0.00001
-#'   )
-#'
-#' # creating a dataframe with effect size results
-#' effsize_df <-
-#'   cbind.data.frame(
+#'     p.value = 0.00001,
 #'     estimate = -1.980,
 #'     conf.low = -2.873,
 #'     conf.high = -1.088
@@ -69,7 +61,6 @@
 #' statsExpressions::expr_template(
 #'   no.parameters = 1L,
 #'   stats.df = stats_df,
-#'   effsize.df = effsize_df,
 #'   statistic.text = quote(italic("t")),
 #'   effsize.text = quote(italic("d")),
 #'   n = 32L,
@@ -81,11 +72,9 @@
 
 # function body
 expr_template <- function(no.parameters,
-                          stat.title = NULL,
                           statistic.text,
                           stats.df,
                           effsize.text,
-                          effsize.df,
                           n,
                           conf.level = 0.95,
                           k = 2L,
@@ -100,9 +89,9 @@ expr_template <- function(no.parameters,
   # extracting the common values
   statistic <- stats.df$statistic[[1]]
   p.value <- stats.df$p.value[[1]]
-  effsize.estimate <- effsize.df$estimate[[1]]
-  effsize.LL <- effsize.df$conf.low[[1]]
-  effsize.UL <- effsize.df$conf.high[[1]]
+  effsize.estimate <- stats.df$estimate[[1]]
+  effsize.LL <- stats.df$conf.low[[1]]
+  effsize.UL <- stats.df$conf.high[[1]]
 
   # ------------------ statistic with 0 degrees of freedom --------------------
 
@@ -111,7 +100,6 @@ expr_template <- function(no.parameters,
     subtitle <-
       substitute(
         expr = paste(
-          stat.title,
           statistic.text,
           " = ",
           statistic,
@@ -135,7 +123,6 @@ expr_template <- function(no.parameters,
           n
         ),
         env = list(
-          stat.title = stat.title,
           statistic.text = statistic.text,
           statistic = specify_decimal_p(x = statistic, k = k),
           p.value = specify_decimal_p(x = p.value, k = k, p.value = TRUE),
@@ -153,14 +140,10 @@ expr_template <- function(no.parameters,
   # ------------------ statistic with 1 degree of freedom --------------------
 
   if (no.parameters == 1L) {
-    # check if parameter is specified
-    parameter <- stats.df$parameter[[1]]
-
     # preparing subtitle
     subtitle <-
       substitute(
         expr = paste(
-          stat.title,
           statistic.text,
           "(",
           parameter,
@@ -186,10 +169,9 @@ expr_template <- function(no.parameters,
           n
         ),
         env = list(
-          stat.title = stat.title,
           statistic.text = statistic.text,
           statistic = specify_decimal_p(x = statistic, k = k),
-          parameter = specify_decimal_p(x = parameter, k = k.parameter),
+          parameter = specify_decimal_p(x = stats.df$parameter[[1]], k = k.parameter),
           p.value = specify_decimal_p(x = p.value, k = k, p.value = TRUE),
           effsize.text = effsize.text,
           effsize.estimate = specify_decimal_p(x = effsize.estimate, k = k),
@@ -205,15 +187,10 @@ expr_template <- function(no.parameters,
   # ------------------ statistic with 2 degrees of freedom -----------------
 
   if (no.parameters == 2L) {
-    # check if parameters are specified
-    parameter <- stats.df$parameter1[[1]]
-    parameter2 <- stats.df$parameter2[[1]]
-
     # preparing subtitle
     subtitle <-
       substitute(
         expr = paste(
-          stat.title,
           statistic.text,
           "(",
           parameter1,
@@ -241,11 +218,10 @@ expr_template <- function(no.parameters,
           n
         ),
         env = list(
-          stat.title = stat.title,
           statistic.text = statistic.text,
           statistic = specify_decimal_p(x = statistic, k = k),
-          parameter1 = specify_decimal_p(x = parameter, k = k.parameter),
-          parameter2 = specify_decimal_p(x = parameter2, k = k.parameter2),
+          parameter1 = specify_decimal_p(x = stats.df$parameter1[[1]], k = k.parameter),
+          parameter2 = specify_decimal_p(x = stats.df$parameter2[[1]], k = k.parameter2),
           p.value = specify_decimal_p(x = p.value, k = k, p.value = TRUE),
           effsize.text = effsize.text,
           effsize.estimate = specify_decimal_p(x = effsize.estimate, k = k),
@@ -270,24 +246,17 @@ expr_template <- function(no.parameters,
 #'
 #' @keywords internal
 
+# rename columns uniformly
 rcompanion_cleaner <- function(object) {
-  # if a list, extract the first component containing results
-  if (inherits(object, "list")) object <- object[[1]]
-
-  # rename columns uniformly
-  as_tibble(object) %>%
-    dplyr::rename_all(
-      .tbl = .,
-      .funs = dplyr::recode,
-      epsilon.squared = "estimate",
-      r = "estimate",
-      rho = "estimate",
-      W = "estimate",
-      Cramer.V = "estimate",
-      Value = "estimate",
-      lower.ci = "conf.low",
-      upper.ci = "conf.high"
-    )
+  dplyr::rename_all(
+    .tbl = as_tibble(object),
+    .funs = dplyr::recode,
+    epsilon.squared = "estimate",
+    r = "estimate",
+    W = "estimate",
+    lower.ci = "conf.low",
+    upper.ci = "conf.high"
+  )
 }
 
 #' @noRd

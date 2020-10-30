@@ -2,7 +2,8 @@
 #' @name expr_corr_test
 #'
 #' @return Expression containing results from correlation test with confidence
-#'   intervals for the correlation coefficient estimate.
+#'   intervals for the correlation coefficient estimate. Results are extracted
+#'   via `correlation::correlation`.
 #'
 #' @references For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
@@ -27,15 +28,15 @@
 #'
 #' @importFrom dplyr select rename_all recode
 #' @importFrom correlation correlation
-#' @importFrom ipmisc easystats_to_tidy_names stats_type_switch
+#' @importFrom ipmisc stats_type_switch
 #'
 #' @examples
-#'
 #' # for reproducibility
 #' set.seed(123)
+#' library(statsExpressions)
 #'
 #' # without changing defaults
-#' statsExpressions::expr_corr_test(
+#' expr_corr_test(
 #'   data = ggplot2::midwest,
 #'   x = area,
 #'   y = percblack,
@@ -43,7 +44,7 @@
 #' )
 #'
 #' # changing defaults
-#' statsExpressions::expr_corr_test(
+#' expr_corr_test(
 #'   data = ggplot2::midwest,
 #'   x = area,
 #'   y = percblack,
@@ -61,10 +62,10 @@ expr_corr_test <- function(data,
                            beta = 0.1,
                            type = "parametric",
                            bf.prior = 0.707,
-                           stat.title = NULL,
+                           output = "expression",
                            ...) {
 
-  # ============================ checking corr.method =======================
+  # -------------------------- checking corr.method --------------------------
 
   # see which method was used to specify type of correlation
   stats_type <- ipmisc::stats_type_switch(type)
@@ -78,7 +79,7 @@ expr_corr_test <- function(data,
       "robust" = "percentage"
     )
 
-  #----------------- creating correlation dataframes -----------------------
+  # ----------------- creating correlation dataframes -----------------------
 
   # for all except `bayes`
   if (stats_type != "bayes") {
@@ -89,14 +90,12 @@ expr_corr_test <- function(data,
         method = corr.method,
         ci = conf.level
       ) %>%
-      ipmisc::easystats_to_tidy_names(.) %>%
-      dplyr::rename_all(.tbl = ., .funs = dplyr::recode, "df" = "parameter")
-
-    # effect size dataframe is the same one
-    effsize_df <- stats_df
+      insight::standardize_names(data = ., style = "broom") %>%
+      dplyr::rename_all(.tbl = ., .funs = dplyr::recode, "df" = "parameter") %>%
+      as_tibble(.)
   }
 
-  #------------------------ subtitle text elements -----------------------------
+  # ------------------------ subtitle text elements -----------------------------
 
   # preparing other needed objects
   if (stats_type == "parametric") {
@@ -118,7 +117,7 @@ expr_corr_test <- function(data,
     effsize.text <- quote(widehat(italic(rho))["pb"])
   }
 
-  #---------------------- preparing subtitle ---------------------------------
+  # ---------------------- preparing subtitle ---------------------------------
 
   if (stats_type != "bayes") {
     # preparing subtitle
@@ -126,8 +125,6 @@ expr_corr_test <- function(data,
       expr_template(
         no.parameters = no.parameters,
         stats.df = stats_df,
-        effsize.df = effsize_df,
-        stat.title = stat.title,
         statistic.text = statistic.text,
         effsize.text = effsize.text,
         n = stats_df$n.obs[[1]],
@@ -137,17 +134,23 @@ expr_corr_test <- function(data,
       )
   } else {
     # bayes factor results
-    subtitle <-
+    stats_df <-
       tidyBF::bf_corr_test(
         data = data,
         x = {{ x }},
         y = {{ y }},
         bf.prior = bf.prior,
-        output = "h1",
-        k = k
-      )$expr
+        output = output,
+        k = k,
+        ...
+      )
+
+    subtitle <- stats_df
   }
 
-  # return the subtitle
-  return(subtitle)
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    subtitle
+  )
 }

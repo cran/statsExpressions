@@ -13,8 +13,7 @@ testthat::test_that(
         x = am,
         y = wt,
         k = 3,
-        conf.level = 0.90,
-        messages = TRUE
+        conf.level = 0.90
       )
 
     # expected output
@@ -22,7 +21,6 @@ testthat::test_that(
     results <-
       ggplot2::expr(
         paste(
-          NULL,
           "log"["e"](italic("W")["Mann-Whitney"]),
           " = ",
           "5.440",
@@ -36,9 +34,9 @@ testthat::test_that(
           "0.727",
           ", CI"["90%"],
           " [",
-          "0.596",
+          "0.608",
           ", ",
-          "0.893",
+          "0.873",
           "]",
           ", ",
           italic("n")["obs"],
@@ -120,7 +118,6 @@ testthat::test_that(
     results2 <-
       ggplot2::expr(
         paste(
-          NULL,
           "log"["e"](italic("V")["Wilcoxon"]),
           " = ",
           "2.30259",
@@ -147,5 +144,86 @@ testthat::test_that(
 
     # testing overall call
     testthat::expect_identical(using_function2, results2)
+  }
+)
+
+
+# dataframe -----------------------------------------------------------
+
+testthat::test_that(
+  desc = "dataframe",
+  code = {
+    testthat::expect_is(
+      statsExpressions::expr_t_nonparametric(
+        data = dplyr::filter(movies_long, genre == "Action" | genre == "Drama"),
+        x = "genre",
+        y = rating,
+        output = "dataframe"
+      ),
+      "tbl_df"
+    )
+  }
+)
+
+
+# works with subject id ------------------------------------------------------
+
+testthat::test_that(
+  desc = "works with subject id",
+  code = {
+    testthat::skip_if(getRversion() < "3.6")
+
+    # data
+    df <-
+      structure(list(
+        score = c(
+          70, 82.5, 97.5, 100, 52.5, 62.5,
+          92.5, 70, 90, 92.5, 90, 75, 60, 90, 85, 67.5, 90, 72.5, 45, 60,
+          72.5, 80, 100, 100, 97.5, 95, 65, 87.5, 90, 62.5, 100, 100, 97.5,
+          100, 97.5, 95, 82.5, 82.5, 40, 92.5, 85, 72.5, 35, 27.5, 82.5
+        ), condition = structure(c(
+          5L, 1L, 2L, 3L, 4L, 4L, 5L, 1L,
+          2L, 3L, 2L, 3L, 3L, 4L, 2L, 1L, 5L, 5L, 4L, 1L, 1L, 4L, 3L, 5L,
+          2L, 5L, 1L, 2L, 3L, 4L, 4L, 5L, 1L, 2L, 3L, 2L, 3L, 4L, 1L, 5L,
+          3L, 2L, 5L, 4L, 1L
+        ), .Label = c("1", "2", "3", "4", "5"), class = "factor"),
+        id = structure(c(
+          1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L,
+          2L, 3L, 3L, 4L, 3L, 4L, 3L, 4L, 3L, 4L, 4L, 5L, 5L, 5L, 5L,
+          5L, 6L, 6L, 6L, 6L, 6L, 7L, 7L, 7L, 7L, 7L, 8L, 8L, 8L, 8L,
+          8L, 9L, 9L, 9L, 9L, 9L
+        ), .Label = c(
+          "1", "2", "3", "4", "5",
+          "6", "7", "8", "9"
+        ), class = "factor")
+      ), row.names = c(
+        NA,
+        45L
+      ), class = "data.frame")
+
+    df <- dplyr::filter(df, condition %in% c(1, 5))
+
+    # incorrect
+    set.seed(123)
+    expr1 <-
+      statsExpressions::expr_t_nonparametric(
+        data = df,
+        x = condition,
+        y = score,
+        subject.id = id,
+        paired = TRUE
+      )
+
+    # correct
+    set.seed(123)
+    expr2 <-
+      statsExpressions::expr_t_nonparametric(
+        data = dplyr::arrange(df, id),
+        x = condition,
+        y = score,
+        paired = TRUE
+      )
+
+    testthat::expect_equal(expr1, expr2)
   }
 )

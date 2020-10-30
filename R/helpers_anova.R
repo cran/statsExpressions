@@ -1,143 +1,107 @@
-#' @title Making expression containing parametric ANOVA results
+#' @title Expression containing parametric ANOVA results
 #' @name expr_anova_parametric
 #'
 #' @return For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
-#' @note For repeated measures designs (`paired = TRUE`), only partial
-#'   omega-squared and partial eta-squared are supported.
-#'
 #' @description The effect sizes and their confidence intervals are computed
 #'   using `effectsize::eta_squared` and `effectsize::omega_squared` functions.
 #'
-#' @param data A dataframe (or a tibble) from which variables specified are to
-#'   be taken. A matrix or tables will **not** be accepted.
-#' @param x The grouping variable from the dataframe `data`.
-#' @param y The response (a.k.a. outcome or dependent) variable from the
-#'   dataframe `data`.
+#' @inheritParams ipmisc::long_to_wide_converter
 #' @param conf.level Scalar between 0 and 1. If unspecified, the defaults return
-#'   `95%` lower and upper confidence intervals (`0.95`).
-#' @param paired Logical that decides whether the experimental design is
-#'   repeated measures/within-subjects or between-subjects. The default is
-#'   `FALSE`.
+#'   `95%` confidence/credible intervals (`0.95`).
 #' @param effsize.type Type of effect size needed for *parametric* tests. The
-#'   argument can be `"biased"` (equivalent to `"d"` for Cohen's *d* for
-#'   **t-test**; `"partial_eta"` for partial eta-squared for **anova**) or
-#'   `"unbiased"` (equivalent to `"g"` Hedge's *g* for **t-test**;
-#'   `"partial_omega"` for partial omega-squared for **anova**)).
-#' @param sphericity.correction Logical that decides whether to apply correction
-#'   to account for violation of sphericity in a repeated measures design ANOVA
-#'   (Default: `TRUE`).
+#'   argument can be `"eta"` (partial eta-squared) or `"omega"` (partial
+#'   omega-squared).
+#' @param output If `"expression"`, will return expression with statistical
+#'   details, while `"dataframe"` will return a dataframe containing the
+#'   results.
+#' @inheritParams expr_corr_test
 #' @inheritParams expr_template
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams stats::oneway.test
-#' @inheritParams effectsize::eta_squared
 #'
 #' @importFrom dplyr select rename matches
 #' @importFrom rlang !! enquo eval_tidy expr ensym exec
 #' @importFrom stats aov oneway.test
 #' @importFrom ez ezANOVA
 #' @importFrom effectsize eta_squared omega_squared
-#' @importFrom broomExtra easystats_to_tidy_names
+#' @importFrom ipmisc long_to_wide_converter specify_decimal_p
 #'
 #' @examples
-#' \donttest{
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
 #'
 #' # -------------------- between-subjects ------------------------------
 #'
-#' # with defaults
-#' statsExpressions::expr_anova_parametric(
+#' # to get expression
+#' expr_anova_parametric(
 #'   data = ggplot2::msleep,
 #'   x = vore,
-#'   y = sleep_rem,
-#'   paired = FALSE,
-#'   k = 3
-#' )
-#'
-#' # modifying the defaults
-#' statsExpressions::expr_anova_parametric(
-#'   data = ggplot2::msleep,
-#'   x = vore,
-#'   y = sleep_rem,
-#'   paired = FALSE,
-#'   effsize.type = "eta",
-#'   partial = FALSE,
-#'   var.equal = TRUE
+#'   y = sleep_rem
 #' )
 #'
 #' # -------------------- repeated measures ------------------------------
 #'
-#' statsExpressions::expr_anova_parametric(
+#' # to get dataframe
+#' expr_anova_parametric(
 #'   data = iris_long,
 #'   x = condition,
 #'   y = value,
+#'   subject.id = id,
 #'   paired = TRUE,
-#'   k = 4
+#'   output = "dataframe"
 #' )
-#' }
 #' @export
 
 # function body
 expr_anova_parametric <- function(data,
                                   x,
                                   y,
+                                  subject.id = NULL,
                                   paired = FALSE,
                                   k = 2L,
                                   conf.level = 0.95,
-                                  effsize.type = "unbiased",
-                                  partial = TRUE,
+                                  effsize.type = "omega",
                                   var.equal = FALSE,
-                                  sphericity.correction = TRUE,
-                                  stat.title = NULL,
+                                  output = "expression",
                                   ...) {
 
   # make sure both quoted and unquoted arguments are allowed
   c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
 
   # for paired designs, variance is going to be equal across grouping levels
-  if (isTRUE(paired)) var.equal <- TRUE else sphericity.correction <- FALSE
+  if (isTRUE(paired)) var.equal <- TRUE
 
   # determine number of decimal places for both degrees of freedom
-  k.df1 <- ifelse(isTRUE(paired) && isTRUE(sphericity.correction), k, 0L)
-  k.df2 <- ifelse(isTRUE(var.equal) && isFALSE(sphericity.correction), 0L, k)
+  k.df1 <- ifelse(isFALSE(paired), 0L, k)
+  k.df2 <- ifelse(isFALSE(paired) && isTRUE(var.equal), 0L, k)
 
   # figuring out which effect size to use
   effsize.type <- effsize_type_switch(effsize.type)
 
-  # some of the effect sizes don't work properly for paired designs
-  if (isTRUE(paired)) partial <- TRUE
-
   # omega
   if (effsize.type == "unbiased") {
-    effsize <- "omega"
-    if (isTRUE(partial)) {
-      effsize.text <- quote(widehat(omega["p"]^2))
-    } else {
-      effsize.text <- quote(widehat(omega^2))
-    }
+    .f <- effectsize::omega_squared
+    effsize.text <- quote(widehat(omega["p"]^2))
   }
 
   # eta
   if (effsize.type == "biased") {
-    effsize <- "eta"
-    if (isTRUE(partial)) {
-      effsize.text <- quote(widehat(eta["p"]^2))
-    } else {
-      effsize.text <- quote(widehat(eta^2))
-    }
+    .f <- effectsize::eta_squared
+    effsize.text <- quote(widehat(eta["p"]^2))
   }
 
-  # ============================ data preparation ==========================
+  # --------------------- data preparation --------------------------------
 
   # have a proper cleanup with NA removal
   data %<>%
-    long_to_wide_converter(
+    ipmisc::long_to_wide_converter(
       data = .,
       x = {{ x }},
       y = {{ y }},
+      subject.id = {{ subject.id }},
       paired = paired,
       spread = FALSE
     )
@@ -149,21 +113,6 @@ expr_anova_parametric <- function(data,
     # sample size
     sample_size <- length(unique(data$rowid))
     n.text <- quote(italic("n")["pairs"])
-
-    # warn the user if
-    if (sample_size < nlevels(as.factor(data %>% dplyr::pull({{ x }})))) {
-      # no sphericity correction applied; adjust expression display accordingly
-      c(k.df1, k.df2, sphericity.correction) %<-% c(0L, 0L, FALSE)
-
-      # inform the user
-      message(cat(
-        ipmisc::red("Warning: "),
-        ipmisc::blue("No. of factor levels is greater than no. of observations per cell.\n"),
-        ipmisc::blue("No sphericity correction applied. Interpret results with caution.\n")
-      ),
-      sep = ""
-      )
-    }
 
     # run the ANOVA
     ez_df <-
@@ -179,28 +128,27 @@ expr_anova_parametric <- function(data,
         )
       ))
 
-    # list with results
-    if (isTRUE(sphericity.correction)) {
-      e_corr <- ez_df$`Sphericity Corrections`$GGe
-      stats_df <-
-        as_tibble(cbind.data.frame(
-          statistic = ez_df$ANOVA$F[2],
-          parameter1 = e_corr * ez_df$ANOVA$DFn[2],
-          parameter2 = e_corr * ez_df$ANOVA$DFd[2],
-          p.value = ez_df$`Sphericity Corrections`$`p[GG]`[[1]]
-        ))
+    # no sphericity correction applied
+    if (sample_size < nlevels(as.factor(data %>% dplyr::pull({{ x }})))) {
+      c(k.df1, k.df2) %<-% c(0L, 0L)
+      e_corr <- 1
+      p.value <- ez_df$ANOVA$p[2]
     } else {
-      stats_df <-
-        as_tibble(cbind.data.frame(
-          statistic = ez_df$ANOVA$F[2],
-          parameter1 = ez_df$ANOVA$DFn[2],
-          parameter2 = ez_df$ANOVA$DFd[2],
-          p.value = ez_df$ANOVA$p[2]
-        ))
+      e_corr <- ez_df$`Sphericity Corrections`$GGe
+      p.value <- ez_df$`Sphericity Corrections`$`p[GG]`[[1]]
     }
 
+    # combine into a dataframe
+    stats_df <-
+      tibble(
+        statistic = ez_df$ANOVA$F[2],
+        parameter1 = e_corr * ez_df$ANOVA$DFn[2],
+        parameter2 = e_corr * ez_df$ANOVA$DFd[2],
+        p.value = p.value
+      )
+
     # creating a standardized dataframe with effect size and its CIs
-    effsize_object <- ez_df$aov
+    mod <- ez_df$aov
   }
 
   # ------------------- between-subjects design ------------------------------
@@ -211,22 +159,21 @@ expr_anova_parametric <- function(data,
     n.text <- quote(italic("n")["obs"])
 
     # Welch's ANOVA run by default
-    stats_obj <-
+    mod <-
       stats::oneway.test(
         formula = rlang::new_formula({{ y }}, {{ x }}),
         data = data,
-        subset = NULL,
         na.action = na.omit,
         var.equal = var.equal
       )
 
     # tidy up the stats object
     stats_df <-
-      suppressMessages(broomExtra::tidy(stats_obj)) %>%
-      dplyr::rename(parameter1 = dplyr::matches("^num"), parameter2 = dplyr::matches("^den"))
+      suppressMessages(broomExtra::tidy(mod)) %>%
+      dplyr::select(statistic, parameter1 = num.df, parameter2 = den.df, dplyr::everything())
 
     # creating a standardized dataframe with effect size and its CIs
-    effsize_object <-
+    mod <-
       stats::aov(
         formula = rlang::new_formula({{ y }}, {{ x }}),
         data = data,
@@ -236,24 +183,15 @@ expr_anova_parametric <- function(data,
 
   # ------------------- effect size computation ------------------------------
 
-  # function to compute effect sizes
-  if (effsize == "eta") {
-    .f <- effectsize::eta_squared
-  } else {
-    .f <- effectsize::omega_squared
-  }
-
   # computing effect size
   effsize_df <-
     rlang::exec(
       .fn = .f,
-      model = effsize_object,
-      partial = partial,
+      model = mod,
+      partial = TRUE,
       ci = conf.level
     ) %>%
-    broomExtra::easystats_to_tidy_names(.) %>%
-    dplyr::rename(estimate = dplyr::matches("eta|omega")) %>%
-    dplyr::filter(!is.na(estimate), !grepl(pattern = "Residuals", x = term, ignore.case = TRUE))
+    insight::standardize_names(data = ., style = "broom")
 
   # test details
   statistic.text <-
@@ -263,24 +201,32 @@ expr_anova_parametric <- function(data,
       quote(italic("F")["Welch"])
     }
 
-  # preparing subtitle
-  expr_template(
-    stat.title = stat.title,
-    no.parameters = 2L,
-    stats.df = stats_df,
-    effsize.df = effsize_df,
-    statistic.text = statistic.text,
-    effsize.text = effsize.text,
-    n = sample_size,
-    n.text = n.text,
-    conf.level = conf.level,
-    k = k,
-    k.parameter = k.df1,
-    k.parameter2 = k.df2
+  # combining dataframes
+  stats_df <- dplyr::bind_cols(stats_df, effsize_df)
+
+  # preparing expression
+  expression <-
+    expr_template(
+      no.parameters = 2L,
+      stats.df = stats_df,
+      statistic.text = statistic.text,
+      effsize.text = effsize.text,
+      n = sample_size,
+      n.text = n.text,
+      conf.level = conf.level,
+      k = k,
+      k.parameter = k.df1,
+      k.parameter2 = k.df2
+    )
+
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    expression
   )
 }
 
-#' @title Making text subtitle for non-parametric ANOVA.
+#' @title Making text expression for non-parametric ANOVA.
 #' @name expr_anova_nonparametric
 #'
 #' @details For paired designs, the effect size is Kendall's coefficient of
@@ -297,6 +243,7 @@ expr_anova_parametric <- function(data,
 #' @param nboot Number of bootstrap samples for computing confidence interval
 #'   for the effect size (Default: `100`).
 #' @inheritParams expr_anova_parametric
+#' @inheritParams tidyBF::bf_oneway_anova
 #' @inheritParams expr_template
 #'
 #' @importFrom dplyr select
@@ -306,15 +253,14 @@ expr_anova_parametric <- function(data,
 #' @importFrom rcompanion epsilonSquared kendallW
 #'
 #' @examples
-#' \donttest{
 #' # setup
 #' set.seed(123)
 #' library(statsExpressions)
 #'
 #' # -------------- within-subjects design --------------------------------
 #'
-#' # creating the subtitle
-#' statsExpressions::expr_anova_nonparametric(
+#' # creating the expression
+#' expr_anova_nonparametric(
 #'   data = bugs_long,
 #'   x = condition,
 #'   y = desire,
@@ -325,7 +271,7 @@ expr_anova_parametric <- function(data,
 #'
 #' # -------------- between-subjects design --------------------------------
 #'
-#' statsExpressions::expr_anova_nonparametric(
+#' expr_anova_nonparametric(
 #'   data = ggplot2::msleep,
 #'   x = vore,
 #'   y = sleep_rem,
@@ -333,19 +279,19 @@ expr_anova_parametric <- function(data,
 #'   conf.level = 0.99,
 #'   conf.type = "perc"
 #' )
-#' }
 #' @export
 
 # function body
 expr_anova_nonparametric <- function(data,
                                      x,
                                      y,
+                                     subject.id = NULL,
                                      paired = FALSE,
                                      k = 2L,
                                      conf.level = 0.95,
                                      conf.type = "perc",
                                      nboot = 100L,
-                                     stat.title = NULL,
+                                     output = "expression",
                                      ...) {
 
   # make sure both quoted and unquoted arguments are allowed
@@ -355,10 +301,11 @@ expr_anova_nonparametric <- function(data,
 
   # have a proper cleanup with NA removal
   data %<>%
-    long_to_wide_converter(
+    ipmisc::long_to_wide_converter(
       data = .,
       x = {{ x }},
       y = {{ y }},
+      subject.id = {{ subject.id }},
       paired = paired,
       spread = FALSE
     )
@@ -368,24 +315,23 @@ expr_anova_nonparametric <- function(data,
   # properly removing NAs if it's a paired design
   if (isTRUE(paired)) {
     # setting up the anova model (`y ~ x | id`) and getting its summary
-    stats_df <-
-      broomExtra::tidy(
-        stats::friedman.test(
-          formula = rlang::new_formula(
-            {{ rlang::enexpr(y) }}, rlang::expr(!!rlang::enexpr(x) | rowid)
-          ),
-          data = data,
-          na.action = na.omit
-        )
+    mod <-
+      stats::friedman.test(
+        formula = rlang::new_formula(
+          {{ rlang::enexpr(y) }}, rlang::expr(!!rlang::enexpr(x) | rowid)
+        ),
+        data = data,
+        na.action = na.omit
       )
 
     # details for expression creator
     .f <- rcompanion::kendallW
-    arg_list <- list(
-      x = dplyr::select(long_to_wide_converter(data, {{ x }}, {{ y }}), -rowid),
-      correct = TRUE,
-      na.rm = TRUE
-    )
+    arg_list <-
+      list(
+        x = dplyr::select(ipmisc::long_to_wide_converter(data, {{ x }}, {{ y }}), -rowid),
+        correct = TRUE,
+        na.rm = TRUE
+      )
     sample_size <- length(unique(data$rowid))
     n.text <- quote(italic("n")["pairs"])
     statistic.text <- quote(chi["Friedman"]^2)
@@ -396,27 +342,26 @@ expr_anova_nonparametric <- function(data,
 
   if (isFALSE(paired)) {
     # setting up the anova model and getting its summary
-    stats_df <-
-      broomExtra::tidy(
-        stats::kruskal.test(
-          formula = rlang::new_formula({{ y }}, {{ x }}),
-          data = data,
-          na.action = na.omit
-        )
+    mod <-
+      stats::kruskal.test(
+        formula = rlang::new_formula({{ y }}, {{ x }}),
+        data = data,
+        na.action = na.omit
       )
 
     # details for expression creator
     .f <- rcompanion::epsilonSquared
-    arg_list <- list(
-      x = data %>% dplyr::pull({{ y }}),
-      g = data %>% dplyr::pull({{ x }}),
-      group = "row",
-      reportIncomplete = FALSE
-    )
+    arg_list <-
+      list(
+        x = data %>% dplyr::pull({{ y }}),
+        g = data %>% dplyr::pull({{ x }}),
+        group = "row",
+        reportIncomplete = FALSE
+      )
     sample_size <- nrow(data)
     n.text <- quote(italic("n")["obs"])
     statistic.text <- quote(chi["Kruskal-Wallis"]^2)
-    effsize.text <- quote(widehat(epsilon^2))
+    effsize.text <- quote(widehat(epsilon^2)["ordinal"])
   }
 
   # computing respective effect sizes
@@ -428,23 +373,30 @@ expr_anova_nonparametric <- function(data,
       conf = conf.level,
       type = conf.type,
       R = nboot,
-      histogram = FALSE,
       digits = 5
     ) %>%
     rcompanion_cleaner(.)
 
-  # preparing subtitle
-  expr_template(
-    stat.title = stat.title,
-    no.parameters = 1L,
-    stats.df = stats_df,
-    effsize.df = effsize_df,
-    statistic.text = statistic.text,
-    effsize.text = effsize.text,
-    n = sample_size,
-    n.text = n.text,
-    conf.level = conf.level,
-    k = k
+  # combining dataframes
+  stats_df <- dplyr::bind_cols(broomExtra::tidy(mod), effsize_df)
+
+  # preparing expression
+  expression <-
+    expr_template(
+      no.parameters = 1L,
+      stats.df = stats_df,
+      statistic.text = statistic.text,
+      effsize.text = effsize.text,
+      n = sample_size,
+      n.text = n.text,
+      conf.level = conf.level,
+      k = k
+    )
+
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    expression
   )
 }
 
@@ -461,6 +413,7 @@ expr_anova_nonparametric <- function(data,
 #'   try to play around with the value of `tr`, which is by default set to
 #'   `0.1`. Lowering the value might help.
 #' @inheritParams expr_anova_nonparametric
+#' @inheritParams expr_corr_test
 #' @inheritParams expr_template
 #'
 #' @importFrom dplyr select
@@ -468,56 +421,40 @@ expr_anova_nonparametric <- function(data,
 #' @importFrom WRS2 rmanova t1way
 #'
 #' @examples
-#'
-#' \donttest{
 #' # for reproducibility
 #' set.seed(123)
+#' library(statsExpressions)
 #'
 #' # ------------------------ between-subjects -----------------------------
 #'
-#' # going with the defaults
-#' statsExpressions::expr_anova_robust(
-#'   data = ggplot2::midwest,
-#'   x = state,
-#'   y = percbelowpoverty,
-#'   paired = FALSE,
-#'   nboot = 10
-#' )
-#'
-#' # changing defaults
 #' expr_anova_robust(
 #'   data = ggplot2::midwest,
 #'   x = state,
-#'   y = percollege,
-#'   paired = FALSE,
-#'   conf.level = 0.99,
-#'   tr = 0.2,
-#'   nboot = 10
+#'   y = percbelowpoverty
 #' )
 #'
 #' # ------------------------ within-subjects -----------------------------
 #'
-#' statsExpressions::expr_anova_robust(
+#' expr_anova_robust(
 #'   data = iris_long,
 #'   x = condition,
 #'   y = value,
 #'   paired = TRUE,
-#'   tr = 0.2,
 #'   k = 3
 #' )
-#' }
 #' @export
 
 # function body
 expr_anova_robust <- function(data,
                               x,
                               y,
+                              subject.id = NULL,
                               paired = FALSE,
                               k = 2L,
                               conf.level = 0.95,
                               tr = 0.1,
                               nboot = 100L,
-                              stat.title = NULL,
+                              output = "expression",
                               ...) {
 
   # make sure both quoted and unquoted arguments are allowed
@@ -527,10 +464,11 @@ expr_anova_robust <- function(data,
 
   # have a proper cleanup with NA removal
   data %<>%
-    long_to_wide_converter(
+    ipmisc::long_to_wide_converter(
       data = .,
       x = {{ x }},
       y = {{ y }},
+      subject.id = {{ subject.id }},
       paired = paired,
       spread = FALSE
     )
@@ -543,7 +481,7 @@ expr_anova_robust <- function(data,
     sample_size <- length(unique(data$rowid))
 
     # test
-    stats_df <-
+    mod <-
       WRS2::rmanova(
         y = data[[rlang::as_name(y)]],
         groups = data[[rlang::as_name(x)]],
@@ -551,8 +489,17 @@ expr_anova_robust <- function(data,
         tr = tr
       )
 
-    # preparing the subtitle
-    subtitle <-
+    # create a dataframe
+    stats_df <-
+      tibble(
+        statistic = mod$test[[1]],
+        parameter1 = mod$df1[[1]],
+        parameter2 = mod$df2[[1]],
+        p.value = mod$p.value[[1]]
+      )
+
+    # preparing the expression
+    expression <-
       substitute(
         expr = paste(
           italic("F")["trimmed-means"],
@@ -572,9 +519,9 @@ expr_anova_robust <- function(data,
           n
         ),
         env = list(
-          statistic = specify_decimal_p(x = stats_df$test[[1]], k = k),
-          df1 = specify_decimal_p(x = stats_df$df1[[1]], k = k),
-          df2 = specify_decimal_p(x = stats_df$df2[[1]], k = k),
+          statistic = specify_decimal_p(x = stats_df$statistic[[1]], k = k),
+          df1 = specify_decimal_p(x = stats_df$parameter1[[1]], k = k),
+          df2 = specify_decimal_p(x = stats_df$parameter2[[1]], k = k),
           p.value = specify_decimal_p(x = stats_df$p.value[[1]], k = k, p.value = TRUE),
           n = sample_size
         )
@@ -610,16 +557,11 @@ expr_anova_robust <- function(data,
         conf.high = mod$effsize_ci[[2]]
       )
 
-    # effect size dataframe
-    effsize_df <- stats_df
-
-    # preparing subtitle
-    subtitle <-
+    # preparing expression
+    expression <-
       expr_template(
         no.parameters = 2L,
-        stat.title = stat.title,
         stats.df = stats_df,
-        effsize.df = effsize_df,
         statistic.text = quote(italic("F")["trimmed-means"]),
         effsize.text = quote(widehat(italic(xi))),
         n = sample_size,
@@ -630,12 +572,15 @@ expr_anova_robust <- function(data,
       )
   }
 
-  # return the subtitle
-  return(subtitle)
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    expression
+  )
 }
 
 
-#' @title Making expression containing Bayesian one-way ANOVA results.
+#' @title Expression containing Bayesian one-way ANOVA results
 #' @name expr_anova_bayes
 #'
 #' @return For more details, see-
@@ -645,55 +590,40 @@ expr_anova_robust <- function(data,
 #' @inheritParams expr_t_bayes
 #'
 #' @importFrom tidyBF bf_oneway_anova
+#' @importFrom parameters model_parameters
+#' @importFrom performance model_performance
 #'
 #' @examples
-#' \donttest{
+#' # setup
 #' set.seed(123)
+#' library(statsExpressions)
 #'
-#' # between-subjects ---------------------------------------
-#' # with defaults
-#' statsExpressions::expr_anova_bayes(
+#' expr_anova_bayes(
 #'   data = ggplot2::msleep,
 #'   x = vore,
 #'   y = sleep_rem
 #' )
-#'
-#' # modifying the defaults
-#' statsExpressions::expr_anova_bayes(
-#'   data = ggplot2::msleep,
-#'   x = vore,
-#'   y = sleep_rem,
-#'   k = 3,
-#'   bf.prior = 0.8
-#' )
-#'
-#' # repeated measures ---------------------------------------
-#' statsExpressions::expr_anova_bayes(
-#'   data = WRS2::WineTasting,
-#'   x = Wine,
-#'   y = Taste,
-#'   paired = TRUE,
-#'   k = 4
-#' )
-#' }
 #' @export
 
 # function body
 expr_anova_bayes <- function(data,
                              x,
                              y,
+                             subject.id = NULL,
                              paired = FALSE,
                              bf.prior = 0.707,
                              k = 2L,
+                             output = "expression",
                              ...) {
-  # bayes factor results
   tidyBF::bf_oneway_anova(
     data = data,
     x = {{ x }},
     y = {{ y }},
+    subject.id = {{ subject.id }},
     paired = paired,
     bf.prior = bf.prior,
     k = k,
-    output = "h1"
-  )$expr
+    output = output,
+    ...
+  )
 }

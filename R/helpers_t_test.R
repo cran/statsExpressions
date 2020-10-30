@@ -43,44 +43,43 @@
 #' @examples
 #' # for reproducibility
 #' set.seed(123)
-#' \donttest{
+#' library(statsExpressions)
+#'
 #' # creating a smaller dataset
 #' msleep_short <- dplyr::filter(ggplot2::msleep, vore %in% c("carni", "herbi"))
 #'
 #' # with defaults
-#' statsExpressions::expr_t_parametric(
+#' expr_t_parametric(
 #'   data = msleep_short,
 #'   x = vore,
 #'   y = sleep_rem
 #' )
 #'
 #' # changing defaults (getting expression as output)
-#' statsExpressions::expr_t_parametric(
+#' expr_t_parametric(
 #'   data = msleep_short,
 #'   x = vore,
 #'   y = sleep_rem,
 #'   var.equal = TRUE,
 #'   effsize.type = "d"
 #' )
-#' }
 #' @export
 
 # function body
 expr_t_parametric <- function(data,
                               x,
                               y,
+                              subject.id = NULL,
                               paired = FALSE,
                               k = 2L,
                               conf.level = 0.95,
                               effsize.type = "g",
                               var.equal = FALSE,
-                              stat.title = NULL,
+                              output = "expression",
                               ...) {
 
   # make sure both quoted and unquoted arguments are supported
   c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
-
-  # ============================ data preparation ==========================
 
   # have a proper cleanup with NA removal
   data %<>%
@@ -88,6 +87,7 @@ expr_t_parametric <- function(data,
       data = .,
       x = {{ x }},
       y = {{ y }},
+      subject.id = {{ subject.id }},
       paired = paired,
       spread = FALSE
     )
@@ -117,14 +117,15 @@ expr_t_parametric <- function(data,
 
   # setting up the t-test model and getting its summary
   stats_df <-
-    broomExtra::tidy(stats::t.test(
+    stats::t.test(
       formula = rlang::new_formula({{ y }}, {{ x }}),
       data = data,
       paired = paired,
       alternative = "two.sided",
       var.equal = var.equal,
       na.action = na.omit
-    ))
+    ) %>%
+    broomExtra::tidy(.)
 
   # effect size object
   effsize_df <-
@@ -137,7 +138,11 @@ expr_t_parametric <- function(data,
       pooled_sd = var.equal,
       ci = conf.level
     ) %>%
-    broomExtra::easystats_to_tidy_names(.)
+    insight::standardize_names(data = ., style = "broom")
+
+  # combining dataframes
+  stats_df <-
+    dplyr::bind_cols(dplyr::select(stats_df, -dplyr::matches("estimate|^conf")), effsize_df)
 
   # when paired samples t-test is run df is going to be integer
   # ditto for when variance is assumed to be equal
@@ -150,18 +155,23 @@ expr_t_parametric <- function(data,
     }
 
   # preparing subtitle
-  expr_template(
-    no.parameters = 1L,
-    stat.title = stat.title,
-    stats.df = stats_df,
-    effsize.df = effsize_df,
-    statistic.text = statistic.text,
-    effsize.text = effsize.text,
-    n = sample_size,
-    conf.level = conf.level,
-    k = k,
-    k.parameter = k.df,
-    n.text = n.text
+  subtitle <-
+    expr_template(
+      no.parameters = 1L,
+      stats.df = stats_df,
+      statistic.text = statistic.text,
+      effsize.text = effsize.text,
+      n = sample_size,
+      conf.level = conf.level,
+      k = k,
+      k.parameter = k.df,
+      n.text = n.text
+    )
+
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    subtitle
   )
 }
 
@@ -201,79 +211,44 @@ expr_t_parametric <- function(data,
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
 #' @examples
-#'
-#' \donttest{
 #' # for reproducibility
 #' set.seed(123)
+#' library(statsExpressions)
 #'
 #' # -------------- between-subjects design ------------------------
-#' # simple function call
-#' statsExpressions::expr_t_nonparametric(
+#'
+#' expr_t_nonparametric(
 #'   data = sleep,
 #'   x = group,
 #'   y = extra
 #' )
 #'
-#' # creating a smaller dataset
-#' msleep_short <- dplyr::filter(
-#'   .data = ggplot2::msleep,
-#'   vore %in% c("carni", "herbi")
-#' )
-#'
-#' # modifying few things
-#' statsExpressions::expr_t_nonparametric(
-#'   data = msleep_short,
-#'   x = vore,
-#'   y = sleep_rem,
-#'   nboot = 200,
-#'   conf.level = 0.99,
-#'   conf.type = "bca"
-#' )
-#'
-#' # The order of the grouping factor matters when computing *V*
-#' # Changing default alphabetical order manually
-#' msleep_short$vore <- factor(msleep_short$vore, levels = c("herbi", "carni"))
-#'
-#' # note the change in the reported *V* value but the identical
-#' # value for *p* and the reversed effect size
-#' statsExpressions::expr_t_nonparametric(
-#'   data = msleep_short,
-#'   x = vore,
-#'   y = sleep_rem
-#' )
-#'
 #' # -------------- within-subjects design ------------------------
 #'
-#' # using dataset included in the package
-#' statsExpressions::expr_t_nonparametric(
+#' expr_t_nonparametric(
 #'   data = VR_dilemma,
 #'   x = modality,
 #'   y = score,
 #'   paired = TRUE,
-#'   conf.level = 0.90,
-#'   conf.type = "perc",
-#'   nboot = 200,
-#'   k = 4
+#'   subject.id = id
 #' )
-#' }
 #' @export
 
 # function body
 expr_t_nonparametric <- function(data,
                                  x,
                                  y,
+                                 subject.id = NULL,
                                  paired = FALSE,
                                  k = 2L,
                                  conf.level = 0.95,
                                  conf.type = "norm",
                                  nboot = 100,
-                                 stat.title = NULL,
+                                 output = "expression",
                                  ...) {
 
   # make sure both quoted and unquoted arguments are supported
   c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
-
-  # ============================ data preparation ==========================
 
   # have a proper cleanup with NA removal
   data %<>%
@@ -281,6 +256,7 @@ expr_t_nonparametric <- function(data,
       data = .,
       x = {{ x }},
       y = {{ y }},
+      subject.id = {{ subject.id }},
       paired = paired,
       spread = FALSE
     )
@@ -305,14 +281,15 @@ expr_t_nonparametric <- function(data,
 
   # setting up the test and getting its summary
   stats_df <-
-    broomExtra::tidy(stats::wilcox.test(
+    stats::wilcox.test(
       formula = rlang::new_formula({{ y }}, {{ x }}),
       data = data,
       paired = paired,
       alternative = "two.sided",
       na.action = na.omit,
       exact = FALSE
-    )) %>%
+    ) %>%
+    broomExtra::tidy(.) %>%
     dplyr::mutate(.data = ., statistic = log(statistic))
 
   # computing effect size
@@ -325,24 +302,32 @@ expr_t_nonparametric <- function(data,
       conf = conf.level,
       type = conf.type,
       R = nboot,
-      histogram = FALSE,
       digits = k,
       reportIncomplete = TRUE
     ) %>%
     rcompanion_cleaner(.)
 
+  # combining dataframes
+  stats_df <-
+    dplyr::bind_cols(dplyr::select(stats_df, -dplyr::matches("estimate|^conf")), effsize_df)
+
   # preparing subtitle
-  expr_template(
-    no.parameters = 0L,
-    stats.df = stats_df,
-    effsize.df = effsize_df,
-    stat.title = stat.title,
-    statistic.text = statistic.text,
-    effsize.text = quote(widehat(italic("r"))),
-    n = sample_size,
-    n.text = n.text,
-    conf.level = conf.level,
-    k = k
+  subtitle <-
+    expr_template(
+      no.parameters = 0L,
+      stats.df = stats_df,
+      statistic.text = statistic.text,
+      effsize.text = quote(widehat(italic("r"))),
+      n = sample_size,
+      n.text = n.text,
+      conf.level = conf.level,
+      k = k
+    )
+
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    subtitle
   )
 }
 
@@ -361,54 +346,43 @@ expr_t_nonparametric <- function(data,
 #' @importFrom WRS2 yuen yuen.effect.ci yuend dep.effect
 #'
 #' @examples
-#' \donttest{
 #' # for reproducibility
 #' set.seed(123)
+#' library(statsExpressions)
 #'
 #' # between-subjects design -----------------------------------------------
 #'
 #' # with defaults
-#' statsExpressions::expr_t_robust(
+#' expr_t_robust(
 #'   data = sleep,
 #'   x = group,
 #'   y = extra
 #' )
 #'
-#' # changing defaults
-#' statsExpressions::expr_t_robust(
-#'   data = ToothGrowth,
-#'   x = supp,
-#'   y = len,
-#'   nboot = 10,
-#'   k = 3,
-#'   tr = 0.2
-#' )
-#'
 #' # within-subjects design -----------------------------------------------
-#' statsExpressions::expr_t_robust(
+#' expr_t_robust(
 #'   data = dplyr::filter(bugs_long, condition %in% c("LDLF", "LDHF")),
 #'   x = condition,
 #'   y = desire,
-#'   paired = TRUE
+#'   paired = TRUE,
+#'   subject.id = subject
 #' )
-#' }
 #' @export
 
 # function body
 expr_t_robust <- function(data,
                           x,
                           y,
+                          subject.id = NULL,
                           paired = FALSE,
                           k = 2L,
                           conf.level = 0.95,
                           tr = 0.1,
                           nboot = 100,
-                          stat.title = NULL,
+                          output = "expression",
                           ...) {
   # make sure both quoted and unquoted arguments are supported
   c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
-
-  # ============================ data preparation ==========================
 
   # have a proper cleanup with NA removal
   data %<>%
@@ -416,11 +390,10 @@ expr_t_robust <- function(data,
       data = .,
       x = {{ x }},
       y = {{ y }},
+      subject.id = {{ subject.id }},
       paired = paired,
       spread = paired
     )
-
-  # ---------------------------- between-subjects design --------------------
 
   # running Bayesian analysis
   if (isFALSE(paired)) {
@@ -464,8 +437,6 @@ expr_t_robust <- function(data,
     effsize.text <- quote(widehat(italic(xi)))
   }
 
-  # ---------------------------- within-subjects design -------------------
-
   if (isTRUE(paired)) {
     # running robust paired t-test
     fit <- WRS2::yuend(x = data[2], y = data[3], tr = tr)
@@ -500,19 +471,28 @@ expr_t_robust <- function(data,
     effsize.text <- quote(widehat(italic(delta))["R"])
   }
 
+  # combining dataframes
+  stats_df <-
+    dplyr::bind_cols(dplyr::select(stats_df, -dplyr::matches("estimate|^conf")), effsize_df)
+
   # preparing subtitle
-  expr_template(
-    no.parameters = 1L,
-    stats.df = stats_df,
-    effsize.df = effsize_df,
-    stat.title = stat.title,
-    statistic.text = quote(italic("t")["Yuen"]),
-    effsize.text = effsize.text,
-    n = nrow(data),
-    n.text = n.text,
-    conf.level = conf.level,
-    k = k,
-    k.parameter = k.parameter
+  subtitle <-
+    expr_template(
+      no.parameters = 1L,
+      stats.df = stats_df,
+      statistic.text = quote(italic("t")["Yuen"]),
+      effsize.text = effsize.text,
+      n = nrow(data),
+      n.text = n.text,
+      conf.level = conf.level,
+      k = k,
+      k.parameter = k.parameter
+    )
+
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    subtitle
   )
 }
 
@@ -529,13 +509,13 @@ expr_t_robust <- function(data,
 #' @inheritParams tidyBF::bf_ttest
 #'
 #' @examples
-#' \donttest{
 #' # for reproducibility
 #' set.seed(123)
+#' library(statsExpressions)
 #'
 #' # ------------- between-subjects design --------------------------
 #'
-#' statsExpressions::expr_t_bayes(
+#' expr_t_bayes(
 #'   data = mtcars,
 #'   x = am,
 #'   y = wt,
@@ -544,31 +524,34 @@ expr_t_robust <- function(data,
 #'
 #' # ------------- within-subjects design -----------------------------
 #'
-#' statsExpressions::expr_t_bayes(
+#' expr_t_bayes(
 #'   data = dplyr::filter(bugs_long, condition %in% c("LDLF", "LDHF")),
 #'   x = condition,
 #'   y = desire,
-#'   paired = TRUE
+#'   paired = TRUE,
+#'   subject.id = subject
 #' )
-#' }
 #' @export
 
 # function body
 expr_t_bayes <- function(data,
                          x,
                          y,
+                         subject.id = NULL,
                          paired = FALSE,
                          k = 2L,
                          bf.prior = 0.707,
+                         output = "expression",
                          ...) {
-  # prepare subtitle
   tidyBF::bf_ttest(
     data = data,
     x = {{ x }},
     y = {{ y }},
+    subject.id = {{ subject.id }},
     paired = paired,
     bf.prior = bf.prior,
-    output = "h1",
-    k = k
-  )$expr
+    output = output,
+    k = k,
+    ...
+  )
 }

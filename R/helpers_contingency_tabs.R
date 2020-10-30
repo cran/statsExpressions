@@ -1,4 +1,5 @@
 #' @name expr_contingency_tab
+#' @rdname expr_contingency_tab
 #' @title Making expression for contingency table and goodness of fit tests
 #'
 #' @return Expression for contingency analysis (Pearson's chi-square test for
@@ -10,22 +11,16 @@
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
 #' @param x The variable to use as the **rows** in the contingency table.
-#' @param y The variable to use as the **columns** in the contingency
-#'   table. Default is `NULL`. If `NULL`, one-sample proportion test (a goodness
-#'   of fit test) will be run for the `main` variable. Otherwise an appropriate
-#'   association test will be run.
+#' @param y The variable to use as the **columns** in the contingency table.
+#'   Default is `NULL`. If `NULL`, one-sample proportion test (a goodness of fit
+#'   test) will be run for the `x` variable. Otherwise association test will be
+#'   carried out.
 #' @param counts A string naming a variable in data containing counts, or `NULL`
-#'   if each row represents a single observation (Default).
+#'   if each row represents a single observation.
 #' @param paired Logical indicating whether data came from a within-subjects or
 #'   repeated measures design study (Default: `FALSE`). If `TRUE`, McNemar's
 #'   test subtitle will be returned. If `FALSE`, Pearson's chi-square test will
 #'   be returned.
-#' @param stat.title Title for the effect being investigated with the chi-square
-#'   test. The default is `NULL`, i.e. no title will be added to describe the
-#'   effect being shown. An example of a `stat.title` argument will be something
-#'   like `"main x condition"` or `"interaction"`.
-#' @param bias.correct If `TRUE` (default), a bias correction will be applied to
-#'   Cramer's *V*.
 #' @param ratio A vector of proportions: the expected proportions for the
 #'   proportion test (should sum to 1). Default is `NULL`, which means the null
 #'   is equal theoretical proportions across the levels of the nominal variable.
@@ -41,33 +36,29 @@
 #' @importFrom rlang !! enquo as_name ensym exec
 #' @importFrom tidyr uncount drop_na
 #' @importFrom stats mcnemar.test chisq.test
-#' @importFrom rcompanion cramerV cohenG cramerVFit
+#' @importFrom effectsize cramers_v cohens_g
+#' @importFrom insight standardize_names
 #'
 #' @details For more details about how the effect sizes and their confidence
-#'   intervals were computed, see documentation in `?rcompanion::cramerV`,
-#'   `?rcompanion::cramerVFit`, and `?rcompanion::cohenG`.
+#'   intervals were computed, see documentation in `?effectsize::cramers_v` and
+#'   `?effectsize::cohens_g`.
 #'
 #' @examples
-#'
-#' \donttest{
-#' # ------------------------ association tests -----------------------------
-#'
+#' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
 #'
+#' # ------------------------ association tests -----------------------------
+#'
 #' # without counts data
-#' statsExpressions::expr_contingency_tab(
+#' expr_contingency_tab(
 #'   data = mtcars,
 #'   x = am,
 #'   y = cyl,
-#'   paired = FALSE,
-#'   nboot = 15
+#'   paired = FALSE
 #' )
 #'
 #' # ------------------------ goodness of fit tests ---------------------------
-#'
-#' # for reproducibility
-#' set.seed(123)
 #'
 #' # with counts
 #' expr_contingency_tab(
@@ -76,7 +67,6 @@
 #'   counts = Freq,
 #'   ratio = c(0.2, 0.2, 0.3, 0.3)
 #' )
-#' }
 #' @export
 
 # function body
@@ -84,14 +74,11 @@ expr_contingency_tab <- function(data,
                                  x,
                                  y = NULL,
                                  counts = NULL,
+                                 paired = FALSE,
                                  ratio = NULL,
                                  k = 2L,
                                  conf.level = 0.95,
-                                 conf.type = "norm",
-                                 nboot = 100L,
-                                 paired = FALSE,
-                                 stat.title = NULL,
-                                 bias.correct = TRUE,
+                                 output = "expression",
                                  ...) {
 
   # ensure the variables work quoted or unquoted
@@ -123,28 +110,6 @@ expr_contingency_tab <- function(data,
       )
   }
 
-  # y
-  if (!rlang::quo_is_null(rlang::enquo(y))) {
-    # drop the unused levels of the column variable
-    data %<>% dplyr::mutate(.data = ., {{ y }} := droplevels(as.factor({{ y }})))
-
-    # in case there is no variation, no subtitle will be shown
-    if (nlevels(data %>% dplyr::pull({{ y }}))[[1]] == 1L) {
-      # display message
-      message(cat(
-        ipmisc::red("Error: "),
-        ipmisc::blue("Row variable 'y' contains less than 2 levels.\n"),
-        ipmisc::blue("Chi-squared test can't be run; no subtitle displayed."),
-        sep = ""
-      ))
-
-      # return early
-      return(NULL)
-    }
-  }
-
-  # =============================== association tests ========================
-
   # sample size
   sample_size <- nrow(data)
 
@@ -154,39 +119,37 @@ expr_contingency_tab <- function(data,
     ratio <- rep(1 / length(table(x_vec)), length(table(x_vec)))
   }
 
+  # =============================== association tests ========================
+
   # association tests
   if (!rlang::quo_is_null(rlang::enquo(y))) {
+    # drop the unused levels of the column variable
+    data %<>% dplyr::mutate(.data = ., {{ y }} := droplevels(as.factor({{ y }})))
 
     # creating a matrix with frequencies and cleaning it up
-    x_arg <- as.matrix(table(data %>% dplyr::pull({{ x }}), data %>% dplyr::pull({{ y }})))
+    x_arg <- table(data %>% dplyr::pull({{ x }}), data %>% dplyr::pull({{ y }}))
 
     # ======================== Pearson's test ================================
 
     if (isFALSE(paired)) {
-      # object containing stats
-      stats_df <- stats::chisq.test(x = x_arg, correct = FALSE)
-
-      # effect size text
-      .f <- rcompanion::cramerV
+      # computing stats and effect size + CI
+      mod <- stats::chisq.test(x = x_arg, correct = FALSE)
+      .f <- effectsize::cramers_v
       effsize.text <- quote(widehat(italic("V"))["Cramer"])
-      statistic.text <- quote(chi["Pearson"]^2)
+
       n.text <- quote(italic("n")["obs"])
     }
 
     # ======================== McNemar's test ================================
 
     if (isTRUE(paired)) {
-      # computing effect size + CI
-      stats_df <- stats::mcnemar.test(x = x_arg, correct = FALSE)
-
-      # effect size text
-      .f <- rcompanion::cohenG
+      # computing stats and effect size + CI
+      mod <- stats::mcnemar.test(x = x_arg, correct = FALSE)
+      .f <- effectsize::cohens_g
       effsize.text <- quote(widehat(italic("g"))["Cohen"])
-      statistic.text <- quote(chi["McNemar"]^2)
+
       n.text <- quote(italic("n")["pairs"])
     }
-
-    args_list <- list(x = x_arg, bias.correct = bias.correct)
   }
 
   # ======================== goodness of fit test ========================
@@ -196,66 +159,51 @@ expr_contingency_tab <- function(data,
     x_arg <- table(data %>% dplyr::pull({{ x }}))
 
     # checking if the chi-squared test can be run
-    stats_df <-
-      tryCatch(
-        expr = stats::chisq.test(x = x_arg, correct = FALSE, p = ratio),
-        error = function(x) NULL
-      )
-
-    # if the function worked, then return tidy output
-    if (is.null(stats_df)) {
-      return(NULL)
-    }
-
-    # `x` argument for effect size function
-    x_arg <- as.vector(table(data %>% dplyr::pull({{ x }})))
+    mod <- stats::chisq.test(x = x_arg, correct = FALSE, p = ratio)
 
     # effect size text
-    .f <- rcompanion::cramerVFit
+    .f <- effectsize::cramers_v
     effsize.text <- quote(widehat(italic("V"))["Cramer"])
-    statistic.text <- quote(chi["gof"]^2)
     n.text <- quote(italic("n")["obs"])
-    args_list <- list(x = x_arg, p = ratio)
+  }
+
+  # which test was carried out?
+  if (mod$method == "Chi-squared test for given probabilities") {
+    statistic.text <- quote(chi["gof"]^2)
+  } else {
+    if (isTRUE(paired)) statistic.text <- quote(chi["McNemar"]^2)
+    if (isFALSE(paired)) statistic.text <- quote(chi["Pearson"]^2)
   }
 
   # computing effect size + CI
   effsize_df <-
     rlang::exec(
       .fn = .f,
-      !!!args_list,
-      ci = TRUE,
-      conf = conf.level,
-      type = conf.type,
-      R = nboot,
-      histogram = FALSE,
-      digits = 5,
-      reportIncomplete = TRUE
+      x = x_arg,
+      adjust = TRUE,
+      ci = conf.level
     ) %>%
-    rcompanion_cleaner(.)
+    insight::standardize_names(data = ., style = "broom")
 
+  # combining dataframes
+  stats_df <- dplyr::bind_cols(broomExtra::tidy(mod), effsize_df)
 
-  # for Cohen's g
-  if ("Statistic" %in% names(effsize_df)) effsize_df %<>% dplyr::filter(Statistic == "g")
+  # expression
+  subtitle <-
+    expr_template(
+      no.parameters = 1L,
+      stats.df = stats_df,
+      statistic.text = statistic.text,
+      effsize.text = effsize.text,
+      n = sample_size,
+      n.text = n.text,
+      conf.level = conf.level,
+      k = k
+    )
 
-  # preparing subtitle
-  expr_template(
-    no.parameters = 1L,
-    stats.df = broomExtra::tidy(stats_df),
-    effsize.df = effsize_df,
-    stat.title = stat.title,
-    statistic.text = statistic.text,
-    effsize.text = effsize.text,
-    n = sample_size,
-    n.text = n.text,
-    conf.level = conf.level,
-    k = k
+  # return the output
+  switch(output,
+    "dataframe" = stats_df,
+    subtitle
   )
 }
-
-# aliases -----------------------------------------------------------------
-
-#' @rdname expr_contingency_tab
-#' @aliases expr_contingency_tab
-#' @export
-
-expr_onesample_proptest <- expr_contingency_tab

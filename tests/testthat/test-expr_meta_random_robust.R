@@ -1,7 +1,7 @@
 # subtitle from meta-analysis -------------------------------------------
 
 testthat::test_that(
-  desc = "expr_meta_robust works",
+  desc = "expr_meta_random works",
   code = {
     testthat::skip_if(getRversion() < "3.6")
 
@@ -18,19 +18,31 @@ testthat::test_that(
     # subtitle
     set.seed(123)
     results1 <-
-      expr_meta_robust(
+      expr_meta_random(
         data = df,
         random = "normal",
-        k = 4,
-        messages = TRUE
+        type = "robust",
+        k = 4
       )
+
+    # df
+    set.seed(123)
+    df_res <-
+      expr_meta_random(
+        data = df,
+        type = "robust",
+        random = "normal",
+        output = "dataframe"
+      )
+
+    # output
+    testthat::expect_is(df_res, "tbl_df")
 
     # test
     testthat::expect_identical(
       results1,
       ggplot2::expr(
         paste(
-          "Summary effect: ",
           italic("z"),
           " = ",
           "-1.8844",
@@ -39,7 +51,7 @@ testthat::test_that(
           " = ",
           "0.0230",
           ", ",
-          widehat(beta),
+          widehat(beta)["summary"]^"meta",
           " = ",
           "-0.6930",
           ", CI"["95%"],

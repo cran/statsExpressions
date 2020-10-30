@@ -1,22 +1,3 @@
-
-# ----------------------- ipmisc -----------------------------------
-
-#' @export
-#' @importFrom ipmisc specify_decimal_p
-ipmisc::specify_decimal_p
-
-#' @export
-#' @importFrom ipmisc signif_column
-ipmisc::signif_column
-
-#' @export
-#' @importFrom ipmisc set_cwd
-ipmisc::set_cwd
-
-#' @export
-#' @importFrom ipmisc long_to_wide_converter
-ipmisc::long_to_wide_converter
-
 # ----------------------- tidyverse -------------------------------------
 
 #' @export
@@ -66,8 +47,8 @@ tidyBF::bf_contingency_tab
 tidyBF::bf_ttest
 
 #' @export
-#' @importFrom tidyBF bf_meta
-tidyBF::bf_meta
+#' @importFrom tidyBF bf_meta_random
+tidyBF::bf_meta_random
 
 #' @export
 #' @importFrom tidyBF bf_corr_test
