@@ -90,12 +90,11 @@ expr_corr_test <- function(data,
         method = corr.method,
         ci = conf.level
       ) %>%
-      insight::standardize_names(data = ., style = "broom") %>%
-      dplyr::rename_all(.tbl = ., .funs = dplyr::recode, "df" = "parameter") %>%
+      parameters::standardize_names(data = ., style = "broom") %>%
       as_tibble(.)
   }
 
-  # ------------------------ subtitle text elements -----------------------------
+  # ------------------------ expression elements -----------------------------
 
   # preparing other needed objects
   if (stats_type == "parametric") {
@@ -114,7 +113,7 @@ expr_corr_test <- function(data,
   if (stats_type == "robust") {
     no.parameters <- 1L
     statistic.text <- quote(italic("t")["Student"])
-    effsize.text <- quote(widehat(italic(rho))["pb"])
+    effsize.text <- quote(widehat(italic(rho))["% bend"])
   }
 
   # ---------------------- preparing subtitle ---------------------------------

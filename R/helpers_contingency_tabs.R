@@ -1,11 +1,10 @@
 #' @name expr_contingency_tab
-#' @rdname expr_contingency_tab
-#' @title Making expression for contingency table and goodness of fit tests
+#' @title Making expression for contingency table analysis
 #'
-#' @return Expression for contingency analysis (Pearson's chi-square test for
-#'   independence for between-subjects design or McNemar's test for
-#'   within-subjects design) or goodness of fit test for a single categorical
-#'   variable.
+#' @return Expression or a dataframe for contingency analysis (Pearson's
+#'   chi-square test for independence for between-subjects design or McNemar's
+#'   test for within-subjects design) or goodness of fit test for a single
+#'   categorical variable.
 #'
 #' @references For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
@@ -38,10 +37,6 @@
 #' @importFrom stats mcnemar.test chisq.test
 #' @importFrom effectsize cramers_v cohens_g
 #' @importFrom insight standardize_names
-#'
-#' @details For more details about how the effect sizes and their confidence
-#'   intervals were computed, see documentation in `?effectsize::cramers_v` and
-#'   `?effectsize::cohens_g`.
 #'
 #' @examples
 #' # for reproducibility
@@ -80,35 +75,19 @@ expr_contingency_tab <- function(data,
                                  conf.level = 0.95,
                                  output = "expression",
                                  ...) {
-
-  # ensure the variables work quoted or unquoted
-  x <- rlang::ensym(x)
-  y <- if (!rlang::quo_is_null(rlang::enquo(y))) rlang::ensym(y)
-  counts <- if (!rlang::quo_is_null(rlang::enquo(counts))) rlang::ensym(counts)
+  # one-way or two-way table?
+  test <- ifelse(!rlang::quo_is_null(rlang::enquo(y)), "two.way", "one.way")
 
   # =============================== dataframe ================================
 
   # creating a dataframe
   data %<>%
-    dplyr::select(.data = ., {{ x }}, {{ y }}, {{ counts }}) %>%
-    tidyr::drop_na(data = .) %>%
-    as_tibble(x = .)
-
-  # x and y need to be factors; drop the unused levels of the factors
-
-  # x
-  data %<>% dplyr::mutate(.data = ., {{ x }} := droplevels(as.factor({{ x }})))
+    dplyr::select(.data = ., {{ x }}, {{ y }}, .counts = {{ counts }}) %>%
+    tidyr::drop_na(.) %>%
+    as_tibble(.)
 
   # untable the dataframe based on the count for each observation
-  if (!rlang::quo_is_null(rlang::enquo(counts))) {
-    data %<>%
-      tidyr::uncount(
-        data = .,
-        weights = {{ counts }},
-        .remove = TRUE,
-        .id = "id"
-      )
-  }
+  if (".counts" %in% names(data)) data %<>% tidyr::uncount(data = ., weights = .counts)
 
   # sample size
   sample_size <- nrow(data)
@@ -121,47 +100,41 @@ expr_contingency_tab <- function(data,
 
   # =============================== association tests ========================
 
-  # association tests
-  if (!rlang::quo_is_null(rlang::enquo(y))) {
-    # drop the unused levels of the column variable
-    data %<>% dplyr::mutate(.data = ., {{ y }} := droplevels(as.factor({{ y }})))
-
+  if (test == "two.way") {
     # creating a matrix with frequencies and cleaning it up
     x_arg <- table(data %>% dplyr::pull({{ x }}), data %>% dplyr::pull({{ y }}))
 
     # ======================== Pearson's test ================================
 
     if (isFALSE(paired)) {
-      # computing stats and effect size + CI
+      # details for the expression
       mod <- stats::chisq.test(x = x_arg, correct = FALSE)
       .f <- effectsize::cramers_v
       effsize.text <- quote(widehat(italic("V"))["Cramer"])
-
       n.text <- quote(italic("n")["obs"])
     }
 
     # ======================== McNemar's test ================================
 
     if (isTRUE(paired)) {
-      # computing stats and effect size + CI
+      # details for the expression
       mod <- stats::mcnemar.test(x = x_arg, correct = FALSE)
       .f <- effectsize::cohens_g
       effsize.text <- quote(widehat(italic("g"))["Cohen"])
-
       n.text <- quote(italic("n")["pairs"])
     }
   }
 
   # ======================== goodness of fit test ========================
 
-  if (rlang::quo_is_null(rlang::enquo(y))) {
+  if (test == "one.way") {
     # frequency table
     x_arg <- table(data %>% dplyr::pull({{ x }}))
 
     # checking if the chi-squared test can be run
     mod <- stats::chisq.test(x = x_arg, correct = FALSE, p = ratio)
 
-    # effect size text
+    # details for the expression
     .f <- effectsize::cramers_v
     effsize.text <- quote(widehat(italic("V"))["Cramer"])
     n.text <- quote(italic("n")["obs"])
@@ -183,10 +156,10 @@ expr_contingency_tab <- function(data,
       adjust = TRUE,
       ci = conf.level
     ) %>%
-    insight::standardize_names(data = ., style = "broom")
+    parameters::standardize_names(data = ., style = "broom")
 
   # combining dataframes
-  stats_df <- dplyr::bind_cols(broomExtra::tidy(mod), effsize_df)
+  stats_df <- dplyr::bind_cols(tidy_model_parameters(mod), effsize_df)
 
   # expression
   subtitle <-
@@ -202,7 +175,8 @@ expr_contingency_tab <- function(data,
     )
 
   # return the output
-  switch(output,
+  switch(
+    EXPR = output,
     "dataframe" = stats_df,
     subtitle
   )
