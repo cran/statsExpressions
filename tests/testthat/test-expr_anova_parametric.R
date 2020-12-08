@@ -35,17 +35,17 @@ testthat::test_that(
           ", ",
           widehat(eta["p"]^2),
           " = ",
-          "0.15181",
+          "0.41092",
           ", CI"["95%"],
           " [",
-          "0.02743",
+          "0.11026",
           ", ",
-          "0.22672",
+          "0.54317",
           "]",
           ", ",
           italic("n")["obs"],
           " = ",
-          158L
+          "158"
         )
       )
 
@@ -68,9 +68,8 @@ testthat::test_that(
         data = ggplot2::msleep,
         x = vore,
         y = "sleep_rem",
-        effsize.type = "omega",
-        k = 4,
-        messages = FALSE
+        effsize.type = "unbiased",
+        k = 4
       )
 
     # expected output
@@ -91,17 +90,17 @@ testthat::test_that(
           ", ",
           widehat(omega["p"]^2),
           " = ",
-          "0.1438",
+          "0.2449",
           ", CI"["95%"],
           " [",
           "0.0000",
           ", ",
-          "0.2999",
+          "0.5391",
           "]",
           ", ",
           italic("n")["obs"],
           " = ",
-          56L
+          "56"
         )
       )
 
@@ -125,9 +124,8 @@ testthat::test_that(
         x = vore,
         y = sleep_rem,
         var.equal = TRUE,
-        effsize.type = "partial_eta",
-        k = 4,
-        messages = FALSE
+        effsize.type = "biased",
+        k = 4
       )
 
     # expected output
@@ -158,7 +156,7 @@ testthat::test_that(
           ", ",
           italic("n")["obs"],
           " = ",
-          56L
+          "56"
         )
       )
 
@@ -214,7 +212,7 @@ testthat::test_that(
           ", ",
           italic("n")["pairs"],
           " = ",
-          150L
+          "150"
         )
       )
 
@@ -233,59 +231,60 @@ testthat::test_that(
     set.seed(123)
 
     # dataframe
-    df <- structure(list(
-      x = c(
-        30, 40, 50, 60, 70, 80, 90, 30, 40, 50,
-        60, 70, 80, 90, 30, 40, 50, 60, 70, 80, 90, 30, 40, 50, 60, 70,
-        80, 90, 30, 40, 50, 60, 70, 80, 90
+    df <-
+      structure(list(
+        x = c(
+          30, 40, 50, 60, 70, 80, 90, 30, 40, 50,
+          60, 70, 80, 90, 30, 40, 50, 60, 70, 80, 90, 30, 40, 50, 60, 70,
+          80, 90, 30, 40, 50, 60, 70, 80, 90
+        ),
+        Participant = c(
+          "FH2", "FH2",
+          "FH2", "FH2", "FH2", "FH2", "FH2", "ZW", "ZW", "ZW", "ZW", "ZW",
+          "ZW", "ZW", "KS", "KS", "KS", "KS", "KS", "KS", "KS", "CL", "CL",
+          "CL", "CL", "CL", "CL", "CL", "AG", "AG", "AG", "AG", "AG", "AG",
+          "AG"
+        ),
+        Method = c(
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ),
+        y = c(
+          2571.25, 2688.003333, 2779.363333, 2832.046667,
+          3050.72, 3255.553333, 3327.173667, 1766.296667, 2107.890333,
+          2391.7, 2569.24, 2680.22, 2807.59, 2807.953333, 2078.734,
+          2414.366667, 2583.27, 2923.253333, 3085.96, 3094.003333,
+          3121.49, 2824.990667, 2716.429667, 2844.323333, 3124.713333,
+          3252.863333, 3424.24, 3674.463333, 2401.996667, 2719.046667,
+          2712.99, 2951.965667, 3046.526667, 3100.902667, 3195.331333
+        )
       ),
-      Participant = c(
-        "FH2", "FH2",
-        "FH2", "FH2", "FH2", "FH2", "FH2", "ZW", "ZW", "ZW", "ZW", "ZW",
-        "ZW", "ZW", "KS", "KS", "KS", "KS", "KS", "KS", "KS", "CL", "CL",
-        "CL", "CL", "CL", "CL", "CL", "AG", "AG", "AG", "AG", "AG", "AG",
-        "AG"
+      class = c("spec_tbl_df", "tbl_df", "tbl", "data.frame"),
+      row.names = c(NA, -35L),
+      spec = structure(list(
+        cols = list(
+          x = structure(list(), class = c("collector_double", "collector")),
+          Participant = structure(list(), class = c(
+            "collector_character",
+            "collector"
+          )),
+          Method = structure(list(), class = c(
+            "collector_double",
+            "collector"
+          )),
+          y = structure(list(), class = c(
+            "collector_double",
+            "collector"
+          ))
+        ),
+        default = structure(list(), class = c(
+          "collector_guess",
+          "collector"
+        )), skip = 1
       ),
-      Method = c(
-        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-      ),
-      y = c(
-        2571.25, 2688.003333, 2779.363333, 2832.046667,
-        3050.72, 3255.553333, 3327.173667, 1766.296667, 2107.890333,
-        2391.7, 2569.24, 2680.22, 2807.59, 2807.953333, 2078.734,
-        2414.366667, 2583.27, 2923.253333, 3085.96, 3094.003333,
-        3121.49, 2824.990667, 2716.429667, 2844.323333, 3124.713333,
-        3252.863333, 3424.24, 3674.463333, 2401.996667, 2719.046667,
-        2712.99, 2951.965667, 3046.526667, 3100.902667, 3195.331333
+      class = "col_spec"
       )
-    ),
-    class = c("spec_tbl_df", "tbl_df", "tbl", "data.frame"),
-    row.names = c(NA, -35L),
-    spec = structure(list(
-      cols = list(
-        x = structure(list(), class = c("collector_double", "collector")),
-        Participant = structure(list(), class = c(
-          "collector_character",
-          "collector"
-        )),
-        Method = structure(list(), class = c(
-          "collector_double",
-          "collector"
-        )),
-        y = structure(list(), class = c(
-          "collector_double",
-          "collector"
-        ))
-      ),
-      default = structure(list(), class = c(
-        "collector_guess",
-        "collector"
-      )), skip = 1
-    ),
-    class = "col_spec"
-    )
-    )
+      )
 
     # capture the message
     set.seed(123)
@@ -326,7 +325,7 @@ testthat::test_that(
         ", ",
         italic("n")["pairs"],
         " = ",
-        5L
+        "5"
       ))
     )
   }

@@ -50,7 +50,7 @@ testthat::test_that(
           ", ",
           italic("n")["obs"],
           " = ",
-          614L
+          "614"
         )
       )
 
@@ -80,8 +80,7 @@ testthat::test_that(
           effsize.type = "g",
           var.equal = FALSE,
           conf.level = 0.90,
-          k = 3,
-          messages = FALSE
+          k = 3
         )
       )
 
@@ -105,14 +104,14 @@ testthat::test_that(
           "-0.863",
           ", CI"["90%"],
           " [",
-          "-0.962",
+          "-0.968",
           ", ",
-          "-0.664",
+          "-0.658",
           "]",
           ", ",
           italic("n")["obs"],
           " = ",
-          614L
+          "614"
         )
       )
 
@@ -170,7 +169,7 @@ testthat::test_that(
           ", ",
           italic("n")["pairs"],
           " = ",
-          150L
+          "150"
         )
       )
 
@@ -225,7 +224,7 @@ testthat::test_that(
           ", ",
           italic("n")["pairs"],
           " = ",
-          90L
+          "90"
         )
       )
 
