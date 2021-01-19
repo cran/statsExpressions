@@ -1,10 +1,10 @@
 # nonparametric ----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_corr_test works - nonparametric",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
-    testthat::skip_on_cran()
+    skip_if(getRversion() < "3.6")
+    skip_on_cran()
 
     if (utils::packageVersion("correlation") > package_version("0.4.0")) {
       # `statsExpressions` output
@@ -31,7 +31,7 @@ testthat::test_that(
             " = ",
             "3.4438e-06",
             ", ",
-            widehat(italic(rho))["Spearman"],
+            widehat(rho)["Spearman"],
             " = ",
             "0.49546",
             ", CI"["99.9%"],
@@ -48,7 +48,7 @@ testthat::test_that(
         )
 
       # testing overall call
-      testthat::expect_identical(using_function, expected)
+      expect_identical(using_function, expected)
 
       # `statsExpressions` output
       set.seed(123)
@@ -71,7 +71,7 @@ testthat::test_that(
             " = ",
             "1.49e-11",
             ", ",
-            widehat(italic(rho))["Spearman"],
+            widehat(rho)["Spearman"],
             " = ",
             "-0.89",
             ", CI"["95%"],
@@ -87,18 +87,18 @@ testthat::test_that(
           )
         )
 
-      testthat::expect_identical(using_function2, expected2)
+      expect_identical(using_function2, expected2)
     }
   }
 )
 
 # parametric --------------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_corr_test works - parametric",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
-    testthat::skip_on_cran()
+    skip_if(getRversion() < "3.6")
+    skip_on_cran()
 
     if (utils::packageVersion("correlation") > package_version("0.4.0")) {
       # `statsExpressions` output
@@ -144,18 +144,18 @@ testthat::test_that(
         )
 
       # testing overall call
-      testthat::expect_identical(using_function, expected)
+      expect_identical(using_function, expected)
     }
   }
 )
 
 # robust ----------------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_corr_test works - robust",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
-    testthat::skip_on_cran()
+    skip_if(getRversion() < "3.6")
+    skip_on_cran()
 
     if (utils::packageVersion("correlation") > package_version("0.4.0")) {
       # using function
@@ -184,7 +184,7 @@ testthat::test_that(
             " = ",
             "1.756e-06",
             ", ",
-            widehat(italic(rho))["% bend"],
+            widehat(rho)["% bend"],
             " = ",
             "-0.5894",
             ", CI"["50%"],
@@ -201,54 +201,17 @@ testthat::test_that(
         )
 
       # testing overall call
-      testthat::expect_identical(using_function, expected)
+      expect_identical(using_function, expected)
     }
   }
 )
 
-
-# bayes ----------------------------------------------------------------
-
-testthat::test_that(
-  desc = "expr_corr_test works - bayes",
-  code = {
-    testthat::skip_if(getRversion() < "3.6")
-
-    # using function
-    set.seed(123)
-    using_function <-
-      statsExpressions::expr_corr_test(
-        data = ggplot2::msleep,
-        x = names(ggplot2::msleep)[10],
-        y = sleep_rem,
-        type = "bayes",
-        k = 3
-      )
-
-    # expected
-    set.seed(123)
-    expected <-
-      tidyBF::bf_corr_test(
-        data = ggplot2::msleep,
-        x = names(ggplot2::msleep)[10],
-        y = sleep_rem,
-        type = "bf",
-        k = 3,
-        output = "expression"
-      )
-
-    # testing overall call
-    testthat::expect_identical(using_function, expected)
-  }
-)
-
-
 # dataframe -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "dataframe",
   code = {
-    testthat::expect_s3_class(
+    expect_s3_class(
       statsExpressions::expr_corr_test(
         data = mtcars,
         x = mpg,

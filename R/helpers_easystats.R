@@ -1,0 +1,60 @@
+
+#' @name tidy_model_parameters
+#' @title Convert `parameters` package output to `tidyverse` conventions
+#'
+#' @inheritParams parameters::model_parameters
+#'
+#' @importFrom parameters model_parameters
+#' @importFrom insight standardize_names
+#' @importFrom dplyr select matches
+#'
+#' @examples
+#' model <- lm(mpg ~ wt + cyl, data = mtcars)
+#' tidy_model_parameters(model)
+#' @export
+
+tidy_model_parameters <- function(model, ...) {
+  parameters::model_parameters(model, verbose = FALSE, ...) %>%
+    dplyr::select(-dplyr::matches("Difference")) %>%
+    parameters::standardize_names(data = ., style = "broom") %>%
+    as_tibble(.)
+}
+
+#' @name tidy_model_performance
+#' @title Convert `performance` package output to `tidyverse` conventions
+#'
+#' @inheritParams performance::model_performance
+#'
+#' @importFrom performance model_performance
+#'
+#' @examples
+#' model <- lm(mpg ~ wt + cyl, data = mtcars)
+#' tidy_model_parameters(model)
+#' @export
+
+tidy_model_performance <- function(model, ...) {
+  performance::model_performance(model, verbose = FALSE, ...) %>%
+    parameters::standardize_names(data = ., style = "broom") %>%
+    as_tibble(.)
+}
+
+
+#' @name tidy_model_effectsize
+#' @title Convert `effectsize` package output to `tidyverse` conventions
+#'
+#' @param data Dataframe returned by `effectsize` functions.
+#'
+#' @importFrom effectsize get_effectsize_label
+#'
+#' @examples
+#' df <- effectsize::cohens_d(sleep$extra, sleep$group)
+#' tidy_model_effectsize(df)
+#' @export
+
+tidy_model_effectsize <- function(data) {
+  data %>%
+    dplyr::mutate(effectsize = stats::na.omit(effectsize::get_effectsize_label(colnames(.)))[[1]]) %>%
+    parameters::standardize_names(data = ., style = "broom") %>%
+    dplyr::select(-dplyr::contains("term")) %>%
+    as_tibble(.)
+}

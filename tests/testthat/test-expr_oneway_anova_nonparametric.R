@@ -1,18 +1,18 @@
 # between-subjects ----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "between-subjects - data with and without NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # `statsExpressions` output
     set.seed(123)
     using_function1 <-
-      statsExpressions::expr_anova_nonparametric(
-        data = dplyr::sample_frac(statsExpressions::movies_long, 0.1),
+      expr_oneway_anova(
+        type = "np",
+        data = dplyr::sample_frac(movies_long, 0.1),
         x = "genre",
         y = length,
-        conf.type = "norm",
         paired = FALSE,
         k = 5
       )
@@ -32,14 +32,14 @@ testthat::test_that(
           " = ",
           "2.1714e-08",
           ", ",
-          widehat(epsilon^2)["ordinal"],
+          widehat(epsilon)["ordinal"]^2,
           " = ",
           "0.32756",
           ", CI"["95%"],
           " [",
-          "0.15930",
+          "0.25737",
           ", ",
-          "0.43544",
+          "0.50585",
           "]",
           ", ",
           italic("n")["obs"],
@@ -49,19 +49,19 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
 
     # `statsExpressions` output
     set.seed(123)
     using_function2 <-
-      suppressWarnings(statsExpressions::expr_anova_nonparametric(
+      suppressWarnings(expr_oneway_anova(
+        type = "np",
         data = ggplot2::msleep,
         x = vore,
         y = sleep_cycle,
         k = 3,
         paired = FALSE,
-        conf.level = 0.99,
-        conf.type = "perc"
+        conf.level = 0.99
       ))
 
     # expected output
@@ -79,14 +79,14 @@ testthat::test_that(
           " = ",
           "0.155",
           ", ",
-          widehat(epsilon^2)["ordinal"],
+          widehat(epsilon)["ordinal"]^2,
           " = ",
           "0.175",
           ", CI"["99%"],
           " [",
-          "0.016",
+          "0.053",
           ", ",
-          "0.547",
+          "0.494",
           "]",
           ", ",
           italic("n")["obs"],
@@ -96,26 +96,26 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function2, results2)
+    expect_identical(using_function2, results2)
   }
 )
 
 # within-subjects -------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "within-subjects - data with and without NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # `statsExpressions` output
     set.seed(123)
     using_function1 <-
-      statsExpressions::expr_anova_nonparametric(
+      expr_oneway_anova(
+        type = "np",
         data = bugs_long,
         x = condition,
         y = "desire",
         k = 4L,
-        conf.type = "norm",
         paired = TRUE,
         conf.level = 0.99
       )
@@ -137,12 +137,12 @@ testthat::test_that(
           ", ",
           widehat(italic("W"))["Kendall"],
           " = ",
-          "0.6148",
+          "0.6021",
           ", CI"["99%"],
           " [",
-          "0.3390",
+          "0.6021",
           ", ",
-          "0.7058",
+          "0.9748",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -152,17 +152,17 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
 
     # `statsExpressions` output
     set.seed(123)
     using_function2 <-
-      statsExpressions::expr_anova_nonparametric(
+      expr_oneway_anova(
+        type = "np",
         data = iris_long,
         x = condition,
         y = "value",
         k = 3,
-        conf.type = "perc",
         paired = TRUE,
         conf.level = 0.90
       )
@@ -184,12 +184,12 @@ testthat::test_that(
           ", ",
           widehat(italic("W"))["Kendall"],
           " = ",
-          "0.486",
+          "0.484",
           ", CI"["90%"],
           " [",
-          "0.345",
+          "0.343",
           ", ",
-          "0.977",
+          "0.969",
           "]",
           ", ",
           italic("n")["pairs"],
@@ -199,18 +199,19 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function2, results2)
+    expect_identical(using_function2, results2)
   }
 )
 
 
 # dataframe -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "dataframe",
   code = {
-    testthat::expect_s3_class(
-      statsExpressions::expr_anova_nonparametric(
+    expect_s3_class(
+      expr_oneway_anova(
+        type = "np",
         data = mtcars,
         x = cyl,
         y = wt,
@@ -221,13 +222,12 @@ testthat::test_that(
   }
 )
 
-
 # works with subject id ------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "works with subject id",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # data
     df <-
@@ -260,7 +260,8 @@ testthat::test_that(
     # incorrect
     set.seed(123)
     expr1 <-
-      statsExpressions::expr_anova_nonparametric(
+      expr_oneway_anova(
+        type = "np",
         data = df,
         x = condition,
         y = score,
@@ -271,13 +272,14 @@ testthat::test_that(
     # correct
     set.seed(123)
     expr2 <-
-      statsExpressions::expr_anova_nonparametric(
+      expr_oneway_anova(
+        type = "np",
         data = dplyr::arrange(df, id),
         x = condition,
         y = score,
         paired = TRUE
       )
 
-    testthat::expect_equal(expr1, expr2)
+    expect_equal(expr1, expr2)
   }
 )

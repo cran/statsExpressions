@@ -1,4 +1,4 @@
-#' @title Making expression for correlation analysis
+#' @title Expression and dataframe for correlation analysis
 #' @name expr_corr_test
 #'
 #' @return Expression containing results from correlation test with confidence
@@ -22,13 +22,12 @@
 #'   parametric/pearson), `"np"` (nonparametric/spearman), `"r"` (robust),
 #'   `"bf"` (for bayes factor), resp.
 #' @param beta bending constant (Default: `0.1`). For more, see [WRS2::pbcor()].
-#' @inheritParams tidyBF::bf_corr_test
-#' @inheritParams expr_anova_parametric
-#' @inheritParams expr_anova_nonparametric
+#' @inheritParams expr_oneway_anova
 #'
-#' @importFrom dplyr select rename_all recode
+#' @importFrom dplyr select rename_all recode pull
 #' @importFrom correlation correlation
 #' @importFrom ipmisc stats_type_switch
+#' @importFrom BayesFactor correlationBF
 #'
 #' @examples
 #' # for reproducibility
@@ -39,8 +38,7 @@
 #' expr_corr_test(
 #'   data = ggplot2::midwest,
 #'   x = area,
-#'   y = percblack,
-#'   type = "parametric"
+#'   y = percblack
 #' )
 #'
 #' # changing defaults
@@ -48,8 +46,8 @@
 #'   data = ggplot2::midwest,
 #'   x = area,
 #'   y = percblack,
-#'   beta = 0.2,
-#'   type = "robust"
+#'   type = "robust",
+#'   output = "dataframe"
 #' )
 #' @export
 
@@ -57,11 +55,12 @@
 expr_corr_test <- function(data,
                            x,
                            y,
+                           type = "parametric",
                            k = 2L,
                            conf.level = 0.95,
                            beta = 0.1,
-                           type = "parametric",
                            bf.prior = 0.707,
+                           top.text = NULL,
                            output = "expression",
                            ...) {
 
@@ -91,62 +90,42 @@ expr_corr_test <- function(data,
         ci = conf.level
       ) %>%
       parameters::standardize_names(data = ., style = "broom") %>%
-      as_tibble(.)
+      dplyr::mutate(effectsize = method)
   }
 
-  # ------------------------ expression elements -----------------------------
+  # ---------------------- preparing expression -------------------------------
 
-  # preparing other needed objects
-  if (stats_type == "parametric") {
-    no.parameters <- 1L
-    statistic.text <- quote(italic("t")["Student"])
-    effsize.text <- quote(widehat(italic("r"))["Pearson"])
-  }
+  # no. of parameters
+  no.parameters <- ifelse(stats_type %in% c("parametric", "robust"), 1L, 0L)
+  if (stats_type == "nonparametric") stats_df %<>% dplyr::mutate(statistic = log(statistic))
 
-  if (stats_type == "nonparametric") {
-    stats_df %<>% dplyr::mutate(.data = ., statistic = log(statistic))
-    no.parameters <- 0L
-    statistic.text <- quote("log"["e"](italic("S")))
-    effsize.text <- quote(widehat(italic(rho))["Spearman"])
-  }
-
-  if (stats_type == "robust") {
-    no.parameters <- 1L
-    statistic.text <- quote(italic("t")["Student"])
-    effsize.text <- quote(widehat(italic(rho))["% bend"])
-  }
-
-  # ---------------------- preparing expression ---------------------------------
-
+  # preparing expression
   if (stats_type != "bayes") {
-    # preparing expression
     expression <-
       expr_template(
         no.parameters = no.parameters,
         stats.df = stats_df,
-        statistic.text = statistic.text,
-        effsize.text = effsize.text,
+        paired = TRUE,
         n = stats_df$n.obs[[1]],
         conf.level = conf.level,
-        k = k,
-        n.text = quote(italic("n")["pairs"])
+        k = k
       )
-  } else {
-    # bayes factor results
-    stats_df <-
-      tidyBF::bf_corr_test(
-        data = data,
-        x = {{ x }},
-        y = {{ y }},
-        bf.prior = bf.prior,
-        output = output,
-        k = k,
-        ...
+  }
+
+  # bayes factor results
+  if (stats_type == "bayes") {
+    # extracting results from Bayesian test and creating a dataframe
+    bf_object <-
+      BayesFactor::correlationBF(
+        x = data %>% dplyr::pull({{ x }}),
+        y = data %>% dplyr::pull({{ y }}),
+        rscale = bf.prior
       )
 
-    expression <- stats_df
+    # final return
+    expression <- stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text, output = output)
   }
 
   # return the output
-  switch(output, "dataframe" = stats_df, expression)
+  switch(output, "dataframe" = as_tibble(stats_df), expression)
 }

@@ -1,3 +1,47 @@
+# statsExpressions 0.7.0
+
+BREAKING CHANGES
+
+  - To be consistent with `ggstatsplot`'s overall syntax philosophy the `type`
+    argument can be used to specify which type of statistical approach is to be
+    used for all functions.
+
+    * `expr_t_parametric`, `expr_t_nonparametric`, `expr_t_robust`,
+      `expr_t_bayes` are now removed in favor of a single function
+      `expr_t_twosample`.
+
+    * `expr_anova_parametric`, `expr_anova_nonparametric`, `expr_anova_robust`,
+      `expr_anova_bayes` are now removed in favor of a single function
+      `expr_oneway_anova`.
+
+  - `statsExpressions` no longer internally relies on `tidyBF`. All Bayesian
+    analysis is carried out in this package itself. This was done to make the
+    maintenance of this package easier and helps with some major internal code
+    refactoring. As such, all re-exported functions from `tidyBF` have also been
+    removed.
+
+BUG FIXES
+
+  - `expr_contingency_tab` ignored `ratio` argument while computing Cramer's *V*
+    for one-sample test. This is fixed.
+
+MAJOR CHANGES
+
+  - All non-parametric functions now use `effectsize` package to compute effect
+    sizes and not `rcompanion`. This would lead to some changes in effect sizes
+    and their confidence intervals reported by the respective functions.
+
+  - Robust one-sample test is changed from one-sample percentile bootstrap to
+    bootstrap-*t* method for one-sample test, which uses trimmed mean like the
+    rest of the robust functions in this package.
+
+MINOR CHANGES
+
+  - Package internally relies on `afex` instead of `ez` for within-subjects
+    ANOVA.
+
+  - `expr_template` gains `paired` argument.
+
 # statsExpressions 0.6.2
 
 MINOR CHANGES

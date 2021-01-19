@@ -1,14 +1,14 @@
 # contingency tab - data without NAs -----------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_contingency_tab works - data without NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # `statsExpressions` output
     set.seed(123)
     using_function1 <-
-      suppressWarnings(statsExpressions::expr_contingency_tab(
+      suppressWarnings(expr_contingency_tab(
         data = mtcars,
         x = "am",
         y = cyl,
@@ -48,12 +48,12 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
 
     # with counts
     set.seed(123)
     using_function2 <-
-      statsExpressions::expr_contingency_tab(
+      expr_contingency_tab(
         data = as.data.frame(Titanic),
         x = names(as.data.frame(Titanic))[2],
         y = Survived,
@@ -90,25 +90,25 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function2, results2)
+    expect_identical(using_function2, results2)
   }
 )
 
 # contingency tab - data with NAs -----------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_contingency_tab works - data with NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # introduce NAs
     set.seed(123)
     using_function1 <-
-      suppressWarnings(statsExpressions::expr_contingency_tab(
+      suppressWarnings(expr_contingency_tab(
         data = ggplot2::msleep,
         x = vore,
         y = "conservation",
-        conf.level = .990
+        conf.level = 0.990
       ))
 
     # expected output
@@ -143,16 +143,16 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
 # paired data without NAs and counts data -------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "paired expr_contingency_tab works - counts data without NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # create data structure
     paired_data <-
@@ -179,7 +179,7 @@ testthat::test_that(
     set.seed(123)
     using_function1 <-
       suppressWarnings(
-        statsExpressions::expr_contingency_tab(
+        expr_contingency_tab(
           data = paired_data,
           x = "response_before",
           y = response_after,
@@ -221,16 +221,16 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
 # paired data with NAs  ---------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "paired expr_contingency_tab works - with NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # create data structure
     paired_data <-
@@ -269,7 +269,7 @@ testthat::test_that(
     set.seed(123)
     using_function1 <-
       suppressWarnings(
-        statsExpressions::expr_contingency_tab(
+        expr_contingency_tab(
           data = paired_data,
           x = response_before,
           y = "response_after",
@@ -311,16 +311,16 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
 # paired data 4-by-4  ---------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "paired data 4-by-4",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
     set.seed(123)
 
     # making data
@@ -350,7 +350,7 @@ testthat::test_that(
     # `statsExpressions` output
     set.seed(123)
     subtitle1 <-
-      suppressWarnings(statsExpressions::expr_contingency_tab(
+      suppressWarnings(expr_contingency_tab(
         data = df,
         x = Var1,
         y = Var2,
@@ -358,7 +358,6 @@ testthat::test_that(
         paired = TRUE,
         k = 4,
         conf.level = 0.99,
-        conf.type = "basic",
         nboot = 50
       ))
 
@@ -394,7 +393,7 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(subtitle1, results1)
+    expect_identical(subtitle1, results1)
 
     # edge case
     dfEx <-
@@ -406,7 +405,7 @@ testthat::test_that(
     # subtitle
     set.seed(123)
     subtitle2 <-
-      statsExpressions::expr_contingency_tab(
+      expr_contingency_tab(
         data = dfEx,
         x = cat1,
         y = cat2,
@@ -443,21 +442,21 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(subtitle2, results2)
+    expect_identical(subtitle2, results2)
   }
 )
 
 # one-sample test (without counts) -----------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "Goodness of Fit expr_contingency_tab works without counts",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # `statsExpressions` output
     set.seed(123)
     using_function1 <-
-      suppressWarnings(statsExpressions::expr_contingency_tab(
+      suppressWarnings(expr_contingency_tab(
         data = mtcars,
         x = "am",
         conf.level = 0.99,
@@ -496,12 +495,12 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
 
     # with counts
     set.seed(123)
     using_function2 <-
-      statsExpressions::expr_contingency_tab(
+      expr_contingency_tab(
         data = as.data.frame(Titanic),
         x = Sex,
         counts = "Freq"
@@ -537,21 +536,21 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function2, results2)
+    expect_identical(using_function2, results2)
   }
 )
 
 # checking subtitle (with counts) -----------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "Goodness of Fit expr_contingency_tab works with counts",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # `statsExpressions` output
     set.seed(123)
     using_function1 <-
-      statsExpressions::expr_contingency_tab(
+      expr_contingency_tab(
         data = as.data.frame(Titanic),
         x = Sex,
         counts = "Freq",
@@ -590,21 +589,21 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
 # dataframe with NA  and with ratio ----------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "works with dataframes with NAs and with ratio",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # from function
     set.seed(123)
     using_function <-
-      statsExpressions::expr_contingency_tab(
+      expr_contingency_tab(
         data = ggplot2::msleep,
         x = vore,
         ratio = c(0.2, 0.2, 0.3, 0.3)
@@ -626,12 +625,12 @@ testthat::test_that(
           ", ",
           widehat(italic("V"))["Cramer"],
           " = ",
-          "0.27",
+          "0.37",
           ", CI"["95%"],
           " [",
-          "0.11",
+          "0.22",
           ", ",
-          "0.38",
+          "0.49",
           "]",
           ", ",
           italic("n")["obs"],
@@ -641,16 +640,16 @@ testthat::test_that(
       )
 
     # testing if these are equivalent
-    testthat::expect_identical(using_function, expected)
+    expect_identical(using_function, expected)
   }
 )
 
 # checking edge cases --------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "works even in edge cases",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # too few observations
     df <- data.frame(
@@ -661,11 +660,11 @@ testthat::test_that(
     # subtitle
     set.seed(123)
     sub <- suppressWarnings(
-      statsExpressions::expr_contingency_tab(df, x, y, messages = FALSE)
+      expr_contingency_tab(df, x, y, messages = FALSE)
     )
 
     # test
-    testthat::expect_identical(
+    expect_identical(
       sub,
       ggplot2::expr(
         paste(
@@ -703,7 +702,7 @@ testthat::test_that(
     sub1 <- expr_contingency_tab(df1, am, cyl)
 
     # test
-    testthat::expect_identical(
+    expect_identical(
       sub1,
       ggplot2::expr(
         paste(
@@ -739,11 +738,11 @@ testthat::test_that(
 
 # dataframe -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "dataframe",
   code = {
-    testthat::expect_s3_class(
-      statsExpressions::expr_contingency_tab(
+    expect_s3_class(
+      expr_contingency_tab(
         data = as.data.frame(HairEyeColor),
         x = Eye,
         counts = Freq,

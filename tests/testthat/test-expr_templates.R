@@ -1,9 +1,9 @@
 # zero parameter -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "checking if subtitle template works without any parameter",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "4.0")
 
     # subtitle
     set.seed(123)
@@ -52,20 +52,21 @@ testthat::test_that(
         conf.level = 0.99,
         k = 2L,
         n = 32,
+        n.text = quote(italic("n")),
         effsize.text = quote(widehat(italic("r")))
       )
 
     # check if they are equivalent
-    testthat::expect_identical(subtitle, template_0)
+    expect_identical(subtitle, template_0)
   }
 )
 
 # single parameter -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "checking if subtitle template works with a single parameter",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "4.0")
 
     # subtitle
     set.seed(123)
@@ -115,27 +116,28 @@ testthat::test_that(
         stats.df = stats_df,
         statistic.text = quote(italic(chi)^2),
         n = 32,
+        n.text = quote(italic("n")),
         effsize.text = quote(widehat(italic("V")))
       )
 
     # check if they are equivalent
-    testthat::expect_identical(subtitle, template_1)
+    expect_identical(subtitle, template_1)
   }
 )
 
 # two parameters -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "checking if subtitle template works with two parameters",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "4.0")
 
     # subtitle
     set.seed(123)
     subtitle <-
       ggplot2::expr(
         paste(
-          italic("F"),
+          NULL,
           "(",
           "3",
           ",",
@@ -172,7 +174,8 @@ testthat::test_that(
         p.value = 0.107,
         estimate = 0.00,
         conf.low = -0.08,
-        conf.high = 0.10
+        conf.high = 0.10,
+        method = "lala"
       )
 
     # created using a template maker
@@ -180,16 +183,25 @@ testthat::test_that(
       statsExpressions::expr_template(
         no.parameters = 2L,
         stats.df = stats_df,
-        statistic.text = quote(italic("F")),
         conf.level = 0.95,
         k = 2L,
         k.parameter = 0L,
         k.parameter2 = 2L,
         n = 51L,
+        n.text = quote(italic("n")),
         effsize.text = quote(widehat(omega["p"]^2))
       )
 
     # check if they are equivalent
-    testthat::expect_identical(subtitle, template_1)
+    expect_identical(subtitle, template_1)
+  }
+)
+
+
+test_that(
+  desc = "switches default to NULL",
+  code = {
+    expect_null(estimate_type_switch("x"))
+    expect_null(stat_text_switch("x"))
   }
 )

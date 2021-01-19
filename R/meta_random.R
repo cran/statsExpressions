@@ -1,4 +1,4 @@
-#' @title Making expression for random-effects meta-analysis
+#' @title Expression and dataframe for random-effects meta-analysis
 #' @name expr_meta_random
 #'
 #' @param data A dataframe. It **must** contain columns named `estimate` (effect
@@ -8,23 +8,24 @@
 #' @param caption Text to display as caption. This argument is relevant only
 #'   when `output = "caption"`.
 #' @inheritParams expr_t_onesample
-#' @inheritParams tidyBF::bf_meta_random
+#' @param metaBMA.args A list of additional arguments to be passed to
+#'   `metaBMA::meta_random`.
 #' @inheritParams metaplus::metaplus
-#' @inheritParams expr_anova_parametric
+#' @inheritParams expr_oneway_anova
 #' @param ... Additional arguments passed to the respective meta-analysis
 #'   function.
 #'
 #' @details This analysis is carried out using-
 #' \itemize{
 #'   \item parametric: `metafor::rma`
-#'   \item  robust: `metaplus::metaplus`
-#'   \item  Bayesian: `metaBMA::meta_random`
+#'   \item robust: `metaplus::metaplus`
+#'   \item Bayesian: `metaBMA::meta_random`
 #' }
 #'
 #' @importFrom metafor rma
 #' @importFrom metaplus metaplus
-#' @importFrom dplyr rename_all recode mutate
-#' @importFrom tidyBF bf_meta_random
+#' @importFrom metaBMA meta_random prior
+#' @importFrom rlang exec !!!
 #'
 #' @examples
 #' \donttest{
@@ -78,8 +79,8 @@ expr_meta_random <- function(data,
                              caption = NULL,
                              output = "expression",
                              ...) {
-  # check the data contains needed column
-  stats.type <- stats_type_switch(type)
+  # check the type of test
+  stats.type <- ipmisc::stats_type_switch(type)
 
   #----------------------- parametric ------------------------------------
 
@@ -124,11 +125,11 @@ expr_meta_random <- function(data,
         ),
         env = list(
           top.text = caption,
-          Q = specify_decimal_p(x = df_glance$cochransq, k = 0L),
-          df = specify_decimal_p(x = df_glance$df.error, k = 0L),
-          pvalue = specify_decimal_p(x = df_glance$p.cochransq, k = k, p.value = TRUE),
-          tau2 = specify_decimal_p(x = df_glance$tau2, k = k),
-          I2 = paste(specify_decimal_p(x = df_glance$i2 * 100, k = 2L), "%", sep = "")
+          Q = format_num(df_glance$cochransq, k = 0L),
+          df = format_num(df_glance$df.error, k = 0L),
+          pvalue = format_num(df_glance$p.cochransq, k = k, p.value = TRUE),
+          tau2 = format_num(df_glance$tau2, k = k),
+          I2 = paste0(format_num(df_glance$i2 * 100, k = 2L), "%")
         )
       )
   }
@@ -145,8 +146,6 @@ expr_meta_random <- function(data,
         random = random,
         ...
       )
-
-    caption <- NULL
   }
 
   # clean up
@@ -154,12 +153,13 @@ expr_meta_random <- function(data,
     # create a dataframe with coefficients
     stats_df <- tidy_model_parameters(mod, include_studies = FALSE)
 
+    # informative column
+    stats_df %<>% dplyr::mutate(effectsize = "meta-analytic summary estimate")
+
     # preparing the subtitle
     subtitle <-
       expr_template(
         stats.df = stats_df,
-        statistic.text = quote(italic("z")),
-        effsize.text = quote(widehat(beta)["summary"]^"meta"),
         n = nrow(data),
         n.text = quote(italic("n")["effects"]),
         no.parameters = 0L,
@@ -171,28 +171,19 @@ expr_meta_random <- function(data,
   #---------------------------- Bayes Factor ---------------------------------
 
   if (stats.type == "bayes") {
-    # bayes factor results
-    stats_df <-
-      tidyBF::bf_meta_random(
-        data = data,
-        metaBMA.args = metaBMA.args,
-        k = k,
-        conf.level = conf.level,
-        output = output,
-        ...
+    # extracting results from random-effects meta-analysis
+    bf_object <-
+      rlang::exec(
+        .fn = metaBMA::meta_random,
+        y = data$estimate,
+        SE = data$std.error,
+        !!!metaBMA.args
       )
 
-    caption <- NULL
-    subtitle <- stats_df
+    # final return
+    subtitle <- stats_df <- bf_extractor(bf_object, conf.level, k = k, centrality = "mean", output = output)
   }
 
-  #---------------------------- return ---------------------------------
-
   # what needs to be returned?
-  switch(
-    EXPR = output,
-    "dataframe" = stats_df,
-    "caption" = caption,
-    subtitle
-  )
+  switch(output, "dataframe" = as_tibble(stats_df), "caption" = caption, subtitle)
 }

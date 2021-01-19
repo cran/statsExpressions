@@ -1,14 +1,15 @@
 # within-subjects ------------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_t_robust - within-subjects - without NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # subtitle
     set.seed(123)
     using_function1 <-
-      expr_t_robust(
+      expr_t_twosample(
+        type = "r",
         data = dplyr::filter(iris_long, condition %in% c("Sepal.Length", "Sepal.Width")),
         x = "condition",
         y = value,
@@ -30,7 +31,7 @@ testthat::test_that(
           " = ",
           "0e+00",
           ", ",
-          widehat(italic(delta))["R"],
+          widehat(delta)["R"]^"AKP",
           " = ",
           "2.6018",
           ", CI"["95%"],
@@ -47,19 +48,20 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
-testthat::test_that(
+test_that(
   desc = "expr_t_robust - within-subjects - with NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # subtitle
     set.seed(123)
     using_function1 <-
-      expr_t_robust(
+      expr_t_twosample(
+        type = "r",
         data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
         x = "condition",
         y = desire,
@@ -81,7 +83,7 @@ testthat::test_that(
           " = ",
           "0.002",
           ", ",
-          widehat(italic(delta))["R"],
+          widehat(delta)["R"]^"AKP",
           " = ",
           "0.418",
           ", CI"["95%"],
@@ -98,22 +100,23 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
 
 # between-subjects ------------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "expr_t_robust - between-subjects - without NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # subtitle
     set.seed(123)
     using_function1 <-
-      expr_t_robust(
+      expr_t_twosample(
+        type = "r",
         data = mtcars,
         x = am,
         y = "wt",
@@ -136,7 +139,7 @@ testthat::test_that(
           " = ",
           "1.97e-05",
           ", ",
-          widehat(italic(xi)),
+          widehat(xi),
           " = ",
           "0.818",
           ", CI"["99%"],
@@ -153,19 +156,20 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
-testthat::test_that(
+test_that(
   desc = "expr_t_robust - between-subjects - with NAs",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # subtitle
     set.seed(123)
     using_function1 <-
-      expr_t_robust(
+      expr_t_twosample(
+        type = "r",
         data = dplyr::filter(ggplot2::msleep, vore %in% c("carni", "herbi")),
         x = "vore",
         y = "brainwt",
@@ -188,7 +192,7 @@ testthat::test_that(
           " = ",
           "0.4983",
           ", ",
-          widehat(italic(xi)),
+          widehat(xi),
           " = ",
           "0.2874",
           ", CI"["90%"],
@@ -205,18 +209,19 @@ testthat::test_that(
       )
 
     # testing overall call
-    testthat::expect_identical(using_function1, results1)
+    expect_identical(using_function1, results1)
   }
 )
 
 
 # dataframe -----------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "dataframe",
   code = {
-    testthat::expect_s3_class(
-      statsExpressions::expr_t_robust(
+    expect_s3_class(
+      statsExpressions::expr_t_twosample(
+        type = "r",
         data = dplyr::filter(movies_long, genre == "Action" | genre == "Drama"),
         x = "genre",
         y = rating,
@@ -230,10 +235,10 @@ testthat::test_that(
 
 # works with subject id ------------------------------------------------------
 
-testthat::test_that(
+test_that(
   desc = "works with subject id",
   code = {
-    testthat::skip_if(getRversion() < "3.6")
+    skip_if(getRversion() < "3.6")
 
     # data
     df <-
@@ -268,7 +273,8 @@ testthat::test_that(
     # incorrect
     set.seed(123)
     expr1 <-
-      statsExpressions::expr_t_robust(
+      statsExpressions::expr_t_twosample(
+        type = "r",
         data = df,
         x = condition,
         y = score,
@@ -279,13 +285,14 @@ testthat::test_that(
     # correct
     set.seed(123)
     expr2 <-
-      statsExpressions::expr_t_robust(
+      statsExpressions::expr_t_twosample(
+        type = "r",
         data = dplyr::arrange(df, id),
         x = condition,
         y = score,
         paired = TRUE
       )
 
-    testthat::expect_equal(expr1, expr2)
+    expect_equal(expr1, expr2)
   }
 )
