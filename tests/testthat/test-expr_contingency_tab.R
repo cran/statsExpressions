@@ -3,7 +3,7 @@
 test_that(
   desc = "expr_contingency_tab works - data without NAs",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)
@@ -99,7 +99,7 @@ test_that(
 test_that(
   desc = "expr_contingency_tab works - data with NAs",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # introduce NAs
     set.seed(123)
@@ -152,7 +152,7 @@ test_that(
 test_that(
   desc = "paired expr_contingency_tab works - counts data without NAs",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # create data structure
     paired_data <-
@@ -230,7 +230,7 @@ test_that(
 test_that(
   desc = "paired expr_contingency_tab works - with NAs",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # create data structure
     paired_data <-
@@ -254,7 +254,7 @@ test_that(
       )
 
     # expanding the dataframe
-    paired_data %<>% tidyr::uncount(data = ., weights = Freq)
+    paired_data %<>% tidyr::uncount(weights = Freq)
 
     # introduce NAs
     # check that 2-by-2 doesn't produce continuity correction
@@ -320,7 +320,6 @@ test_that(
 test_that(
   desc = "paired data 4-by-4",
   code = {
-    skip_if(getRversion() < "3.6")
     set.seed(123)
 
     # making data
@@ -339,8 +338,9 @@ test_that(
     ))
 
     # cleaning the factor levels
-    df <- as.data.frame(as.table(matrix_df)) %>%
-      dplyr::mutate(.data = ., Var2 = dplyr::case_when(
+    df <-
+      as.data.frame(as.table(matrix_df)) %>%
+      dplyr::mutate(Var2 = dplyr::case_when(
         Var2 == "Pastafarian2" ~ "Pastafarian",
         Var2 == "Discordiant2" ~ "Discordiant",
         Var2 == "Dudist2" ~ "Dudist",
@@ -451,7 +451,7 @@ test_that(
 test_that(
   desc = "Goodness of Fit expr_contingency_tab works without counts",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)
@@ -545,7 +545,7 @@ test_that(
 test_that(
   desc = "Goodness of Fit expr_contingency_tab works with counts",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)
@@ -598,7 +598,7 @@ test_that(
 test_that(
   desc = "works with dataframes with NAs and with ratio",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # from function
     set.seed(123)
@@ -649,7 +649,7 @@ test_that(
 test_that(
   desc = "works even in edge cases",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # too few observations
     df <- data.frame(

@@ -16,7 +16,7 @@ utils::globalVariables(
     ".counts",
     "df",
     "df.error",
-    "k.parameter",
+    "k.df",
     "effsize.text",
     "method",
     ".f",
@@ -24,7 +24,10 @@ utils::globalVariables(
     "bf10",
     "estimate.LB",
     "estimate.UB",
-    "r2.component"
+    "r2.component",
+    "conf.level",
+    ".fn",
+    ".ns"
   ),
   package = "statsExpressions",
   add = FALSE

@@ -1,45 +1,62 @@
 #' @title Template for expressions with statistical details
 #' @name expr_template
 #'
+#' @description
+#'
+#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("questioning")}
+#'
+#' Creates an expression from a dataframe containing statistical details.
+#' Ideally, this dataframe would come from having run `tidy_model_parameters`
+#' function on your model object.
+#'
+#' This function is currently **not** stable and should not be used outside of
+#' this package context.
+#'
 #' @param no.parameters An integer that specifies that the number of parameters
 #'   for the statistical test. Can be `0` for non-parametric tests, `1` for
 #'   tests based on *t*-statistic or chi-squared statistic, `2` for tests based
 #'   on *F*-statistic.
-#' @param stats.df A dataframe containing details from the statistical analysis
-#'   and should contain some of the the following columns:
+#' @param data A dataframe containing details from the statistical analysis
+#'   and should contain some or all of the the following columns:
 #' \itemize{
 #'   \item *statistic*: the numeric value of a statistic.
-#'   \item *parameter*: the numeric value of a parameter being modeled (often
+#'   \item *df.error*: the numeric value of a parameter being modeled (often
 #' degrees of freedom for the test); note that if `no.parameters = 0L` (e.g.,
 #' for non-parametric tests), this column will be irrelevant.
-#'   \item *parameter1*, *parameter2* relevant only if the statistic in question
+#'   \item *df* relevant only if the statistic in question
 #' has two degrees of freedom (e.g., anova).
 #'   \item *p.value* the two-sided *p*-value associated with the observed
 #' statistic.
 #'  \item *estimate*: estimated value of the effect size.
-#'   \item *conf.low*:  lower bound for effect size estimate.
+#'  \item *conf.level*: width for the confidence intervals.
+#'   \item *conf.low*: lower bound for effect size estimate.
 #'   \item *conf.high*: upper bound for effect size estimate.
+#'   \item *`bf10`* Bayes Factor value (if `bayesian = TRUE`).
+#'   \item *method*: method describing the test carried out.
 #' }
 #' @param statistic.text A character that specifies the relevant test statistic.
-#'   For example, for tests with *t*-statistic, `statistic.text = "t"`. If you
-#'   want to use plotmath, you will have to quote the argument (e.g.,
-#'   `quote(italic("t"))`).
-#' @param effsize.text A character that specifies the relevant effect size.
-#'   For example, for Cohen's *d* statistic, `effsize.text = "d"`. If you
-#'   want to use plotmath, you will have to quote the argument (e.g.,
-#'   `quote(italic("d"))`).
-#' @param conf.level Scalar between 0 and 1. If unspecified, the defaults return
-#'   `95%` confidence/credible intervals (`0.95`).
+#'   For example, for tests with *t*-statistic, `statistic.text = "t"`.
+#' @param effsize.text A character that specifies the relevant effect size or
+#'   posterior estimate.
 #' @param k Number of digits after decimal point (should be an integer)
 #'   (Default: `k = 2L`).
-#' @param k.parameter,k.parameter2 Number of decimal places to display for the
+#' @param k.df,k.df.error Number of decimal places to display for the
 #'   parameters (default: `0`).
 #' @param n An integer specifying the sample size used for the test.
 #' @param n.text A character that specifies the design, which will determine
 #'   what the `n` stands for. If `NULL`, defaults to
 #'   `quote(italic("n")["pairs"])` if `paired = TRUE`, and to
 #'   `quote(italic("n")["obs"])` if `paired = FALSE`.
+#' @param prior.distribution A character that specifies the prior type.
+#' @param effsize.text A character that specifies the relevant effect size.
+#' @param bayesian Is this Bayesian analysis? Defaults to `FALSE`. The template
+#'   is slightly different for Bayesian analysis.
+#' @param prior.type The type of prior.
+#' @param conf.method The type of index used for Credible Interval. Can be
+#'   `"hdi"` (default), `"eti"`, or `"si"` (see `si()`, `hdi()`, `eti()`
+#'   functions from `bayestestR` package).
 #' @param ... Currently ignored.
+#' @inheritParams bf_extractor
 #' @inheritParams expr_oneway_anova
 #' @inheritParams ipmisc::long_to_wide_converter
 #'
@@ -52,49 +69,110 @@
 #' stats_df <-
 #'   cbind.data.frame(
 #'     statistic = 5.494,
-#'     parameter = 29.234,
+#'     df = 29.234,
 #'     p.value = 0.00001,
 #'     estimate = -1.980,
+#'     conf.level = 0.95,
 #'     conf.low = -2.873,
 #'     conf.high = -1.088
 #'   )
 #'
 #' # expression for *t*-statistic with Cohen's *d* as effect size
+#' # note that the plotmath expressions need to be quoted
 #' statsExpressions::expr_template(
 #'   no.parameters = 1L,
-#'   stats.df = stats_df,
+#'   data = stats_df,
 #'   statistic.text = quote(italic("t")),
 #'   effsize.text = quote(italic("d")),
 #'   n = 32L,
-#'   conf.level = 0.95,
 #'   k = 3L,
-#'   k.parameter = 3L
+#'   k.df = 3L
 #' )
 #' @export
 
 # function body
-expr_template <- function(no.parameters,
-                          stats.df,
+expr_template <- function(data,
+                          no.parameters = 0L,
+                          bayesian = FALSE,
                           statistic.text = NULL,
                           effsize.text = NULL,
-                          n,
+                          top.text = NULL,
+                          prior.distribution = NULL,
+                          prior.type = NULL,
+                          n = NULL,
                           n.text = NULL,
                           paired = FALSE,
-                          conf.level = 0.95,
+                          conf.method = "HDI",
                           k = 2L,
-                          k.parameter = 0L,
-                          k.parameter2 = 0L,
+                          k.df = 0L,
+                          k.df.error = 0L,
                           ...) {
 
-  # if expression elements are `NULL`
+  # special case for Bayesian analysis
+  if (isTRUE(bayesian)) {
+    # if not present, create a new column for Bayesian analysis
+    if (!"effectsize" %in% names(data)) data %<>% dplyr::mutate(effectsize = method)
+
+    # special handling of contingency tabs analysis
+    if (grepl("contingency", data$method[[1]])) data %<>% dplyr::filter(grepl("cramer", term, TRUE))
+  }
+
+  # extracting estimate values
+  if ("r2" %in% names(data)) {
+    # for ANOVA designs
+    c(estimate, estimate.LB, estimate.UB) %<-% c(data$r2[[1]], data$r2.conf.low[[1]], data$r2.conf.high[[1]])
+  } else {
+    # for non-ANOVA designs
+    c(estimate, estimate.LB, estimate.UB) %<-% c(data$estimate[[1]], data$conf.low[[1]], data$conf.high[[1]])
+  }
+
+  # if expression text elements are `NULL`
   if (isTRUE(paired) && is.null(n.text)) n.text <- quote(italic("n")["pairs"])
   if (isFALSE(paired) && is.null(n.text)) n.text <- quote(italic("n")["obs"])
-  if (is.null(statistic.text)) statistic.text <- stat_text_switch(stats.df$method[[1]])
-  if (is.null(effsize.text)) effsize.text <- estimate_type_switch(stats.df$effectsize[[1]])
+  if (is.null(statistic.text)) statistic.text <- stat_text_switch(data$method[[1]])
+  if (is.null(effsize.text)) effsize.text <- estimate_type_switch(data$effectsize[[1]])
+  if (!"conf.level" %in% names(data)) data %<>% dplyr::mutate(conf.level = 0.95)
+
+  # -------------------------- Bayesian analysis ------------------------------
+
+  if (isTRUE(bayesian)) {
+    if (is.null(prior.distribution)) prior.distribution <- prior_switch(data$method[[1]])
+    if (is.null(prior.type)) prior.type <- prior_type_switch(data$method[[1]])
+
+    # Bayesian expression
+    expression <-
+      substitute(
+        atop(
+          displaystyle(top.text),
+          expr = paste(
+            "log"["e"] * "(BF"["01"] * ") = " * bf * ", ",
+            widehat(effsize.text)[prior.type]^"posterior" * " = " * estimate * ", ",
+            "CI"[conf.level]^conf.method * " [" * estimate.LB * ", " * estimate.UB * "], ",
+            prior.distribution * " = " * bf.prior
+          )
+        ),
+        env = list(
+          top.text = top.text,
+          effsize.text = effsize.text,
+          prior.type = prior.type,
+          conf.level = paste0(data$conf.level[[1]] * 100, "%"),
+          conf.method = toupper(conf.method),
+          bf = format_num(-log(data$bf10[[1]]), k),
+          estimate = format_num(estimate, k),
+          estimate.LB = format_num(estimate.LB, k),
+          estimate.UB = format_num(estimate.UB, k),
+          prior.distribution = prior.distribution,
+          bf.prior = format_num(data$prior.scale[[1]], k)
+        )
+      )
+
+    # return the final expression
+    if (is.null(top.text)) expression <- expression$expr
+  }
 
   # ------------------ statistic with 0 degrees of freedom --------------------
 
-  if (no.parameters == 0L) {
+  if (isFALSE(bayesian) && no.parameters == 0L) {
     # preparing expression
     expression <-
       substitute(
@@ -123,13 +201,13 @@ expr_template <- function(no.parameters,
         ),
         env = list(
           statistic.text = statistic.text,
-          statistic = format_num(stats.df$statistic[[1]], k),
-          p.value = format_num(stats.df$p.value[[1]], k = k, p.value = TRUE),
+          statistic = format_num(data$statistic[[1]], k),
+          p.value = format_num(data$p.value[[1]], k, p.value = TRUE),
           effsize.text = effsize.text,
-          estimate = format_num(stats.df$estimate[[1]], k),
-          conf.level = paste0(conf.level * 100, "%"),
-          estimate.LB = format_num(stats.df$conf.low[[1]], k),
-          estimate.UB = format_num(stats.df$conf.high[[1]], k),
+          estimate = format_num(estimate, k),
+          conf.level = paste0(data$conf.level[[1]] * 100, "%"),
+          estimate.LB = format_num(estimate.LB, k),
+          estimate.UB = format_num(estimate.UB, k),
           n = .prettyNum(n),
           n.text = n.text
         )
@@ -138,9 +216,8 @@ expr_template <- function(no.parameters,
 
   # ------------------ statistic with 1 degree of freedom --------------------
 
-  if (no.parameters == 1L) {
-    if ("df" %in% names(stats.df)) stats.df %<>% dplyr::rename("parameter" = "df")
-    if ("df.error" %in% names(stats.df)) stats.df %<>% dplyr::rename("parameter" = "df.error")
+  if (isFALSE(bayesian) && no.parameters == 1L) {
+    if ("df" %in% names(data)) data %<>% mutate(df.error = df)
 
     # preparing expression
     expression <-
@@ -172,14 +249,14 @@ expr_template <- function(no.parameters,
         ),
         env = list(
           statistic.text = statistic.text,
-          statistic = format_num(stats.df$statistic[[1]], k),
-          parameter = format_num(stats.df$parameter[[1]], k = k.parameter),
-          p.value = format_num(stats.df$p.value[[1]], k = k, p.value = TRUE),
+          statistic = format_num(data$statistic[[1]], k),
+          parameter = format_num(data$df.error[[1]], k.df),
+          p.value = format_num(data$p.value[[1]], k, p.value = TRUE),
           effsize.text = effsize.text,
-          estimate = format_num(stats.df$estimate[[1]], k),
-          conf.level = paste0(conf.level * 100, "%"),
-          estimate.LB = format_num(stats.df$conf.low[[1]], k),
-          estimate.UB = format_num(stats.df$conf.high[[1]], k),
+          estimate = format_num(estimate, k),
+          conf.level = paste0(data$conf.level[[1]] * 100, "%"),
+          estimate.LB = format_num(estimate.LB, k),
+          estimate.UB = format_num(estimate.UB, k),
           n = .prettyNum(n),
           n.text = n.text
         )
@@ -188,10 +265,7 @@ expr_template <- function(no.parameters,
 
   # ------------------ statistic with 2 degrees of freedom -----------------
 
-  if (no.parameters == 2L) {
-    # renaming pattern from `easystats`
-    stats.df %<>% dplyr::rename_all(.funs = dplyr::recode, df = "parameter1", df.error = "parameter2")
-
+  if (isFALSE(bayesian) && no.parameters == 2L) {
     # preparing expression
     expression <-
       substitute(
@@ -224,15 +298,15 @@ expr_template <- function(no.parameters,
         ),
         env = list(
           statistic.text = statistic.text,
-          statistic = format_num(stats.df$statistic[[1]], k),
-          parameter1 = format_num(stats.df$parameter1[[1]], k = k.parameter),
-          parameter2 = format_num(stats.df$parameter2[[1]], k = k.parameter2),
-          p.value = format_num(stats.df$p.value[[1]], k = k, p.value = TRUE),
+          statistic = format_num(data$statistic[[1]], k),
+          parameter1 = format_num(data$df[[1]], k.df),
+          parameter2 = format_num(data$df.error[[1]], k.df.error),
+          p.value = format_num(data$p.value[[1]], k, p.value = TRUE),
           effsize.text = effsize.text,
-          estimate = format_num(stats.df$estimate[[1]], k),
-          conf.level = paste0(conf.level * 100, "%"),
-          estimate.LB = format_num(stats.df$conf.low[[1]], k),
-          estimate.UB = format_num(stats.df$conf.high[[1]], k),
+          estimate = format_num(estimate, k),
+          conf.level = paste0(data$conf.level[[1]] * 100, "%"),
+          estimate.LB = format_num(estimate.LB, k),
+          estimate.UB = format_num(estimate.UB, k),
           n = .prettyNum(n),
           n.text = n.text
         )
@@ -243,152 +317,89 @@ expr_template <- function(no.parameters,
   expression
 }
 
-#' @title Expression template for Bayes Factor results
-#' @name bf_expr_template
-#'
-#' @param prior.type A character that specifies the prior type.
-#' @param estimate.type A character that specifies the relevant effect size.
-#' @param stats.df Dataframe containing estimates and their credible
-#'   intervals along with Bayes Factor value. The columns should be named as
-#'   `estimate`, `estimate.LB`, `estimate.UB`, and `bf10`.
-#' @param ... Currently ignored.
-#' @inheritParams bf_extractor
-#' @inheritParams expr_t_twosample
-#'
-#' @importFrom ipmisc format_num
-#'
-#' @export
 
-bf_expr_template <- function(top.text,
-                             stats.df,
-                             prior.type = NULL,
-                             estimate.type = NULL,
-                             centrality = "median",
-                             conf.level = 0.95,
-                             conf.method = "HDI",
-                             k = 2L,
-                             ...) {
-  # extracting estimate values
-  if ("r2" %in% names(stats.df)) {
-    # for ANOVA designs
-    c(estimate, estimate.LB, estimate.UB) %<-%
-      c(stats.df$r2[[1]], stats.df$r2.conf.low[[1]], stats.df$r2.conf.high[[1]])
-  } else {
-    # for non-ANOVA designs
-    c(estimate, estimate.LB, estimate.UB) %<-%
-      c(stats.df$estimate[[1]], stats.df$conf.low[[1]], stats.df$conf.high[[1]])
-  }
+#' @importFrom dplyr case_when
+#' @noRd
 
-  # if expression elements are `NULL`
-  if (is.null(prior.type)) prior.type <- prior_type_switch(stats.df$method[[1]])
-  if (is.null(estimate.type)) estimate.type <- estimate_type_switch(stats.df$method[[1]])
+stat_text_switch <- function(x) {
+  # to make life easier
+  x <- tolower(x)
 
-  # prepare the Bayes Factor message
-  expression <-
-    substitute(
-      atop(
-        displaystyle(top.text),
-        expr = paste(
-          "log"["e"] * "(BF"["01"] * ") = " * bf * ", ",
-          widehat(estimate.type)[centrality]^"posterior" * " = " * estimate * ", ",
-          "CI"[conf.level]^conf.method * " [" * estimate.LB * ", " * estimate.UB * "], ",
-          prior.type * " = " * bf.prior
-        )
-      ),
-      env = list(
-        top.text = top.text,
-        estimate.type = estimate.type,
-        centrality = centrality,
-        conf.level = paste0(conf.level * 100, "%"),
-        conf.method = toupper(conf.method),
-        bf = format_num(-log(stats.df$bf10[[1]]), k = k),
-        estimate = format_num(estimate, k = k),
-        estimate.LB = format_num(estimate.LB, k = k),
-        estimate.UB = format_num(estimate.UB, k = k),
-        prior.type = prior.type,
-        bf.prior = format_num(stats.df$prior.scale[[1]], k = k)
-      )
-    )
-
-  # return the final expression
-  if (is.null(top.text)) expression$expr else expression
+  # need to list because `case_when` can't handle outputs of different lengths
+  dplyr::case_when(
+    grepl("^one sample|^two sample|^pair|pearson correlation$", x) ~ list(quote(italic("t")["Student"])),
+    grepl("^boot", x) ~ list(quote(italic("t")["bootstrapped"])),
+    grepl("^welch", x) ~ list(quote(italic("t")["Welch"])),
+    grepl("wilcoxon rank", x) ~ list(quote("log"["e"](italic("W")["Mann-Whitney"]))),
+    grepl("wilcoxon signed", x) ~ list(quote("log"["e"](italic("V")["Wilcoxon"]))),
+    grepl("afex| of means$", x) ~ list(quote(italic("F")["Fisher"])),
+    grepl("variances", x) ~ list(quote(italic("F")["Welch"])),
+    grepl("friedman", x) ~ list(quote(chi["Friedman"]^2)),
+    grepl("kruskal", x) ~ list(quote(chi["Kruskal-Wallis"]^2)),
+    grepl("spearman", x) ~ list(quote("log"["e"](italic("S")))),
+    grepl("yuen", x) ~ list(quote(italic("t")["Yuen"])),
+    grepl("heteroscedastic", x) ~ list(quote(italic("F")["trimmed-means"])),
+    grepl("probabilities", x) ~ list(quote(chi["gof"]^2)),
+    grepl("pearson's chi", x) ~ list(quote(chi["Pearson"]^2)),
+    grepl("mcnemar's chi", x) ~ list(quote(chi["McNemar"]^2)),
+    grepl("meta", x) ~ list(quote(italic("z"))),
+    TRUE ~ list(NULL)
+  )[[1]]
 }
-
 
 #' @noRd
 
-stat_text_switch <- function(method) {
-  switch(
-    method,
-    "Pearson" = ,
-    "Percentage Bend" = ,
-    "One Sample t-test" = ,
-    "Two Sample t-test" = ,
-    "Paired t-test" = quote(italic("t")["Student"]),
-    "Bootstrap-t method for one-sample test" = quote(italic("t")["bootstrapped"]),
-    "Welch Two Sample t-test" = quote(italic("t")["Welch"]),
-    "Wilcoxon rank sum test" = quote("log"["e"](italic("W")["Mann-Whitney"])),
-    "Wilcoxon signed rank test" = quote("log"["e"](italic("V")["Wilcoxon"])),
-    "Yuen's test on trimmed means for independent samples" = ,
-    "Yuen's test on trimmed means for dependent samples" = quote(italic("t")["Yuen"]),
-    "One-way analysis of means (not assuming equal variances)" = quote(italic("F")["Welch"]),
-    "One-way analysis of means" = ,
-    "ANOVA estimation for factorial designs using 'afex'" = quote(italic("F")["Fisher"]),
-    "Friedman rank sum test" = quote(chi["Friedman"]^2),
-    "Kruskal-Wallis rank sum test" = quote(chi["Kruskal-Wallis"]^2),
-    "A heteroscedastic one-way repeated measures ANOVA for trimmed means" = ,
-    "A heteroscedastic one-way ANOVA for trimmed means" = quote(italic("F")["trimmed-means"]),
-    "Spearman" = quote("log"["e"](italic("S"))),
-    "Chi-squared test for given probabilities" = quote(chi["gof"]^2),
-    "Pearson's Chi-squared test" = quote(chi["Pearson"]^2),
-    "McNemar's Chi-squared test" = quote(chi["McNemar"]^2),
-    "Meta-analysis using 'metafor'" = ,
-    "Robust meta-analysis using 'metaplus'" = quote(italic("z")),
-    NULL
+estimate_type_switch <- function(x) {
+  # to make life easier
+  x <- tolower(x)
+
+  # need to list because `case_when` can't handle outputs of different lengths
+  dplyr::case_when(
+    grepl("^pearson", x) ~ list(quote(widehat(italic("r"))["Pearson"])),
+    grepl("spearman", x) ~ list(quote(widehat(rho)["Spearman"])),
+    grepl("^winsor", x) ~ list(quote(widehat(italic("r"))["Winsorized"])),
+    grepl("cohen's d", x) ~ list(quote(widehat(italic("d"))["Cohen"])),
+    grepl("hedges' g", x) ~ list(quote(widehat(italic("g"))["Hedges"])),
+    grepl("^eta2", x) ~ list(quote(widehat(eta["p"]^2))),
+    grepl("^omega2", x) ~ list(quote(widehat(omega["p"]^2))),
+    grepl("biserial", x) ~ list(quote(widehat(italic("r"))["biserial"]^"rank")),
+    grepl("^trimmed", x) ~ list(quote(widehat(mu)["trimmed"])),
+    grepl("^kendall", x) ~ list(quote(widehat(italic("W"))["Kendall"])),
+    grepl("^epsilon2", x) ~ list(quote(widehat(epsilon)["ordinal"]^2)),
+    grepl("cramer", x) ~ list(quote(widehat(italic("V"))["Cramer"])),
+    grepl("cohen's g", x) ~ list(quote(widehat(italic("g"))["Cohen"])),
+    grepl("^explanatory", x) ~ list(quote(widehat(xi))),
+    grepl("difference$", x) ~ list(quote(widehat(delta)["R"]^"AKP")),
+    grepl("average$", x) ~ list(quote(widehat(delta)["R-avg"]^"AKP")),
+    grepl("^bayesian pearson", x) ~ list(quote(rho)),
+    grepl("posterior|t-", x) ~ list(quote(italic(delta))),
+    grepl("contingency", x) ~ list(quote(italic("V"))),
+    grepl("linear", x) ~ list(quote(italic(R^"2"))),
+    grepl("^meta", x) ~ list(quote(widehat(beta)["summary"]^"meta")),
+    TRUE ~ list(NULL)
+  )[[1]]
+}
+
+#' @noRd
+
+prior_switch <- function(x) {
+  dplyr::case_when(
+    grepl("contingency", tolower(x)) ~ quote(italic("a")["Gunel-Dickey"]),
+    grepl("correlation", tolower(x)) ~ quote(italic("r")["beta"]^"JZS"),
+    TRUE ~ quote(italic("r")["Cauchy"]^"JZS")
   )
 }
 
 #' @noRd
 
-estimate_type_switch <- function(method) {
-  switch(
-    method,
-    "Pearson" = quote(widehat(italic("r"))["Pearson"]),
-    "Spearman" = quote(widehat(rho)["Spearman"]),
-    "Percentage Bend" = quote(widehat(rho)["% bend"]),
-    "Cohen's d" = quote(widehat(italic("d"))["Cohen"]),
-    "Hedges' g" = quote(widehat(italic("g"))["Hedge"]),
-    "r (rank biserial)" = quote(widehat(italic("r"))["biserial"]^"rank"),
-    "Explanatory measure of effect size" = quote(widehat(xi)),
-    "Algina-Keselman-Penfield robust standardized difference" = quote(widehat(delta)["R"]^"AKP"),
-    "Algina-Keselman-Penfield robust standardized difference average" = quote(widehat(delta)["R-avg"]^"AKP"),
-    "Trimmed mean" = quote(widehat(mu)["trimmed"]),
-    "Eta2" = ,
-    "Eta2 (partial)" = quote(widehat(eta["p"]^2)),
-    "Omega2" = ,
-    "Omega2 (partial)" = quote(widehat(omega["p"]^2)),
-    "Kendall's W" = quote(widehat(italic("W"))["Kendall"]),
-    "Epsilon2 (rank)" = quote(widehat(epsilon)["ordinal"]^2),
-    "Cramer's V (adj.)" = quote(widehat(italic("V"))["Cramer"]),
-    "Cohen's g" = quote(widehat(italic("g"))["Cohen"]),
-    "meta-analytic summary estimate" = quote(widehat(beta)["summary"]^"meta"),
-    "Bayesian contingency tabs analysis" = quote(italic("V")),
-    "Bayesian correlation analysis" = quote(italic(rho)),
-    "Bayesian meta-analysis using 'metaBMA'" = ,
-    "Bayesian t-test" = quote(italic(delta)),
-    "Bayes factors for linear models" = quote(italic(R^"2")),
-    NULL
-  )
-}
-
-#' @noRd
-
-prior_type_switch <- function(method) {
-  switch(
-    method,
-    "Bayesian contingency tabs analysis" = quote(italic("a")["Gunel-Dickey"]),
-    quote(italic("r")["Cauchy"]^"JZS")
-  )
+prior_type_switch <- function(x) {
+  dplyr::case_when(
+    grepl("contingency", tolower(x)) ~ list("Cramer"),
+    grepl("correlation", tolower(x)) ~ list("Pearson"),
+    grepl("t-|meta-", tolower(x)) ~ list("difference"),
+    grepl("linear", tolower(x)) ~ list("Bayesian"),
+    TRUE ~ list(NULL)
+  )[[1]]
 }
 
 #' @noRd

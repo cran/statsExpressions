@@ -3,7 +3,7 @@
 test_that(
   desc = "parametric t-test works (between-subjects without NAs)",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)
@@ -64,7 +64,7 @@ test_that(
 test_that(
   desc = "parametric t-test works (between-subjects with NAs)",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)
@@ -99,7 +99,7 @@ test_that(
           " = ",
           "5.8e-18",
           ", ",
-          widehat(italic("g"))["Hedge"],
+          widehat(italic("g"))["Hedges"],
           " = ",
           "-0.924",
           ", CI"["90%"],
@@ -125,7 +125,7 @@ test_that(
 test_that(
   desc = "parametric t-test works (within-subjects without NAs)",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # output from `statsExpressions` helper subtitle
     set.seed(123)
@@ -157,7 +157,7 @@ test_that(
           " = ",
           "1.85e-73",
           ", ",
-          widehat(italic("g"))["Hedge"],
+          widehat(italic("g"))["Hedges"],
           " = ",
           "2.8283",
           ", CI"["50%"],
@@ -184,7 +184,7 @@ test_that(
 test_that(
   desc = "parametric t-test works (within-subjects with NAs)",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # output from `statsExpressions` helper subtitle
     set.seed(123)
@@ -238,7 +238,7 @@ test_that(
 test_that(
   desc = "works with subject id",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # data
     df <-

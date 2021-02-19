@@ -4,7 +4,7 @@
 test_that(
   desc = "expr_anova_robust works - between-subjects",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)
@@ -77,22 +77,22 @@ test_that(
           "(",
           "2",
           ",",
-          "35.1708",
+          "21.6869",
           ") = ",
-          "0.2695",
+          "0.0503",
           ", ",
           italic("p"),
           " = ",
-          "0.7653",
+          "0.9511",
           ", ",
           widehat(xi),
           " = ",
-          "0.1793",
-          ", CI"["99%"],
+          "0.2013",
+          ", CI"["95%"],
           " [",
-          "0.0711",
+          "0.0872",
           ", ",
-          "0.5717",
+          "0.7537",
           "]",
           ", ",
           italic("n")["obs"],
@@ -111,7 +111,7 @@ test_that(
 test_that(
   desc = "expr_anova_robust works - within-subjects",
   code = {
-    skip_if(getRversion() < "3.6")
+
 
     # `statsExpressions` output
     set.seed(123)

@@ -38,10 +38,18 @@ repeated measures design study (Default: \code{FALSE}). If \code{TRUE}, McNemar'
 test expression will be returned. If \code{FALSE}, Pearson's chi-square test will
 be returned.}
 
-\item{type}{Type of statistic expected (\code{"parametric"} or \code{"nonparametric"}
-or \code{"robust"} or \code{"bayes"}).Corresponding abbreviations are also accepted:
-\code{"p"} (for parametric), \code{"np"} (nonparametric), \code{"r"} (robust), or
-\code{"bf"}resp.}
+\item{type}{A character specifying the type of statistical approach.
+Four possible options:
+
+\itemize{
+\item \code{"parametric"}
+\item \code{"nonparametric"}
+\item \code{"robust"}
+\item \code{"bayes"}
+}
+
+Corresponding abbreviations are also accepted: \code{"p"} (for parametric),
+\code{"np"} (for nonparametric), \code{"r"} (for robust), or \code{"bf"} (for Bayesian).}
 
 \item{counts}{A string naming a variable in data containing counts, or \code{NULL}
 if each row represents a single observation.}
@@ -55,8 +63,8 @@ there are four levels this will be \code{ratio = c(0.25,0.25,0.25,0.25)}, etc.}
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
-\verb{95\%} confidence/credible intervals (\code{0.95}).}
+\item{conf.level}{Confidence/Credible Interval (CI) level. Default to \code{0.95}
+(\verb{95\%}).}
 
 \item{sampling.plan}{Character describing the sampling plan. Possible options
 are \code{"indepMulti"} (independent multinomial; default), \code{"poisson"},
@@ -80,14 +88,14 @@ results.}
 
 \item{...}{Additional arguments (currently ignored).}
 }
-\value{
-Expression or a dataframe for contingency table analysis (Pearson's
-chi-square test for independence for between-subjects design or McNemar's
-test for within-subjects design) or goodness of fit test for a single
-categorical variable.
-}
 \description{
-Expression and dataframe for contingency table analysis
+\Sexpr[results=rd, stage=render]{rlang:::lifecycle("maturing")}
+
+A dataframe containing results from for contingency table analysis or
+goodness of fit test.
+
+For more details, see-
+\url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 }
 \examples{
 \donttest{
@@ -102,7 +110,8 @@ expr_contingency_tab(
   data = mtcars,
   x = am,
   y = cyl,
-  paired = FALSE
+  paired = FALSE,
+  output = "dataframe"
 )
 
 # goodness-of-fit test
@@ -121,7 +130,8 @@ expr_contingency_tab(
   x = am,
   y = cyl,
   paired = FALSE,
-  type = "bayes"
+  type = "bayes",
+  output = "dataframe"
 )
 
 # goodness-of-fit test
@@ -133,8 +143,4 @@ expr_contingency_tab(
   type = "bayes"
 )
 }
-}
-\references{
-For more details, see-
-\url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 }

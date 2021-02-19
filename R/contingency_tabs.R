@@ -1,12 +1,14 @@
 #' @title Expression and dataframe for contingency table analysis
 #' @name expr_contingency_tab
 #'
-#' @return Expression or a dataframe for contingency table analysis (Pearson's
-#'   chi-square test for independence for between-subjects design or McNemar's
-#'   test for within-subjects design) or goodness of fit test for a single
-#'   categorical variable.
+#' @description
 #'
-#' @references For more details, see-
+#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("maturing")}
+#'
+#' A dataframe containing results from for contingency table analysis or
+#' goodness of fit test.
+#'
+#' For more details, see-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
 #' @param x The variable to use as the **rows** in the contingency table.
@@ -42,7 +44,7 @@
 #'
 #' @importFrom BayesFactor contingencyTableBF logMeanExpLogs
 #' @importFrom dplyr pull select rename mutate
-#' @importFrom rlang enquo as_name ensym exec
+#' @importFrom rlang enquo quo_is_null exec !!!
 #' @importFrom tidyr uncount drop_na
 #' @importFrom stats mcnemar.test chisq.test dmultinom rgamma
 #' @importFrom effectsize cramers_v cohens_g
@@ -61,7 +63,8 @@
 #'   data = mtcars,
 #'   x = am,
 #'   y = cyl,
-#'   paired = FALSE
+#'   paired = FALSE,
+#'   output = "dataframe"
 #' )
 #'
 #' # goodness-of-fit test
@@ -80,7 +83,8 @@
 #'   x = am,
 #'   y = cyl,
 #'   paired = FALSE,
-#'   type = "bayes"
+#'   type = "bayes",
+#'   output = "dataframe"
 #' )
 #'
 #' # goodness-of-fit test
@@ -112,18 +116,18 @@ expr_contingency_tab <- function(data,
                                  ...) {
 
   # check the data contains needed column
-  stats.type <- ipmisc::stats_type_switch(type)
+  type <- ipmisc::stats_type_switch(type)
 
   # one-way or two-way table?
   test <- ifelse(!rlang::quo_is_null(rlang::enquo(y)), "two.way", "one.way")
 
   # creating a dataframe
   data %<>%
-    dplyr::select(.data = ., {{ x }}, {{ y }}, .counts = {{ counts }}) %>%
+    dplyr::select({{ x }}, {{ y }}, .counts = {{ counts }}) %>%
     tidyr::drop_na(.)
 
   # untable the dataframe based on the count for each observation
-  if (".counts" %in% names(data)) data %<>% tidyr::uncount(data = ., weights = .counts)
+  if (".counts" %in% names(data)) data %<>% tidyr::uncount(weights = .counts)
 
   # variables needed for both one-way and two-way analysis
   x_vec <- data %>% dplyr::pull({{ x }})
@@ -131,7 +135,7 @@ expr_contingency_tab <- function(data,
 
   # ----------------------- non-Bayesian ---------------------------------------
 
-  if (stats.type != "bayes") {
+  if (type != "bayes") {
     # default functions for analysis (only change for McNemar's test)
     c(.f, .f.es) %<-% c(stats::chisq.test, effectsize::cramers_v)
 
@@ -148,9 +152,7 @@ expr_contingency_tab <- function(data,
     }
 
     # stats
-    stats_df <-
-      rlang::exec(.fn = .f, !!!.f.args) %>%
-      tidy_model_parameters(.)
+    stats_df <- tidy_model_parameters(rlang::exec(.fn = .f, !!!.f.args))
 
     # computing effect size + CI
     effsize_df <-
@@ -169,17 +171,16 @@ expr_contingency_tab <- function(data,
     expression <-
       expr_template(
         no.parameters = 1L,
-        stats.df = stats_df,
+        data = stats_df,
         n = nrow(data),
         paired = paired,
-        conf.level = conf.level,
         k = k
       )
   }
 
   # ----------------------- Bayesian ---------------------------------------
 
-  if (stats.type == "bayes") {
+  if (type == "bayes") {
     if (test == "two.way") {
       # Bayes Factor object
       bf_object <-
@@ -219,9 +220,7 @@ expr_contingency_tab <- function(data,
         stats::dmultinom(as.matrix(xtab), prob = ratio, log = TRUE)
 
       # computing Bayes Factor and formatting the results
-      stats_df <-
-        tibble(bf10 = exp(bf)) %>%
-        dplyr::mutate(log_e_bf10 = log(bf10), prior.scale = prior.concentration)
+      stats_df <- tibble(bf10 = exp(bf), prior.scale = prior.concentration)
 
       # final expression
       expression <-
@@ -235,8 +234,8 @@ expr_contingency_tab <- function(data,
           ),
           env = list(
             top.text = top.text,
-            bf = format_num(-log(stats_df$bf10[[1]]), k = k),
-            a = format_num(stats_df$prior.scale[[1]], k = k)
+            bf = format_num(-log(stats_df$bf10[[1]]), k),
+            a = format_num(stats_df$prior.scale[[1]], k)
           )
         )
 
@@ -246,7 +245,10 @@ expr_contingency_tab <- function(data,
   }
 
   # return the output
-  switch(output, "dataframe" = as_tibble(stats_df), expression)
+  switch(output,
+    "dataframe" = as_tibble(stats_df),
+    expression
+  )
 }
 
 

@@ -31,7 +31,7 @@ test_that(
           " = ",
           "0.00910",
           ", ",
-          widehat(italic("g"))["Hedge"],
+          widehat(italic("g"))["Hedges"],
           " = ",
           "-0.29805",
           ", CI"["95%"],
@@ -218,20 +218,20 @@ test_that(
         paste(
           italic("t")["bootstrapped"],
           " = ",
-          "0.8748",
+          "0.7866",
           ", ",
           italic("p"),
           " = ",
-          "0.2500",
+          "0.3000",
           ", ",
           widehat(mu)["trimmed"],
           " = ",
           "9.0000",
           ", CI"["99%"],
           " [",
-          "4.4493",
+          "3.8097",
           ", ",
-          "13.5507",
+          "14.1903",
           "]",
           ", ",
           italic("n")["obs"],
@@ -262,20 +262,20 @@ test_that(
         paste(
           italic("t")["bootstrapped"],
           " = ",
-          "-1.4272",
+          "-3.8075",
           ", ",
           italic("p"),
           " = ",
-          "0.2000",
+          "0.0200",
           ", ",
           widehat(mu)["trimmed"],
           " = ",
-          "0.0660",
+          "0.0390",
           ", CI"["90%"],
           " [",
-          "0.0201",
+          "0.0112",
           ", ",
-          "0.1119",
+          "0.0667",
           "]",
           ", ",
           italic("n")["obs"],
@@ -289,85 +289,85 @@ test_that(
   }
 )
 
-# bayes factor -----------------------------------------------------------
+if (packageVersion("parameters") > "0.11.0") {
 
-test_that(
-  desc = "expr_t_onesample bayes factor works",
-  code = {
-    skip_if(getRversion() < "4.0")
-    skip_on_cran()
+  # bayes factor -----------------------------------------------------------
 
-    # extracting results from where this function is implemented
-    set.seed(123)
-    df_results <-
-      expr_t_onesample(
-        type = "bayes",
-        data = iris,
-        x = Petal.Length,
-        y = NULL,
-        test.value = 5.5,
-        bf.prior = 0.99,
-        output = "dataframe"
-      )
+  test_that(
+    desc = "expr_t_onesample bayes factor works",
+    code = {
+      skip_if(getRversion() < "4.0")
 
-    # check Bayes factor values
-    expect_equal(df_results$bf10[[1]], 5.958171e+20, tolerance = 0.001)
-    expect_equal(df_results$log_e_bf10[[1]], 47.83647, tolerance = 0.001)
+      # extracting results from where this function is implemented
+      set.seed(123)
+      df_results <-
+        expr_t_onesample(
+          type = "bayes",
+          data = iris,
+          x = Petal.Length,
+          y = NULL,
+          test.value = 5.5,
+          bf.prior = 0.99,
+          output = "dataframe"
+        )
 
-    # extracting subtitle (without NA)
-    set.seed(123)
-    subtitle <-
-      expr_t_onesample(
-        type = "bayes",
-        data = iris,
-        x = "Petal.Length",
-        y = NULL,
-        test.value = 5.5,
-        bf.prior = 0.99,
-        output = "expression",
-        centrality = "mean",
-        conf.level = 0.90
-      )
+      # check Bayes factor values
+      expect_equal(df_results$bf10[[1]], 5.958171e+20, tolerance = 0.001)
 
-    expect_type(subtitle, "language")
+      # extracting subtitle (without NA)
+      set.seed(123)
+      subtitle <-
+        expr_t_onesample(
+          type = "bayes",
+          data = iris,
+          x = "Petal.Length",
+          y = NULL,
+          test.value = 5.5,
+          bf.prior = 0.99,
+          output = "expression",
+          conf.level = 0.90
+        )
 
-    expect_identical(
-      subtitle,
-      ggplot2::expr(
-        paste(
-          "log"["e"] * "(BF"["01"] * ") = " * "-47.84" * ", ",
-          widehat(italic(delta))["median"]^"posterior" * " = " * "1.76" * ", ",
-          "CI"["90%"]^"HDI" * " [" * "1.52" * ", " * "1.99" * "], ",
-          italic("r")["Cauchy"]^"JZS" * " = " * "0.99"
+      expect_type(subtitle, "language")
+
+      expect_identical(
+        subtitle,
+        ggplot2::expr(
+          paste(
+            "log"["e"] * "(BF"["01"] * ") = " * "-47.84" * ", ",
+            widehat(italic(delta))["difference"]^"posterior" * " = " * "1.76" * ", ",
+            "CI"["90%"]^"HDI" * " [" * "1.52" * ", " * "1.99" * "], ",
+            italic("r")["Cauchy"]^"JZS" * " = " * "0.99"
+          )
         )
       )
-    )
 
-    # extracting subtitle (with NA)
-    set.seed(123)
-    subtitle2 <-
-      expr_t_onesample(
-        type = "bayes",
-        data = ggplot2::msleep,
-        x = brainwt,
-        y = NULL,
-        test.value = 0.25,
-        bf.prior = 0.9,
-        k = 3,
-        output = "subtitle",
-        conf.method = "eti"
-      )
+      # extracting subtitle (with NA)
+      set.seed(123)
+      subtitle2 <-
+        expr_t_onesample(
+          type = "bayes",
+          data = ggplot2::msleep,
+          x = brainwt,
+          y = NULL,
+          test.value = 0.25,
+          bf.prior = 0.9,
+          k = 3,
+          output = "subtitle",
+          conf.method = "eti"
+        )
 
-    expect_identical(
-      subtitle2,
-      ggplot2::expr(
-        paste(
-          "log"["e"] * "(BF"["01"] * ") = " * "2.125" * ", ",
-          widehat(italic(delta))["median"]^"posterior" * " = " * "-0.018" * ", ",
-          "CI"["95%"]^"HDI" * " [" * "-0.265" * ", " * "0.242" * "], ",
-          italic("r")["Cauchy"]^"JZS" * " = " * "0.900"
+      expect_identical(
+        subtitle2,
+        ggplot2::expr(
+          paste(
+            "log"["e"] * "(BF"["01"] * ") = " * "2.125" * ", ",
+            widehat(italic(delta))["difference"]^"posterior" * " = " * "-0.018" * ", ",
+            "CI"["95%"]^"HDI" * " [" * "-0.265" * ", " * "0.242" * "], ",
+            italic("r")["Cauchy"]^"JZS" * " = " * "0.900"
+          )
         )
       )
-    )
-  }
-)
+    }
+  )
+}

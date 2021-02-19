@@ -20,7 +20,13 @@ vignette: >
 
 ```{r setup, include = FALSE}
 # show me all columns
-options(tibble.width = Inf, pillar.bold = TRUE, pillar.subtle_num = TRUE)
+options(
+  tibble.width = Inf,
+  pillar.bold = TRUE,
+  pillar.neg = TRUE,
+  pillar.subtle_num = TRUE,
+  pillar.min_chars = Inf
+)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -38,7 +44,8 @@ Although the primary focus of this package is to get expressions containing
 statistical results, one can also use it to extract dataframes containing these
 details. This vignette catalogs dataframe outputs from all functions.
 
-A dataframe will typically contain the following columns:
+A dataframe will contain the following columns (the exact columns will depend on
+the test and the statistical approach):
 
   - *statistic*: the numeric value of a statistic.
 
@@ -46,16 +53,22 @@ A dataframe will typically contain the following columns:
     of freedom for the test); note that if `no.parameters = 0L` (e.g., for
     non-parametric tests), this column will be irrelevant.
 
-  - *parameter1*, *parameter2* relevant only if the statistic in question has
+  - *parameter1*, *parameter2*: relevant only if the statistic in question has
     two degrees of freedom (e.g., anova).
 
-  - *p.value* the two-sided *p*-value associated with the observed statistic.
+  - *p.value*: the two-sided *p*-value associated with the observed statistic.
+  
+  - *method*: the details of the statistical test carried out.
 
   - *estimate*: estimated value of the effect size.
 
   - *conf.low*: lower bound for effect size estimate.
 
   - *conf.high*: upper bound for effect size estimate.
+  
+  - *conf.level*: width of the confidence interval.
+  
+  - *effectsize*: the details of the effect size.
 
 For details about the tests and types of effect size estimates they correspond
 to, see:
@@ -63,7 +76,7 @@ to, see:
 
 # One-sample tests
 
-```{r}
+```{r onesample}
 # setup
 library(statsExpressions)
 
@@ -121,7 +134,7 @@ expr_t_onesample(
 
 ## within-subjects design
 
-```{r}
+```{r twosample_w}
 # setup
 library(statsExpressions)
 
@@ -180,14 +193,14 @@ expr_t_twosample(
   y = desire,
   paired = TRUE,
   subject.id = subject,
-  type = "bf",
+  type = "bayes",
   output = "dataframe"
 )
 ```
 
 ## between-subjects design
 
-```{r}
+```{r twosample_b}
 # setup
 set.seed(123)
 library(statsExpressions)
@@ -249,7 +262,7 @@ expr_t_twosample(
   data = ToothGrowth,
   x = supp,
   y = len,
-  type = "bf",
+  type = "bayes",
   output = "dataframe"
 )
 ```
@@ -258,7 +271,7 @@ expr_t_twosample(
 
 ## within-subjects design
 
-```{r}
+```{r anova_w}
 # setup
 library(statsExpressions)
 
@@ -321,7 +334,7 @@ expr_oneway_anova(
 
 ## between-subjects design
 
-```{r}
+```{r anova_b}
 # setup
 library(statsExpressions)
 
@@ -389,7 +402,7 @@ expr_oneway_anova(
 
 # Contingency table analyses
 
-```{r}
+```{r conttabs}
 # for reproducibility
 set.seed(123)
 library(statsExpressions)
@@ -476,7 +489,7 @@ expr_contingency_tab(
 
 # Correlation analyses
 
-```{r}
+```{r corr}
 # for reproducibility
 set.seed(123)
 library(statsExpressions)
@@ -532,7 +545,7 @@ expr_corr_test(
 
 # Meta-analysis
 
-```{r}
+```{r meta}
 # for reproducibility
 set.seed(123)
 library(statsExpressions)

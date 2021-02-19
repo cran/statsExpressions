@@ -3,14 +3,11 @@
 test_that(
   desc = "expr_corr_test works - nonparametric",
   code = {
-    skip_if(getRversion() < "3.6")
-    skip_on_cran()
-
     if (utils::packageVersion("correlation") > package_version("0.4.0")) {
       # `statsExpressions` output
       set.seed(123)
       using_function <-
-        suppressWarnings(statsExpressions::expr_corr_test(
+        suppressWarnings(expr_corr_test(
           data = dplyr::sample_frac(movies_long, 0.05),
           x = rating,
           y = "length",
@@ -53,7 +50,7 @@ test_that(
       # `statsExpressions` output
       set.seed(123)
       using_function2 <-
-        statsExpressions::expr_corr_test(
+        expr_corr_test(
           data = mtcars,
           x = names(mtcars)[6],
           y = mpg,
@@ -97,14 +94,11 @@ test_that(
 test_that(
   desc = "expr_corr_test works - parametric",
   code = {
-    skip_if(getRversion() < "3.6")
-    skip_on_cran()
-
     if (utils::packageVersion("correlation") > package_version("0.4.0")) {
       # `statsExpressions` output
       set.seed(123)
       using_function <-
-        suppressWarnings(statsExpressions::expr_corr_test(
+        suppressWarnings(expr_corr_test(
           data = ggplot2::msleep,
           x = brainwt,
           y = sleep_rem,
@@ -154,14 +148,11 @@ test_that(
 test_that(
   desc = "expr_corr_test works - robust",
   code = {
-    skip_if(getRversion() < "3.6")
-    skip_on_cran()
-
     if (utils::packageVersion("correlation") > package_version("0.4.0")) {
       # using function
       set.seed(123)
       using_function <-
-        statsExpressions::expr_corr_test(
+        expr_corr_test(
           data = ggplot2::msleep,
           x = names(ggplot2::msleep)[10],
           y = "sleep_total",
@@ -178,20 +169,20 @@ test_that(
             "(",
             "54",
             ") = ",
-            "-5.3621",
+            "-4.8286",
             ", ",
             italic("p"),
             " = ",
-            "1.756e-06",
+            "1.172e-05",
             ", ",
-            widehat(rho)["% bend"],
+            widehat(italic("r"))["Winsorized"],
             " = ",
-            "-0.5894",
+            "-0.5491",
             ", CI"["50%"],
             " [",
-            "-0.6466",
+            "-0.6106",
             ", ",
-            "-0.5257",
+            "-0.4812",
             "]",
             ", ",
             italic("n")["pairs"],
@@ -212,7 +203,7 @@ test_that(
   desc = "dataframe",
   code = {
     expect_s3_class(
-      statsExpressions::expr_corr_test(
+      expr_corr_test(
         data = mtcars,
         x = mpg,
         y = wt,

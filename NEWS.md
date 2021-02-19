@@ -1,3 +1,37 @@
+# statsExpressions 0.7.1
+
+BREAKING CHANGES
+
+  - To avoid confusion among users, the trimming level for all functions is now
+    changed from `tr = 0.1` to `tr = 0.2` (which is what `WRS2` defaults to).
+
+MAJOR CHANGES
+
+  - `expr_template` gains a new argument `bayesian`, which can return an
+    expression for Bayesian analysis, which has a slightly different template.
+    Additionally, it has changed its conventions about the column names it
+    expects.
+
+  - Retires the additional caption-making functionality that was unique to
+    `expr_meta_random` when `type = "parametric"`. This was the only context in
+    which this feature was supported and was therefore inconsistent with the
+    rest of the package API.
+
+  - Removes `tidy_model_performance` function, which is no longer used
+    internally.
+
+  - Removes column containing `log` values of Bayes Factor as they are relevant
+    only for expressions.
+
+  - All meta-analysis packages move from `Imports` to `Suggests` to reduce the
+    installation time for the user.
+
+  - All robust tests in this package were based on trimmed means, except for
+    correlation test. This has been changed: the robust correlation measure is
+    now Winsorized correlation, which is based on trimming. Therefore, the
+    `beta` argument has been replaced by `tr` argument. This should result only
+    in minor changes in correlation coefficient estimates.
+
 # statsExpressions 0.7.0
 
 BREAKING CHANGES
@@ -71,7 +105,7 @@ BREAKING CHANGES
   - Removes the alias `expr_onesample_proptest`.
 
   - The `expr_template` function retires `effsize.df` argument. Now all details
-    need to be entered only in `stats.df`.
+    need to be entered only in `data`.
 
   - All meta-analyses are now carried out using `expr_meta_random` and the
     individual functions have been removed.
@@ -208,10 +242,10 @@ NEW FEATURES
 
 BREAKING CHANGES
 
-  - `expr_template` function now expects two dataframes: `stats.df` and
-    `effsize.df` that contain the details needed for creating expressions
-    instead of providing each individual values. This makes the function more
-    friendly work with using modeling packages like `broom`.
+  - `expr_template` function now expects two dataframes: `data` and `effsize.df`
+    that contain the details needed for creating expressions instead of
+    providing each individual values. This makes the function more friendly work
+    with using modeling packages like `broom`.
 
 MINOR CHANGES
 
