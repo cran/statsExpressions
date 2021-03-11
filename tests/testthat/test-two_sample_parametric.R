@@ -9,7 +9,7 @@ test_that(
     set.seed(123)
     using_function1 <-
       suppressWarnings(
-        expr_t_twosample(
+        two_sample_test(
           data = dplyr::filter(
             movies_long,
             genre == "Action" | genre == "Drama"
@@ -55,7 +55,7 @@ test_that(
       )
 
     # testing overall call
-    expect_equal(using_function1, results1)
+    expect_equal(using_function1$expression[[1]], results1)
   }
 )
 
@@ -70,7 +70,7 @@ test_that(
     set.seed(123)
     using_function1 <-
       suppressWarnings(
-        expr_t_twosample(
+        two_sample_test(
           data = dplyr::filter(
             movies_long,
             genre == "Action" | genre == "Drama"
@@ -116,7 +116,7 @@ test_that(
       )
 
     # testing overall call
-    expect_equal(using_function1, results1)
+    expect_equal(using_function1$expression[[1]], results1)
   }
 )
 
@@ -130,7 +130,7 @@ test_that(
     # output from `statsExpressions` helper subtitle
     set.seed(123)
     subtitle <-
-      suppressWarnings(expr_t_twosample(
+      suppressWarnings(two_sample_test(
         data = dplyr::filter(
           iris_long,
           condition %in% c("Sepal.Length", "Sepal.Width")
@@ -174,7 +174,7 @@ test_that(
       )
 
     # testing overall call
-    expect_identical(subtitle, expected)
+    expect_identical(subtitle$expression[[1]], expected)
   }
 )
 
@@ -189,7 +189,7 @@ test_that(
     # output from `statsExpressions` helper subtitle
     set.seed(123)
     subtitle <-
-      expr_t_twosample(
+      two_sample_test(
         data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
         x = condition,
         y = desire,
@@ -229,7 +229,7 @@ test_that(
       )
 
     # testing overall call
-    expect_identical(subtitle, expected)
+    expect_identical(subtitle$expression[[1]], expected)
   }
 )
 
@@ -273,7 +273,7 @@ test_that(
     # incorrect
     set.seed(123)
     expr1 <-
-      expr_t_twosample(
+      two_sample_test(
         data = df,
         x = condition,
         y = score,
@@ -284,7 +284,7 @@ test_that(
     # correct
     set.seed(123)
     expr2 <-
-      expr_t_twosample(
+      two_sample_test(
         data = dplyr::arrange(df, id),
         x = condition,
         y = score,

@@ -3,7 +3,7 @@ if (require("metafor")) {
   # subtitle from meta-analysis -------------------------------------------
 
   test_that(
-    desc = "expr_meta_random works",
+    desc = "meta_analysis works",
     code = {
       skip_if(getRversion() < "4.0")
 
@@ -21,18 +21,16 @@ if (require("metafor")) {
       # subtitle output
       set.seed(123)
       using_function1 <-
-        expr_meta_random(
+        meta_analysis(
           data = df_eg,
-          k = 4,
-          output = "subtitle"
+          k = 4
         )
 
       # dataframe output
       set.seed(123)
       df_res <-
-        expr_meta_random(
+        meta_analysis(
           data = df_eg,
-          output = "dataframe"
         )
 
       # output
@@ -68,10 +66,10 @@ if (require("metafor")) {
         )
 
       # testing overall call
-      expect_identical(using_function1, results1)
+      expect_identical(using_function1$expression[[1]], results1)
 
       # error
-      expect_error(expr_meta_random(mtcars))
+      expect_error(meta_analysis(mtcars))
     }
   )
 }

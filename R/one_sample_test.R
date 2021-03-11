@@ -1,18 +1,18 @@
-#' @title Expression and dataframe for one-sample *t*-test
-#' @name expr_t_onesample
+#' @title One-sample tests
+#' @name one_sample_test
 #'
 #' @param x A numeric variable from the dataframe `data`.
-#' @param test.value A number specifying the value of the null hypothesis
-#'   (Default: `0`).
+#' @param test.value A number indicating the true value of the mean (Default:
+#'   `0`).
 #' @inheritParams ipmisc::long_to_wide_converter
 #' @inheritParams expr_template
 #' @inheritParams bf_extractor
-#' @inheritParams expr_t_twosample
-#' @inheritParams expr_oneway_anova
+#' @inheritParams two_sample_test
+#' @inheritParams oneway_anova
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("maturing")}
+#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
 #'
 #' A dataframe containing results from a one-sample test. The exact test and the
 #' effect size details contained will depend on the `type` argument.
@@ -32,10 +32,11 @@
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
+#' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
 #' # ----------------------- parametric ---------------------------------------
 #'
-#' expr_t_onesample(
+#' one_sample_test(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -44,7 +45,7 @@
 #'
 #' # ----------------------- non-parametric -----------------------------------
 #'
-#' expr_t_onesample(
+#' one_sample_test(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -53,7 +54,7 @@
 #'
 #' # ----------------------- robust --------------------------------------------
 #'
-#' expr_t_onesample(
+#' one_sample_test(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -62,7 +63,7 @@
 #'
 #' # ---------------------------- Bayesian -----------------------------------
 #'
-#' expr_t_onesample(
+#' one_sample_test(
 #'   data = ggplot2::msleep,
 #'   x = brainwt,
 #'   test.value = 0.275,
@@ -72,19 +73,18 @@
 #' }
 #' @export
 
-expr_t_onesample <- function(data,
-                             x,
-                             type = "parametric",
-                             test.value = 0,
-                             k = 2L,
-                             conf.level = 0.95,
-                             tr = 0.2,
-                             bf.prior = 0.707,
-                             effsize.type = "g",
-                             nboot = 100L,
-                             top.text = NULL,
-                             output = "expression",
-                             ...) {
+one_sample_test <- function(data,
+                            x,
+                            type = "parametric",
+                            test.value = 0,
+                            k = 2L,
+                            conf.level = 0.95,
+                            tr = 0.2,
+                            bf.prior = 0.707,
+                            effsize.type = "g",
+                            nboot = 100L,
+                            top.text = NULL,
+                            ...) {
   # standardize the type of statistics
   type <- ipmisc::stats_type_switch(type)
 
@@ -157,13 +157,13 @@ expr_t_onesample <- function(data,
 
   # expression
   if (type != "bayes") {
-    expression <-
-      expr_template(
+    stats_df %<>%
+      dplyr::mutate(expression = list(expr_template(
         no.parameters = no.parameters,
-        data = stats_df,
+        data = .,
         n = length(x_vec),
         k = k
-      )
+      )))
   }
 
   # ----------------------- Bayesian ---------------------------------------
@@ -173,15 +173,18 @@ expr_t_onesample <- function(data,
     bf_object <- BayesFactor::ttestBF(x_vec, rscale = bf.prior, mu = test.value)
 
     # final return
-    expression <- stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text, output = output)
+    stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text)
   }
 
   # return the output
-  switch(output,
-    "dataframe" = as_tibble(stats_df),
-    expression
-  )
+  as_tibble(stats_df)
 }
+
+#' @rdname one_sample_test
+#' @aliases one_sample_test
+#' @export
+
+expr_t_onesample <- one_sample_test
 
 #' bootstrap-t method for one-sample test
 #' @importFrom WRS2 trimse

@@ -1,9 +1,9 @@
-#' @title Expression and dataframe for contingency table analysis
-#' @name expr_contingency_tab
+#' @title Contingency table analyses
+#' @name contingency_table
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("maturing")}
+#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
 #'
 #' A dataframe containing results from for contingency table analysis or
 #' goodness of fit test.
@@ -38,9 +38,9 @@
 #'   This means if there are two levels this will be `ratio = c(0.5,0.5)` or if
 #'   there are four levels this will be `ratio = c(0.25,0.25,0.25,0.25)`, etc.
 #' @param ... Additional arguments (currently ignored).
-#' @inheritParams expr_t_twosample
+#' @inheritParams two_sample_test
 #' @inheritParams stats::chisq.test
-#' @inheritParams expr_oneway_anova
+#' @inheritParams oneway_anova
 #'
 #' @importFrom BayesFactor contingencyTableBF logMeanExpLogs
 #' @importFrom dplyr pull select rename mutate
@@ -55,20 +55,20 @@
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
+#' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
 #' # ------------------------ non-Bayesian -----------------------------
 #'
 #' # association test
-#' expr_contingency_tab(
+#' contingency_table(
 #'   data = mtcars,
 #'   x = am,
 #'   y = cyl,
-#'   paired = FALSE,
-#'   output = "dataframe"
+#'   paired = FALSE
 #' )
 #'
 #' # goodness-of-fit test
-#' expr_contingency_tab(
+#' contingency_table(
 #'   data = as.data.frame(HairEyeColor),
 #'   x = Eye,
 #'   counts = Freq,
@@ -78,17 +78,16 @@
 #' # ------------------------ Bayesian -----------------------------
 #'
 #' # association test
-#' expr_contingency_tab(
+#' contingency_table(
 #'   data = mtcars,
 #'   x = am,
 #'   y = cyl,
 #'   paired = FALSE,
-#'   type = "bayes",
-#'   output = "dataframe"
+#'   type = "bayes"
 #' )
 #'
 #' # goodness-of-fit test
-#' expr_contingency_tab(
+#' contingency_table(
 #'   data = as.data.frame(HairEyeColor),
 #'   x = Eye,
 #'   counts = Freq,
@@ -99,21 +98,20 @@
 #' @export
 
 # function body
-expr_contingency_tab <- function(data,
-                                 x,
-                                 y = NULL,
-                                 paired = FALSE,
-                                 type = "parametric",
-                                 counts = NULL,
-                                 ratio = NULL,
-                                 k = 2L,
-                                 conf.level = 0.95,
-                                 sampling.plan = "indepMulti",
-                                 fixed.margin = "rows",
-                                 prior.concentration = 1,
-                                 top.text = NULL,
-                                 output = "expression",
-                                 ...) {
+contingency_table <- function(data,
+                              x,
+                              y = NULL,
+                              paired = FALSE,
+                              type = "parametric",
+                              counts = NULL,
+                              ratio = NULL,
+                              k = 2L,
+                              conf.level = 0.95,
+                              sampling.plan = "indepMulti",
+                              fixed.margin = "rows",
+                              prior.concentration = 1,
+                              top.text = NULL,
+                              ...) {
 
   # check the data contains needed column
   type <- ipmisc::stats_type_switch(type)
@@ -167,20 +165,23 @@ expr_contingency_tab <- function(data,
     # combining dataframes
     stats_df <- dplyr::bind_cols(stats_df, effsize_df)
 
-    # expression
-    expression <-
-      expr_template(
-        no.parameters = 1L,
-        data = stats_df,
-        n = nrow(data),
-        paired = paired,
-        k = k
+    # add expression column
+    stats_df %<>%
+      dplyr::mutate(
+        expression = list(expr_template(
+          data = .,
+          no.parameters = 1L,
+          n = nrow(data),
+          paired = paired,
+          k = k
+        ))
       )
   }
 
   # ----------------------- Bayesian ---------------------------------------
 
   if (type == "bayes") {
+    # two-way table
     if (test == "two.way") {
       # Bayes Factor object
       bf_object <-
@@ -192,11 +193,11 @@ expr_contingency_tab <- function(data,
         )
 
       # Bayes Factor expression
-      expression <- stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text, output = output)
+      stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text)
     }
 
+    # one-way table
     if (test == "one.way") {
-      # one-way table
       xtab <- table(data %>% dplyr::pull({{ x }}))
 
       # probability can't be exactly 0 or 1
@@ -241,15 +242,21 @@ expr_contingency_tab <- function(data,
 
       # the final expression
       if (is.null(top.text)) expression <- expression$expr
+
+      # computing Bayes Factor and formatting the results
+      stats_df %<>% dplyr::mutate(expression = list(expression))
     }
   }
 
   # return the output
-  switch(output,
-    "dataframe" = as_tibble(stats_df),
-    expression
-  )
+  return(stats_df)
 }
+
+#' @rdname contingency_table
+#' @aliases contingency_table
+#' @export
+
+expr_contingency_tab <- contingency_table
 
 
 #' @title estimate log prob of data under null with Monte Carlo

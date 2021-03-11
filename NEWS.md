@@ -1,3 +1,35 @@
+# statsExpressions 1.0.0
+
+This is the first **stable** release of `statsExpressions`!
+
+There is good news and there is bad news that accompanies this milestone.
+
+  - The **bad news**: The `API` for the package has changed **completely**: All
+    functions return a *dataframe*, and not an *expression*, as a default. The
+    expression is contained in a list column in the dataframe itself. So, to
+    salvage your functions from breaking, you will have to add
+    `$expression[[1]]` to your function calls. For example, if you were using
+    the function `expr_t_onesample()`, you will now have to specify
+    `expr_t_onesample()$expression[[1]]`, so on and so forth. But, in general,
+    the advice is to **not** use any of the `expr_*` functions, which are
+    vestigial names for new avatars of these functions. The new names are more
+    intuitive, e.g., `expr_t_onesample()` is now called `one_sample_test()`,
+    etc.
+
+  - The **good news**: There will not be any new changes to any of the current
+    functions, except for any change necessary for maintenance or bug squashing.
+    Well, to be more precise, this is true only for the functions that have
+    **"stable"** [badge](https://lifecycle.r-lib.org/articles/stages.html).
+
+BUG FIXES
+
+  - If the entered dataframe is `grouped`-tibble, the function internally
+    ungroups this (#79).
+
+MINOR CHANGES
+
+  - To reduce dependency load, `afex` has moved from `Imports` to `Suggests`.
+
 # statsExpressions 0.7.1
 
 BREAKING CHANGES
@@ -40,13 +72,12 @@ BREAKING CHANGES
     argument can be used to specify which type of statistical approach is to be
     used for all functions.
 
-    * `expr_t_parametric`, `expr_t_nonparametric`, `expr_t_robust`,
-      `expr_t_bayes` are now removed in favor of a single function
-      `expr_t_twosample`.
+    * `t_parametric`, `t_nonparametric`, `t_robust`, `t_bayes` are now removed
+      in favor of a single function `two_sample_test`.
 
     * `expr_anova_parametric`, `expr_anova_nonparametric`, `expr_anova_robust`,
       `expr_anova_bayes` are now removed in favor of a single function
-      `expr_oneway_anova`.
+      `oneway_anova`.
 
   - `statsExpressions` no longer internally relies on `tidyBF`. All Bayesian
     analysis is carried out in this package itself. This was done to make the
@@ -56,7 +87,7 @@ BREAKING CHANGES
 
 BUG FIXES
 
-  - `expr_contingency_tab` ignored `ratio` argument while computing Cramer's *V*
+  - `contingency_table` ignored `ratio` argument while computing Cramer's *V*
     for one-sample test. This is fixed.
 
 MAJOR CHANGES
@@ -117,10 +148,10 @@ MAJOR CHANGES
     sizes and their CIs but the computations will be faster. Additionally, the
     lower bound will never be negative and will be restricted to [0,1].
 
-  - `expr_contingency_tab` function has been made less robust. It now fails
-    instead of returning `NULL` when it is not supposed to work. This is done to
-    be consistent with the other functions in the package which also fail
-    instead of returning `NULL`.
+  - `contingency_table` function has been made less robust. It now fails instead
+    of returning `NULL` when it is not supposed to work. This is done to be
+    consistent with the other functions in the package which also fail instead
+    of returning `NULL`.
 
   - `expr_anova_parametric` always applies sphericity correction for *p*-values
     for repeated measures ANOVA.
@@ -160,8 +191,8 @@ MINOR CHANGES
 
   - Re-exports `correlation::correlation` needed for `ggstatsplot`.
 
-  - The `expr_t_nonparametric` subtitle now clarifies whether it's a Wilcoxon
-    test or a Mann-Whitney test.
+  - The `t_nonparametric` subtitle now clarifies whether it's a Wilcoxon test or
+    a Mann-Whitney test.
 
 # statsExpressions 0.4.2
 

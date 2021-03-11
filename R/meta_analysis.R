@@ -1,5 +1,5 @@
-#' @title Expression and dataframe for random-effects meta-analysis
-#' @name expr_meta_random
+#' @title Random-effects meta-analyses
+#' @name meta_analysis
 #'
 #' @param data A dataframe. It **must** contain columns named `estimate` (effect
 #'   sizes or outcomes)  and `std.error` (corresponding standard errors). These
@@ -7,15 +7,15 @@
 #'   (for parametric analysis) or `metaplus::metaplus` (for robust analysis),
 #'   and for `y` and `SE` arguments in `metaBMA::meta_random` (for Bayesian
 #'   analysis).
-#' @inheritParams expr_t_onesample
+#' @inheritParams one_sample_test
 #' @inheritParams metaplus::metaplus
-#' @inheritParams expr_oneway_anova
+#' @inheritParams oneway_anova
 #' @param ... Additional arguments passed to the respective meta-analysis
 #'   function.
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("maturing")}
+#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
 #'
 #' A dataframe containing results from random-effects meta-analysis.
 #'
@@ -43,32 +43,29 @@
 #'   # setup
 #'   set.seed(123)
 #'   library(statsExpressions)
+#'   options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
 #'   # renaming to what `statsExpressions` expects
 #'   df <- dplyr::rename(mag, estimate = yi, std.error = sei)
 #'
 #'   # ----------------------- parametric ---------------------------------------
 #'
-#'   # creating expression
-#'   print(expr_meta_random(data = df, output = "dataframe"))
+#'   print(meta_analysis(data = df))
 #'
 #'   # ----------------------- random -----------------------------------------
 #'
-#'   # creating expression
-#'   print(expr_meta_random(
+#'   print(meta_analysis(
 #'     data = df,
 #'     type = "random",
-#'     random = "normal",
-#'     output = "dataframe"
+#'     random = "normal"
 #'   ))
 #'
 #'   # ----------------------- Bayes Factor -----------------------------------
 #'
-#'   # making expression
-#'   expr_meta_random(
+#'   meta_analysis(
 #'     data = df,
 #'     type = "bayes",
-#'     output = "dataframe",
+#'
 #'     # additional arguments given to `metaBMA`
 #'     iter = 5000,
 #'     summarize = "integrate",
@@ -79,14 +76,13 @@
 #' @export
 
 # function body
-expr_meta_random <- function(data,
-                             type = "parametric",
-                             random = "mixture",
-                             k = 2L,
-                             conf.level = 0.95,
-                             top.text = NULL,
-                             output = "expression",
-                             ...) {
+meta_analysis <- function(data,
+                          type = "parametric",
+                          random = "mixture",
+                          k = 2L,
+                          conf.level = 0.95,
+                          top.text = NULL,
+                          ...) {
   # check the type of test
   type <- ipmisc::stats_type_switch(type)
 
@@ -104,12 +100,7 @@ expr_meta_random <- function(data,
 
   # create a call and then extract dataframe with coefficients
   suppressMessages(suppressWarnings(stats_df <-
-    eval(rlang::call2(
-      .fn = .fn,
-      .ns = .ns,
-      data = data,
-      !!!.f.args
-    )) %>%
+    eval(rlang::call2(.fn = .fn, .ns = .ns, data = data, !!!.f.args)) %>%
     tidy_model_parameters(., include_studies = FALSE, ci = conf.level)))
 
   # new column
@@ -117,20 +108,23 @@ expr_meta_random <- function(data,
   if (type == "bayes") stats_df %<>% dplyr::mutate(effectsize = "meta-analytic posterior estimate")
 
   # preparing the expression
-  expression <-
-    expr_template(
-      data = stats_df,
+  stats_df %<>%
+    dplyr::mutate(expression = list(expr_template(
+      data = .,
       n = nrow(data),
       n.text = quote(italic("n")["effects"]),
       no.parameters = 0L,
       k = k,
       top.text = top.text,
       bayesian = ifelse(type == "bayes", TRUE, FALSE)
-    )
+    )))
 
-  # what needs to be returned?
-  switch(output,
-    "dataframe" = as_tibble(stats_df),
-    expression
-  )
+  # return the output
+  as_tibble(stats_df)
 }
+
+#' @rdname meta_analysis
+#' @aliases meta_analysis
+#' @export
+
+expr_meta_random <- meta_analysis
