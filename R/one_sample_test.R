@@ -12,7 +12,7 @@
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
+#'
 #'
 #' A dataframe containing results from a one-sample test. The exact test and the
 #' effect size details contained will depend on the `type` argument.
@@ -179,12 +179,6 @@ one_sample_test <- function(data,
   # return the output
   as_tibble(stats_df)
 }
-
-#' @rdname one_sample_test
-#' @aliases one_sample_test
-#' @export
-
-expr_t_onesample <- one_sample_test
 
 #' bootstrap-t method for one-sample test
 #' @importFrom WRS2 trimse

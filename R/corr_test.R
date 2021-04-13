@@ -3,7 +3,7 @@
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
+#'
 #'
 #'  A dataframe containing results from correlation test with confidence
 #'  intervals for the correlation coefficient estimate. Results are extracted
@@ -75,7 +75,6 @@ corr_test <- function(data,
       ci = conf.level,
       bayesian = ifelse(type == "bayes", TRUE, FALSE),
       bayesian_prior = bf.prior,
-      bayesian_ci_method = "hdi",
       winsorize = ifelse(type == "robust", tr, FALSE)
     ) %>%
     parameters::standardize_names(style = "broom") %>%
@@ -100,9 +99,3 @@ corr_test <- function(data,
       bayesian = ifelse(type == "bayes", TRUE, FALSE)
     )))
 }
-
-#' @rdname corr_test
-#' @aliases corr_test
-#' @export
-
-expr_corr_test <- corr_test

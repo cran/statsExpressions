@@ -2,28 +2,9 @@
 % Please edit documentation in R/two_sample_test.R
 \name{two_sample_test}
 \alias{two_sample_test}
-\alias{expr_t_twosample}
 \title{Two-sample tests}
 \usage{
 two_sample_test(
-  data,
-  x,
-  y,
-  subject.id = NULL,
-  type = "parametric",
-  paired = FALSE,
-  k = 2L,
-  conf.level = 0.95,
-  effsize.type = "g",
-  var.equal = FALSE,
-  bf.prior = 0.707,
-  tr = 0.2,
-  nboot = 100,
-  top.text = NULL,
-  ...
-)
-
-expr_t_twosample(
   data,
   x,
   y,
@@ -106,8 +87,6 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 \item{...}{Currently ignored.}
 }
 \description{
-\Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
-
 A dataframe containing details from results of a two-sample test and effect
 size plus confidence intervals.
 

@@ -2,23 +2,9 @@
 % Please edit documentation in R/corr_test.R
 \name{corr_test}
 \alias{corr_test}
-\alias{expr_corr_test}
 \title{Correlation analyses}
 \usage{
 corr_test(
-  data,
-  x,
-  y,
-  type = "parametric",
-  k = 2L,
-  conf.level = 0.95,
-  tr = 0.2,
-  bf.prior = 0.707,
-  top.text = NULL,
-  ...
-)
-
-expr_corr_test(
   data,
   x,
   y,
@@ -76,8 +62,6 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 \item{...}{Additional arguments (currently ignored).}
 }
 \description{
-\Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
-
 A dataframe containing results from correlation test with confidence
 intervals for the correlation coefficient estimate. Results are extracted
 via \code{correlation::correlation}.

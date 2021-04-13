@@ -1,10 +1,11 @@
-if (require("metaBMA") && packageVersion("parameters") > "0.11.0") {
+if (require("metaBMA")) {
 
   # subtitle from meta-analysis -------------------------------------------
 
   test_that(
     desc = "meta_analysis works",
     code = {
+      skip_on_cran()
       skip_if(getRversion() < "4.0")
 
       # setup

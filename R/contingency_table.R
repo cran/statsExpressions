@@ -3,7 +3,7 @@
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
+#'
 #'
 #' A dataframe containing results from for contingency table analysis or
 #' goodness of fit test.
@@ -49,6 +49,7 @@
 #' @importFrom stats mcnemar.test chisq.test dmultinom rgamma
 #' @importFrom effectsize cramers_v cohens_g
 #' @importFrom parameters standardize_names
+#' @importFrom insight format_value
 #'
 #' @examples
 #' \donttest{
@@ -235,8 +236,8 @@ contingency_table <- function(data,
           ),
           env = list(
             top.text = top.text,
-            bf = format_num(-log(stats_df$bf10[[1]]), k),
-            a = format_num(stats_df$prior.scale[[1]], k)
+            bf = format_value(-log(stats_df$bf10[[1]]), k),
+            a = format_value(stats_df$prior.scale[[1]], k)
           )
         )
 
@@ -249,14 +250,8 @@ contingency_table <- function(data,
   }
 
   # return the output
-  return(stats_df)
+  stats_df
 }
-
-#' @rdname contingency_table
-#' @aliases contingency_table
-#' @export
-
-expr_contingency_tab <- contingency_table
 
 
 #' @title estimate log prob of data under null with Monte Carlo

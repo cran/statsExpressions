@@ -2,28 +2,9 @@
 % Please edit documentation in R/oneway_anova.R
 \name{oneway_anova}
 \alias{oneway_anova}
-\alias{expr_oneway_anova}
 \title{One-way analysis of variance (ANOVA)}
 \usage{
 oneway_anova(
-  data,
-  x,
-  y,
-  subject.id = NULL,
-  type = "parametric",
-  paired = FALSE,
-  k = 2L,
-  conf.level = 0.95,
-  effsize.type = "omega",
-  var.equal = FALSE,
-  bf.prior = 0.707,
-  tr = 0.2,
-  nboot = 100,
-  top.text = NULL,
-  ...
-)
-
-expr_oneway_anova(
   data,
   x,
   y,
@@ -107,8 +88,6 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 \item{...}{Additional arguments (currently ignored).}
 }
 \description{
-\Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
-
 A dataframe containing results for one-way ANOVA.
 
 For more details, see-

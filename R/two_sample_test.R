@@ -19,7 +19,7 @@
 #'
 #' @description
 #'
-#' \Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
+#'
 #'
 #'  A dataframe containing details from results of a two-sample test and effect
 #'  size plus confidence intervals.
@@ -290,9 +290,3 @@ two_sample_test <- function(data,
   # return the output
   as_tibble(stats_df)
 }
-
-#' @rdname two_sample_test
-#' @aliases two_sample_test
-#' @export
-
-expr_t_twosample <- two_sample_test

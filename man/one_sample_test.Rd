@@ -2,25 +2,9 @@
 % Please edit documentation in R/one_sample_test.R
 \name{one_sample_test}
 \alias{one_sample_test}
-\alias{expr_t_onesample}
 \title{One-sample tests}
 \usage{
 one_sample_test(
-  data,
-  x,
-  type = "parametric",
-  test.value = 0,
-  k = 2L,
-  conf.level = 0.95,
-  tr = 0.2,
-  bf.prior = 0.707,
-  effsize.type = "g",
-  nboot = 100L,
-  top.text = NULL,
-  ...
-)
-
-expr_t_onesample(
   data,
   x,
   type = "parametric",
@@ -83,8 +67,6 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 \item{...}{Currently ignored.}
 }
 \description{
-\Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
-
 A dataframe containing results from a one-sample test. The exact test and the
 effect size details contained will depend on the \code{type} argument.
 

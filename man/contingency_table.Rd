@@ -2,27 +2,9 @@
 % Please edit documentation in R/contingency_table.R
 \name{contingency_table}
 \alias{contingency_table}
-\alias{expr_contingency_tab}
 \title{Contingency table analyses}
 \usage{
 contingency_table(
-  data,
-  x,
-  y = NULL,
-  paired = FALSE,
-  type = "parametric",
-  counts = NULL,
-  ratio = NULL,
-  k = 2L,
-  conf.level = 0.95,
-  sampling.plan = "indepMulti",
-  fixed.margin = "rows",
-  prior.concentration = 1,
-  top.text = NULL,
-  ...
-)
-
-expr_contingency_tab(
   data,
   x,
   y = NULL,
@@ -103,8 +85,6 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 \item{...}{Additional arguments (currently ignored).}
 }
 \description{
-\Sexpr[results=rd, stage=render]{rlang:::lifecycle("stable")}
-
 A dataframe containing results from for contingency table analysis or
 goodness of fit test.
 
