@@ -3,10 +3,11 @@
 #'
 #' @param data A dataframe. It **must** contain columns named `estimate` (effect
 #'   sizes or outcomes)  and `std.error` (corresponding standard errors). These
-#'   two columns will be used for `yi`  and `sei` arguments in `metafor::rma`
-#'   (for parametric analysis) or `metaplus::metaplus` (for robust analysis),
-#'   and for `y` and `SE` arguments in `metaBMA::meta_random` (for Bayesian
-#'   analysis).
+#'   two columns will be used:
+#'   - as `yi`  and `sei` arguments in `metafor::rma` (for **parametric** test)
+#'   or `metaplus::metaplus` (for **robust** test)
+#'   - as `y` and `SE` arguments in `metaBMA::meta_random` (for **Bayesian**
+#'   test).
 #' @inheritParams one_sample_test
 #' @inheritParams metaplus::metaplus
 #' @inheritParams oneway_anova
@@ -15,15 +16,15 @@
 #'
 #' @description
 #'
-#'
-#'
 #' A dataframe containing results from random-effects meta-analysis.
 #'
-#' For more details, see-
+#' To see details about functions which are internally used to carry out these
+#' analyses, see the following vignette-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
 #' @note **Important**: The function assumes that you have already downloaded
 #'   the needed package (`metafor`, `metaplus`, or `metaBMA`) for meta-analysis.
+#'   If they are not available, you will be asked to install them.
 #'
 #' @importFrom rlang exec !!! call2
 #'
@@ -101,7 +102,7 @@ meta_analysis <- function(data,
   # create a call and then extract dataframe with coefficients
   suppressMessages(suppressWarnings(stats_df <-
     eval(rlang::call2(.fn = .fn, .ns = .ns, data = data, !!!.f.args)) %>%
-    tidy_model_parameters(., include_studies = FALSE, ci = conf.level)))
+    tidy_model_parameters(include_studies = FALSE, ci = conf.level)))
 
   # new column
   if (type != "bayes") stats_df %<>% dplyr::mutate(effectsize = "meta-analytic summary estimate")

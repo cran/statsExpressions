@@ -11,13 +11,14 @@ two_sample_test(
   subject.id = NULL,
   type = "parametric",
   paired = FALSE,
+  alternative = "two.sided",
   k = 2L,
   conf.level = 0.95,
   effsize.type = "g",
   var.equal = FALSE,
   bf.prior = 0.707,
   tr = 0.2,
-  nboot = 100,
+  nboot = 100L,
   top.text = NULL,
   ...
 )
@@ -27,22 +28,28 @@ two_sample_test(
 be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
 be accepted.}
 
-\item{x}{The grouping (or independent) variable from the dataframe \code{data}.}
+\item{x}{The grouping (or independent) variable from the dataframe \code{data}. In
+case of a repeated measures or within-subjects design, if \code{subject.id}
+argument is not available or not explicitly specified, the function assumes
+that the data has already been sorted by such an id by the user and creates
+an internal identifier. So if your data is \strong{not} sorted, the results
+\emph{can} be inaccurate when there are more than two levels in \code{x} and there
+are \code{NA}s present. The data is expected to be sorted by user in
+subject-1,subject-2, ..., pattern.}
 
 \item{y}{The response (or outcome or dependent) variable from the
 dataframe \code{data}.}
 
-\item{subject.id}{Relevant in case of repeated measures or within-subjects
+\item{subject.id}{Relevant in case of a repeated measures or within-subjects
 design (\code{paired = TRUE}, i.e.), it specifies the subject or repeated
 measures identifier. \strong{Important}: Note that if this argument is \code{NULL}
 (which is the default), the function assumes that the data has already been
 sorted by such an id by the user and creates an internal identifier. So if
 your data is \strong{not} sorted and you leave this argument unspecified, the
-results can be inaccurate.}
+results \emph{can} be inaccurate when there are more than two levels in \code{x} and
+there are \code{NA}s present.}
 
-\item{type}{A character specifying the type of statistical approach.
-Four possible options:
-
+\item{type}{A character specifying the type of statistical approach:
 \itemize{
 \item \code{"parametric"}
 \item \code{"nonparametric"}
@@ -50,12 +57,16 @@ Four possible options:
 \item \code{"bayes"}
 }
 
-Corresponding abbreviations are also accepted: \code{"p"} (for parametric),
-\code{"np"} (for nonparametric), \code{"r"} (for robust), or \code{"bf"} (for Bayesian).}
+You can specify just the initial letter.}
 
 \item{paired}{Logical that decides whether the experimental design is
 repeated measures/within-subjects or between-subjects. The default is
 \code{FALSE}.}
+
+\item{alternative}{a character string specifying the alternative
+    hypothesis, must be one of \code{"two.sided"} (default),
+    \code{"greater"} or \code{"less"}.  You can specify just the initial
+    letter.}
 
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
@@ -72,14 +83,18 @@ argument can be \code{"d"} (for Cohen's \emph{d}) or \code{"g"} (for Hedge's \em
     (or Satterthwaite) approximation to the degrees of freedom is used.}
 
 \item{bf.prior}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
-width to use in calculating Bayes factors and posterior estimates.}
+width to use in calculating Bayes factors and posterior estimates. In
+addition to numeric arguments, several named values are also recognized:
+\code{"medium"}, \code{"wide"}, and \code{"ultrawide"}, corresponding to \emph{r} scale values
+of 1/2, sqrt(2)/2, and 1, respectively. In case of an ANOVA, this value
+corresponds to scale for fixed effects.}
 
 \item{tr}{Trim level for the mean when carrying out \code{robust} tests. In case
 of an error, try reducing the value of \code{tr}, which is by default set to
 \code{0.2}. Lowering the value might help.}
 
 \item{nboot}{Number of bootstrap samples for computing confidence interval
-for the effect size (Default: \code{100}).}
+for the effect size (Default: \code{100L}).}
 
 \item{top.text}{Text to display on top of the Bayes Factor message. This is
 mostly relevant in the context of \code{ggstatsplot} functions.}
@@ -87,19 +102,12 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 \item{...}{Currently ignored.}
 }
 \description{
-A dataframe containing details from results of a two-sample test and effect
-size plus confidence intervals.
+A dataframe containing results from a two-sample test and effect size plus
+confidence intervals.
 
-For more details, see-
+To see details about functions which are internally used to carry out these
+analyses, see the following vignette-
 \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
-}
-\note{
-The \emph{stats::wilcox.test} function does not follow the same convention
-as \emph{stats::t.test}. The sign of the \emph{V} test statistic will always be
-positive since it is \strong{the sum of the positive signed ranks}. Therefore,
-\emph{V} will vary in magnitude but not significance based solely on the order
-of the grouping variable. Consider manually reordering your factor levels
-if appropriate as shown in the second example below.
 }
 \examples{
 \donttest{

@@ -2,8 +2,7 @@
 #' @name two_sample_test
 #'
 #' @inheritParams ipmisc::long_to_wide_converter
-#' @param effsize.type Type of effect size needed for *parametric* tests. The
-#'   argument can be `"d"` (for Cohen's *d*) or `"g"` (for Hedge's *g*).
+#' @inheritParams ipmisc::stats_type_switch
 #' @inheritParams one_sample_test
 #' @inheritParams oneway_anova
 #' @inheritParams stats::t.test
@@ -14,25 +13,17 @@
 #' @importFrom tidyr drop_na
 #' @importFrom stats t.test  wilcox.test
 #' @importFrom BayesFactor ttestBF
-#' @importFrom WRS2 yuen yuen.effect.ci yuend dep.effect
+#' @importFrom WRS2 yuen akp.effect yuend dep.effect
 #' @importFrom effectsize cohens_d hedges_g rank_biserial
 #'
 #' @description
 #'
+#'  A dataframe containing results from a two-sample test and effect size plus
+#'  confidence intervals.
 #'
-#'
-#'  A dataframe containing details from results of a two-sample test and effect
-#'  size plus confidence intervals.
-#'
-#'  For more details, see-
+#'  To see details about functions which are internally used to carry out these
+#'  analyses, see the following vignette-
 #'  \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
-#'
-#' @note The *stats::wilcox.test* function does not follow the same convention
-#'   as *stats::t.test*. The sign of the *V* test statistic will always be
-#'   positive since it is **the sum of the positive signed ranks**. Therefore,
-#'   *V* will vary in magnitude but not significance based solely on the order
-#'   of the grouping variable. Consider manually reordering your factor levels
-#'   if appropriate as shown in the second example below.
 #'
 #' @examples
 #' \donttest{
@@ -130,13 +121,14 @@ two_sample_test <- function(data,
                             subject.id = NULL,
                             type = "parametric",
                             paired = FALSE,
+                            alternative = "two.sided",
                             k = 2L,
                             conf.level = 0.95,
                             effsize.type = "g",
                             var.equal = FALSE,
                             bf.prior = 0.707,
                             tr = 0.2,
-                            nboot = 100,
+                            nboot = 100L,
                             top.text = NULL,
                             ...) {
   # standardize the type of statistics
@@ -177,28 +169,27 @@ two_sample_test <- function(data,
   # preparing expression
   if (type %in% c("parametric", "nonparametric")) {
     # extracting test details
-    stats_df <-
-      rlang::exec(
-        .fn = .f,
-        formula = rlang::new_formula(y, x),
-        data = data,
-        paired = paired,
-        var.equal = var.equal,
-        exact = FALSE
-      ) %>%
+    stats_df <- rlang::exec(
+      .f,
+      formula = rlang::new_formula(y, x),
+      data = data,
+      paired = paired,
+      alternative = alternative,
+      var.equal = var.equal,
+      exact = FALSE
+    ) %>%
       tidy_model_parameters(.)
 
     # extracting effect size details
-    effsize_df <-
-      rlang::exec(
-        .fn = .f.es,
-        x = rlang::new_formula(y, x),
-        data = data,
-        paired = paired,
-        ci = conf.level,
-        verbose = FALSE,
-        iterations = nboot
-      ) %>%
+    effsize_df <- rlang::exec(
+      .f.es,
+      x = rlang::new_formula(y, x),
+      data = data,
+      paired = paired,
+      pooled_sd = FALSE,
+      ci = conf.level,
+      verbose = FALSE
+    ) %>%
       tidy_model_effectsize(.)
 
     # these can be really big values
@@ -214,39 +205,29 @@ two_sample_test <- function(data,
     # running robust analysis
     if (isFALSE(paired)) {
       # computing effect size and its confidence interval
-      mod2 <-
-        WRS2::yuen.effect.ci(
-          formula = rlang::new_formula(y, x),
-          data = data,
-          tr = tr,
-          nboot = nboot,
-          alpha = 1 - conf.level
-        )
+      effsize_df <- WRS2::akp.effect(
+        formula = rlang::new_formula(y, x),
+        data = data,
+        EQVAR = FALSE,
+        tr = tr,
+        nboot = nboot,
+        alpha = 1 - conf.level
+      ) %>%
+        tidy_model_parameters(.)
 
       # Yuen's test for trimmed means
-      mod <- WRS2::yuen(formula = rlang::new_formula(y, x), data = data, tr = tr)
-
-      # tidying it up
-      stats_df <- tidy_model_parameters(mod)
-      effsize_df <-
-        tibble(
-          estimate = mod2$effsize[[1]],
-          conf.low = mod2$CI[[1]],
-          conf.high = mod2$CI[[2]],
-          conf.level = conf.level,
-          effectsize = "Explanatory measure of effect size"
-        )
+      stats_df <- WRS2::yuen(formula = rlang::new_formula(y, x), data = data, tr = tr) %>%
+        tidy_model_parameters(.)
     }
 
     if (isTRUE(paired)) {
-      # running robust paired t-test and its effect size
-      mod <- WRS2::yuend(x = data[2], y = data[3], tr = tr)
-      mod2 <- WRS2::dep.effect(x = data[2], y = data[3], tr = tr, nboot = nboot)
+      # Yuen's paired test for trimmed means
+      stats_df <- WRS2::yuend(x = data[2], y = data[3], tr = tr) %>%
+        tidy_model_parameters(.)
 
-      # tidying it up
-      stats_df <- tidy_model_parameters(mod)
-      effsize_df <-
-        as_tibble(as.data.frame(mod2), rownames = "effectsize") %>%
+      # computing effect size and its confidence interval
+      effsize_df <- WRS2::dep.effect(x = data[2], y = data[3], tr = tr, nboot = nboot) %>%
+        as_tibble(as.data.frame(.), rownames = "effectsize") %>%
         dplyr::filter(effectsize == "AKP") %>%
         dplyr::mutate(
           effectsize = "Algina-Keselman-Penfield robust standardized difference",
@@ -281,7 +262,7 @@ two_sample_test <- function(data,
     if (paired) .f.args <- list(x = data[[2]], y = data[[3]], rscale = bf.prior, paired = paired)
 
     # creating a `BayesFactor` object
-    bf_object <- rlang::exec(.fn = BayesFactor::ttestBF, data = as.data.frame(data), !!!.f.args)
+    bf_object <- rlang::exec(BayesFactor::ttestBF, data = as.data.frame(data), !!!.f.args)
 
     # final return
     stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text)

@@ -17,14 +17,15 @@ meta_analysis(
 \arguments{
 \item{data}{A dataframe. It \strong{must} contain columns named \code{estimate} (effect
 sizes or outcomes)  and \code{std.error} (corresponding standard errors). These
-two columns will be used for \code{yi}  and \code{sei} arguments in \code{metafor::rma}
-(for parametric analysis) or \code{metaplus::metaplus} (for robust analysis),
-and for \code{y} and \code{SE} arguments in \code{metaBMA::meta_random} (for Bayesian
-analysis).}
+two columns will be used:
+\itemize{
+\item as \code{yi}  and \code{sei} arguments in \code{metafor::rma} (for \strong{parametric} test)
+or \code{metaplus::metaplus} (for \strong{robust} test)
+\item as \code{y} and \code{SE} arguments in \code{metaBMA::meta_random} (for \strong{Bayesian}
+test).
+}}
 
-\item{type}{A character specifying the type of statistical approach.
-Four possible options:
-
+\item{type}{A character specifying the type of statistical approach:
 \itemize{
 \item \code{"parametric"}
 \item \code{"nonparametric"}
@@ -32,8 +33,7 @@ Four possible options:
 \item \code{"bayes"}
 }
 
-Corresponding abbreviations are also accepted: \code{"p"} (for parametric),
-\code{"np"} (for nonparametric), \code{"r"} (for robust), or \code{"bf"} (for Bayesian).}
+You can specify just the initial letter.}
 
 \item{random}{
 The type of random effects distribution. One of "normal","t-dist","mixture", for standard normal, \eqn{t}-distribution or mixture of normals respectively.
@@ -54,12 +54,14 @@ function.}
 \description{
 A dataframe containing results from random-effects meta-analysis.
 
-For more details, see-
+To see details about functions which are internally used to carry out these
+analyses, see the following vignette-
 \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 }
 \note{
 \strong{Important}: The function assumes that you have already downloaded
 the needed package (\code{metafor}, \code{metaplus}, or \code{metaBMA}) for meta-analysis.
+If they are not available, you will be asked to install them.
 }
 \examples{
 \donttest{

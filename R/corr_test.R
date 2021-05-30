@@ -3,21 +3,17 @@
 #'
 #' @description
 #'
-#'
-#'
 #'  A dataframe containing results from correlation test with confidence
-#'  intervals for the correlation coefficient estimate. Results are extracted
-#'  via `correlation::correlation`.
+#'  intervals for the correlation coefficient estimate.
 #'
-#' @references For more details, see-
+#' @references To see details about functions which are internally used to carry
+#'   out these analyses, see the following vignette-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
 #' @param x The column in `data` containing the explanatory variable to be
-#'   plotted on the `x`-axis. Can be entered either as a character string (e.g.,
-#'   `"x"`) or as a bare expression (e.g, `x`).
+#'   plotted on the `x`-axis.
 #' @param y The column in `data` containing the response (outcome) variable to
-#'   be plotted on the `y`-axis. Can be entered either as a character string
-#'   (e.g., `"y"`) or as a bare expression (e.g, `y`).
+#'   be plotted on the `y`-axis.
 #' @inheritParams oneway_anova
 #'
 #' @importFrom dplyr select case_when ungroup
@@ -68,15 +64,14 @@ corr_test <- function(data,
   # ----------------- creating correlation dataframes -----------------------
 
   # creating a dataframe of results
-  stats_df <-
-    correlation::correlation(
-      data = tidyr::drop_na(dplyr::select(dplyr::ungroup(data), {{ x }}, {{ y }})),
-      method = ifelse(type == "nonparametric", "spearman", "pearson"),
-      ci = conf.level,
-      bayesian = ifelse(type == "bayes", TRUE, FALSE),
-      bayesian_prior = bf.prior,
-      winsorize = ifelse(type == "robust", tr, FALSE)
-    ) %>%
+  stats_df <- correlation::correlation(
+    data = tidyr::drop_na(dplyr::select(dplyr::ungroup(data), {{ x }}, {{ y }})),
+    method = ifelse(type == "nonparametric", "spearman", "pearson"),
+    ci = conf.level,
+    bayesian = ifelse(type == "bayes", TRUE, FALSE),
+    bayesian_prior = bf.prior,
+    winsorize = ifelse(type == "robust", tr, FALSE)
+  ) %>%
     parameters::standardize_names(style = "broom") %>%
     dplyr::mutate(effectsize = method)
 

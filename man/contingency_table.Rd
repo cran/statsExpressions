@@ -38,9 +38,7 @@ repeated measures design study (Default: \code{FALSE}). If \code{TRUE}, McNemar'
 test expression will be returned. If \code{FALSE}, Pearson's chi-square test will
 be returned.}
 
-\item{type}{A character specifying the type of statistical approach.
-Four possible options:
-
+\item{type}{A character specifying the type of statistical approach:
 \itemize{
 \item \code{"parametric"}
 \item \code{"nonparametric"}
@@ -48,8 +46,7 @@ Four possible options:
 \item \code{"bayes"}
 }
 
-Corresponding abbreviations are also accepted: \code{"p"} (for parametric),
-\code{"np"} (for nonparametric), \code{"r"} (for robust), or \code{"bf"} (for Bayesian).}
+You can specify just the initial letter.}
 
 \item{counts}{A string naming a variable in data containing counts, or \code{NULL}
 if each row represents a single observation.}
@@ -88,7 +85,8 @@ mostly relevant in the context of \code{ggstatsplot} functions.}
 A dataframe containing results from for contingency table analysis or
 goodness of fit test.
 
-For more details, see-
+To see details about functions which are internally used to carry out these
+analyses, see the following vignette-
 \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 }
 \examples{

@@ -3,26 +3,14 @@
 #'
 #' @description
 #'
-#'
-#'
 #' A dataframe containing results for one-way ANOVA.
 #'
-#' For more details, see-
+#' To see details about functions which are internally used to carry out these
+#' analyses, see the following vignette-
 #' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 #'
 #' @inheritParams ipmisc::long_to_wide_converter
-#' @param type A character specifying the type of statistical approach.
-#' Four possible options:
-#'
-#' \itemize{
-#'   \item `"parametric"`
-#'   \item `"nonparametric"`
-#'   \item `"robust"`
-#'   \item `"bayes"`
-#' }
-#'
-#'   Corresponding abbreviations are also accepted: `"p"` (for parametric),
-#'   `"np"` (for nonparametric), `"r"` (for robust), or `"bf"` (for Bayesian).
+#' @inheritParams ipmisc::stats_type_switch
 #' @param conf.level Scalar between `0` and `1`. If unspecified, the defaults
 #'   return `95%` confidence/credible intervals (`0.95`).
 #' @param effsize.type Type of effect size needed for *parametric* tests. The
@@ -32,9 +20,13 @@
 #'   of an error, try reducing the value of `tr`, which is by default set to
 #'   `0.2`. Lowering the value might help.
 #' @param nboot Number of bootstrap samples for computing confidence interval
-#'   for the effect size (Default: `100`).
+#'   for the effect size (Default: `100L`).
 #' @param bf.prior A number between `0.5` and `2` (default `0.707`), the prior
-#'   width to use in calculating Bayes factors and posterior estimates.
+#'   width to use in calculating Bayes factors and posterior estimates. In
+#'   addition to numeric arguments, several named values are also recognized:
+#'   `"medium"`, `"wide"`, and `"ultrawide"`, corresponding to *r* scale values
+#'   of 1/2, sqrt(2)/2, and 1, respectively. In case of an ANOVA, this value
+#'   corresponds to scale for fixed effects.
 #' @inheritParams two_sample_test
 #' @inheritParams expr_template
 #' @inheritParams bf_extractor
@@ -42,25 +34,22 @@
 #' @inheritParams stats::oneway.test
 #'
 #' @note
-#' 1. Please note that the function expects that the data is
-#'   already sorted by subject/repeated measures ID.
-#'
-#' 2. To carry out Bayesian analysis for ANOVA designs, you will need to install
-#' the development version of `BayesFactor` (`0.9.12-4.3`). You can download it
-#' by running:
+#' To carry out Bayesian posterior estimation for ANOVA designs, you will need
+#' to install the development version of `BayesFactor` (`0.9.12-4.3`). You can
+#' download it by running:
 #' `remotes::install_github("richarddmorey/BayesFactor/pkg/BayesFactor")`.
 #'
-#' @importFrom dplyr select rename matches
-#' @importFrom rlang !! !!! quo_is_null eval_tidy expr enexpr ensym exec new_formula
+#' @importFrom dplyr select rename
+#' @importFrom rlang !! !!! expr enexpr ensym exec new_formula
 #' @importFrom stats oneway.test
 #' @importFrom WRS2 t1way rmanova wmcpAKP
-#' @importFrom stats friedman.test kruskal.test na.omit
-#' @importFrom effectsize rank_epsilon_squared kendalls_w
-#' @importFrom effectsize omega_squared eta_squared
+#' @importFrom stats friedman.test kruskal.test
+#' @importFrom effectsize rank_epsilon_squared kendalls_w omega_squared eta_squared
 #' @importFrom ipmisc long_to_wide_converter
 #' @importFrom BayesFactor ttestBF anovaBF
 #' @importFrom parameters model_parameters
 #' @importFrom performance model_performance
+#' @importFrom insight check_if_installed
 #'
 #' @examples
 #' \donttest{
@@ -167,7 +156,7 @@ oneway_anova <- function(data,
                          var.equal = FALSE,
                          bf.prior = 0.707,
                          tr = 0.2,
-                         nboot = 100,
+                         nboot = 100L,
                          top.text = NULL,
                          ...) {
 
@@ -197,37 +186,30 @@ oneway_anova <- function(data,
 
     if (isTRUE(paired)) {
       # check if `afex` is installed
-      if (!requireNamespace("afex", quietly = TRUE)) stop("Package 'afex' needs to be installed.")
+      insight::check_if_installed("afex")
 
       # Fisher's ANOVA
-      mod <-
-        afex::aov_ez(
-          id = "rowid",
-          dv = rlang::as_string(y),
-          data = data,
-          within = rlang::as_string(x)
-        )
+      mod <- afex::aov_ez(
+        id = "rowid",
+        dv = rlang::as_string(y),
+        data = data,
+        within = rlang::as_string(x),
+        include_aov = TRUE
+      )
     }
 
     if (isFALSE(paired)) {
       # Welch's ANOVA
-      mod <-
-        stats::oneway.test(
-          formula = rlang::new_formula(y, x),
-          data = data,
-          var.equal = var.equal
-        )
+      mod <- stats::oneway.test(
+        formula = rlang::new_formula(y, x),
+        data = data,
+        var.equal = var.equal
+      )
     }
 
     # tidying it up
     stats_df <- tidy_model_parameters(mod)
-    effsize_df <-
-      suppressWarnings(rlang::exec(
-        .fn = .f.es,
-        model = mod,
-        ci = conf.level,
-        verbose = FALSE
-      )) %>%
+    effsize_df <- rlang::exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
       tidy_model_effectsize(.)
 
     # combining dataframes
@@ -258,20 +240,17 @@ oneway_anova <- function(data,
     }
 
     # extracting test details
-    stats_df <-
-      rlang::exec(.fn = .f, !!!.f.args, data = data) %>%
-      tidy_model_parameters(.)
+    stats_df <- tidy_model_parameters(rlang::exec(.f, !!!.f.args, data = data))
 
     # computing respective effect sizes
-    effsize_df <-
-      rlang::exec(
-        .fn = .f.es,
-        data = data,
-        ci = conf.level,
-        iterations = nboot,
-        verbose = FALSE,
-        !!!.f.es.args
-      ) %>%
+    effsize_df <- rlang::exec(
+      .fn = .f.es,
+      data = data,
+      ci = conf.level,
+      iterations = nboot,
+      verbose = FALSE,
+      !!!.f.es.args
+    ) %>%
       tidy_model_effectsize(.)
 
     # dataframe
@@ -287,25 +266,23 @@ oneway_anova <- function(data,
     # heteroscedastic one-way repeated measures ANOVA for trimmed means
     if (isTRUE(paired)) {
       # test
-      mod <-
-        WRS2::rmanova(
-          y = data[[rlang::as_name(y)]],
-          groups = data[[rlang::as_name(x)]],
-          blocks = data[["rowid"]],
-          tr = tr
-        )
+      mod <- WRS2::rmanova(
+        y = data[[rlang::as_name(y)]],
+        groups = data[[rlang::as_name(x)]],
+        blocks = data[["rowid"]],
+        tr = tr
+      )
     }
 
     # heteroscedastic one-way ANOVA for trimmed means
     if (isFALSE(paired)) {
-      mod <-
-        WRS2::t1way(
-          formula = rlang::new_formula(y, x),
-          data = data,
-          tr = tr,
-          alpha = 1 - conf.level,
-          nboot = nboot
-        )
+      mod <- WRS2::t1way(
+        formula = rlang::new_formula(y, x),
+        data = data,
+        tr = tr,
+        alpha = 1 - conf.level,
+        nboot = nboot
+      )
     }
 
     # parameter extraction
@@ -313,8 +290,7 @@ oneway_anova <- function(data,
 
     # for paired designs, WRS2 currently doesn't return effect size
     if (isTRUE(paired)) {
-      effsize_df <-
-        ipmisc::long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
+      effsize_df <- ipmisc::long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
         wAKPavg(dplyr::select(-rowid), tr = tr, nboot = nboot) %>%
         dplyr::mutate(effectsize = "Algina-Keselman-Penfield robust standardized difference average")
 
@@ -354,7 +330,7 @@ oneway_anova <- function(data,
 
     # creating a `BayesFactor` object
     bf_object <- rlang::exec(
-      .fn = BayesFactor::anovaBF,
+      BayesFactor::anovaBF,
       data = as.data.frame(data),
       progress = FALSE,
       !!!.f.args
@@ -369,7 +345,7 @@ oneway_anova <- function(data,
 
 #' @noRd
 
-wAKPavg <- function(x, tr = 0.2, nboot = 100, ...) {
+wAKPavg <- function(x, tr = 0.2, nboot = 100L, ...) {
   A <- WRS2::wmcpAKP(x, tr, nboot)
   tibble("estimate" = A[[1]], "conf.low" = A[[2]], "conf.high" = A[[3]], "conf.level" = 0.95)
 }

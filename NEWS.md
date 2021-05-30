@@ -1,3 +1,26 @@
+# statsExpressions 1.1.0
+
+MAJOR CHANGES
+
+  - There is a new _JOSS_ paper about `statsExpressions` package!!
+    <https://joss.theoj.org/papers/10.21105/joss.03236>
+
+  - The effect size for independent trimmed means two-sample test has been
+    changed from explanatory measure of effect size to AKP's delta, which is
+    easier to understand and interpret since its a robust cousin of Cohen's
+    *d*.
+
+  - `one_sample_test` and `two_sample_test` gain `alternative` argument to
+    specify alternative hypothesis (#86).
+
+  - Cohen's *d* and Hedge's *g* use non-pooled standard deviation (cf.
+    https://psyarxiv.com/tu6mp/).
+
+MINOR CHANGES
+
+  - The output dataframes now contain columns with additional information about
+    how confidence intervals are computed (thanks to `effectsize` package).
+
 # statsExpressions 1.0.1
 
 BREAKING CHANGES
