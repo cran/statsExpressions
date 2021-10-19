@@ -1,15 +1,15 @@
 # contingency_table works
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
       # A tibble: 1 x 11
-        statistic    df p.value method                     estimate conf.level
-            <dbl> <int>   <dbl> <chr>                         <dbl>      <dbl>
-      1      8.74     2  0.0126 Pearson's Chi-squared test    0.464       0.99
-        conf.low conf.high effectsize        conf.method conf.distribution
-           <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1        0     0.888 Cramer's V (adj.) ncp         chisq            
+        statistic    df p.value method                     effectsize        estimate
+            <dbl> <int>   <dbl> <chr>                      <chr>                <dbl>
+      1      8.74     2  0.0126 Pearson's Chi-squared test Cramer's V (adj.)    0.464
+        conf.level conf.low conf.high conf.method conf.distribution
+             <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1       0.99        0         1 ncp         chisq            
 
 ---
 
@@ -18,21 +18,21 @@
     Output
       paste(chi["Pearson"]^2, "(", "2", ") = ", "8.74073", ", ", italic("p"), 
           " = ", "0.01265", ", ", widehat(italic("V"))["Cramer"], " = ", 
-          "0.46431", ", CI"["99%"], " [", "0.00000", ", ", "0.88767", 
+          "0.46431", ", CI"["99%"], " [", "0.00000", ", ", "1.00000", 
           "], ", italic("n")["obs"], " = ", "32")
 
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
       # A tibble: 1 x 11
-        statistic    df   p.value method                     estimate conf.level
-            <dbl> <int>     <dbl> <chr>                         <dbl>      <dbl>
-      1      457.     1 2.30e-101 Pearson's Chi-squared test    0.455       0.95
-        conf.low conf.high effectsize        conf.method conf.distribution
-           <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1    0.413     0.497 Cramer's V (adj.) ncp         chisq            
+        statistic    df   p.value method                     effectsize       
+            <dbl> <int>     <dbl> <chr>                      <chr>            
+      1      457.     1 2.30e-101 Pearson's Chi-squared test Cramer's V (adj.)
+        estimate conf.level conf.low conf.high conf.method conf.distribution
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1    0.455       0.95    0.420         1 ncp         chisq            
 
 ---
 
@@ -41,21 +41,21 @@
     Output
       paste(chi["Pearson"]^2, "(", "1", ") = ", "456.87", ", ", italic("p"), 
           " = ", "2.3e-101", ", ", widehat(italic("V"))["Cramer"], 
-          " = ", "0.46", ", CI"["95%"], " [", "0.41", ", ", "0.50", 
+          " = ", "0.46", ", CI"["95%"], " [", "0.42", ", ", "1.00", 
           "], ", italic("n")["obs"], " = ", "2,201")
 
 ---
 
     Code
-      dplyr::select(df3, -expression)
+      select(df3, -expression)
     Output
       # A tibble: 1 x 11
-        statistic    df p.value method                     estimate conf.level
-            <dbl> <int>   <dbl> <chr>                         <dbl>      <dbl>
-      1      15.8    15   0.399 Pearson's Chi-squared test   0.0558       0.99
-        conf.low conf.high effectsize        conf.method conf.distribution
-           <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1        0         0 Cramer's V (adj.) ncp         chisq            
+        statistic    df p.value method                     effectsize        estimate
+            <dbl> <int>   <dbl> <chr>                      <chr>                <dbl>
+      1      15.8    15   0.399 Pearson's Chi-squared test Cramer's V (adj.)   0.0558
+        conf.level conf.low conf.high conf.method conf.distribution
+             <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1       0.99        0         1 ncp         chisq            
 
 ---
 
@@ -64,21 +64,21 @@
     Output
       paste(chi["Pearson"]^2, "(", "15", ") = ", "15.75", ", ", italic("p"), 
           " = ", "0.399", ", ", widehat(italic("V"))["Cramer"], " = ", 
-          "0.06", ", CI"["99%"], " [", "0.00", ", ", "0.00", "], ", 
+          "0.06", ", CI"["99%"], " [", "0.00", ", ", "1.00", "], ", 
           italic("n")["obs"], " = ", "52")
 
 # paired contingency_table works 
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
       # A tibble: 1 x 10
-        statistic    df  p.value method                     estimate conf.level
-            <dbl> <dbl>    <dbl> <chr>                         <dbl>      <dbl>
-      1      13.3     1 0.000261 McNemar's Chi-squared test    0.333       0.95
-        conf.low conf.high effectsize conf.method
-           <dbl>     <dbl> <chr>      <chr>      
-      1    0.164     0.427 Cohen's g  binomial   
+        statistic    df  p.value method                     effectsize estimate
+            <dbl> <dbl>    <dbl> <chr>                      <chr>         <dbl>
+      1      13.3     1 0.000261 McNemar's Chi-squared test Cohen's g     0.333
+        conf.level conf.low conf.high conf.method
+             <dbl>    <dbl>     <dbl> <chr>      
+      1       0.95    0.164     0.427 binomial   
 
 ---
 
@@ -93,15 +93,15 @@
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
       # A tibble: 1 x 10
-        statistic    df  p.value method                     estimate conf.level
-            <dbl> <dbl>    <dbl> <chr>                         <dbl>      <dbl>
-      1      13.3     1 0.000261 McNemar's Chi-squared test    0.333        0.9
-        conf.low conf.high effectsize conf.method
-           <dbl>     <dbl> <chr>      <chr>      
-      1    0.195     0.416 Cohen's g  binomial   
+        statistic    df  p.value method                     effectsize estimate
+            <dbl> <dbl>    <dbl> <chr>                      <chr>         <dbl>
+      1      13.3     1 0.000261 McNemar's Chi-squared test Cohen's g     0.333
+        conf.level conf.low conf.high conf.method
+             <dbl>    <dbl>     <dbl> <chr>      
+      1        0.9    0.195     0.416 binomial   
 
 ---
 
@@ -116,15 +116,15 @@
 # Goodness of Fit contingency_table works without counts
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
       # A tibble: 1 x 11
-        statistic    df p.value method                                   estimate
-            <dbl> <dbl>   <dbl> <chr>                                       <dbl>
-      1      1.12     1   0.289 Chi-squared test for given probabilities   0.0547
-        conf.level conf.low conf.high effectsize        conf.method conf.distribution
-             <dbl>    <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1       0.99        0     0.499 Cramer's V (adj.) ncp         chisq            
+        statistic    df p.value method                                   effectsize 
+            <dbl> <dbl>   <dbl> <chr>                                    <chr>      
+      1      1.12     1   0.289 Chi-squared test for given probabilities Pearson's C
+        estimate conf.level conf.low conf.high conf.method conf.distribution
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1    0.184       0.99        0         1 ncp         chisq            
 
 ---
 
@@ -132,22 +132,22 @@
       df1$expression[[1]]
     Output
       paste(chi["gof"]^2, "(", "1", ") = ", "1.12500", ", ", italic("p"), 
-          " = ", "0.28884", ", ", widehat(italic("V"))["Cramer"], " = ", 
-          "0.05472", ", CI"["99%"], " [", "0.00000", ", ", "0.49920", 
+          " = ", "0.28884", ", ", widehat(italic("C"))["Pearson"], 
+          " = ", "0.18429", ", CI"["99%"], " [", "0.00000", ", ", "1.00000", 
           "], ", italic("n")["obs"], " = ", "32")
 
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
       # A tibble: 1 x 11
-        statistic    df   p.value method                                   estimate
-            <dbl> <dbl>     <dbl> <chr>                                       <dbl>
-      1      722.     1 3.92e-159 Chi-squared test for given probabilities    0.573
-        conf.level conf.low conf.high effectsize        conf.method conf.distribution
-             <dbl>    <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1       0.95    0.465     0.615 Cramer's V (adj.) ncp         chisq            
+        statistic    df   p.value method                                   effectsize 
+            <dbl> <dbl>     <dbl> <chr>                                    <chr>      
+      1      722.     1 3.92e-159 Chi-squared test for given probabilities Pearson's C
+        estimate conf.level conf.low conf.high conf.method conf.distribution
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1    0.497       0.95    0.474         1 ncp         chisq            
 
 ---
 
@@ -155,22 +155,25 @@
       df2$expression[[1]]
     Output
       paste(chi["gof"]^2, "(", "1", ") = ", "722.45", ", ", italic("p"), 
-          " = ", "3.92e-159", ", ", widehat(italic("V"))["Cramer"], 
-          " = ", "0.57", ", CI"["95%"], " [", "0.47", ", ", "0.62", 
+          " = ", "3.92e-159", ", ", widehat(italic("C"))["Pearson"], 
+          " = ", "0.50", ", CI"["95%"], " [", "0.47", ", ", "1.00", 
           "], ", italic("n")["obs"], " = ", "2,201")
 
 ---
 
     Code
-      dplyr::select(df3, -expression)
+      select(df3, -expression)
     Output
       # A tibble: 1 x 11
-        statistic    df     p.value method                                   estimate
-            <dbl> <dbl>       <dbl> <chr>                                       <dbl>
-      1      33.8     3 0.000000223 Chi-squared test for given probabilities    0.375
-        conf.level conf.low conf.high effectsize        conf.method conf.distribution
-             <dbl>    <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1       0.95    0.222     0.486 Cramer's V (adj.) ncp         chisq            
+        statistic    df     p.value method                                  
+            <dbl> <dbl>       <dbl> <chr>                                   
+      1      33.8     3 0.000000223 Chi-squared test for given probabilities
+        effectsize  estimate conf.level conf.low conf.high conf.method
+        <chr>          <dbl>      <dbl>    <dbl>     <dbl> <chr>      
+      1 Pearson's C    0.555       0.95    0.413         1 ncp        
+        conf.distribution
+        <chr>            
+      1 chisq            
 
 ---
 
@@ -178,8 +181,8 @@
       df3$expression[[1]]
     Output
       paste(chi["gof"]^2, "(", "3", ") = ", "33.76", ", ", italic("p"), 
-          " = ", "2.23e-07", ", ", widehat(italic("V"))["Cramer"], 
-          " = ", "0.37", ", CI"["95%"], " [", "0.22", ", ", "0.49", 
+          " = ", "2.23e-07", ", ", widehat(italic("C"))["Pearson"], 
+          " = ", "0.55", ", CI"["95%"], " [", "0.41", ", ", "1.00", 
           "], ", italic("n")["obs"], " = ", "76")
 
 # bayes factor (proportion test)
@@ -215,50 +218,4 @@
               ", ", "CI"["95%"]^"HDI" * " [" * "0.417" * ", " * "0.495" * 
               "], ", italic("a")["Gunel-Dickey"] * " = " * "1.500")
       
-
-# works even in edge cases
-
-    Code
-      dplyr::select(df1, -expression)
-    Output
-      # A tibble: 1 x 11
-        statistic    df p.value method                     estimate conf.level
-            <dbl> <int>   <dbl> <chr>                         <dbl>      <dbl>
-      1         3     2   0.223 Pearson's Chi-squared test    0.354       0.95
-        conf.low conf.high effectsize        conf.method conf.distribution
-           <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1        0     0.949 Cramer's V (adj.) ncp         chisq            
-
----
-
-    Code
-      df1$expression[[1]]
-    Output
-      paste(chi["Pearson"]^2, "(", "2", ") = ", "3.00", ", ", italic("p"), 
-          " = ", "0.223", ", ", widehat(italic("V"))["Cramer"], " = ", 
-          "0.35", ", CI"["95%"], " [", "0.00", ", ", "0.95", "], ", 
-          italic("n")["obs"], " = ", "6")
-
----
-
-    Code
-      dplyr::select(df2, -expression)
-    Output
-      # A tibble: 1 x 11
-        statistic    df p.value method                                   estimate
-            <dbl> <dbl>   <dbl> <chr>                                       <dbl>
-      1      7.68     2  0.0214 Chi-squared test for given probabilities    0.406
-        conf.level conf.low conf.high effectsize        conf.method conf.distribution
-             <dbl>    <dbl>     <dbl> <chr>             <chr>       <chr>            
-      1       0.95        0     0.675 Cramer's V (adj.) ncp         chisq            
-
----
-
-    Code
-      df2$expression[[1]]
-    Output
-      paste(chi["gof"]^2, "(", "2", ") = ", "7.68", ", ", italic("p"), 
-          " = ", "0.021", ", ", widehat(italic("V"))["Cramer"], " = ", 
-          "0.41", ", CI"["95%"], " [", "0.00", ", ", "0.67", "], ", 
-          italic("n")["obs"], " = ", "19")
 

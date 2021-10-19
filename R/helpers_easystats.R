@@ -3,22 +3,37 @@
 #'
 #' @inheritParams parameters::model_parameters
 #'
-#' @importFrom parameters model_parameters standardize_names
-#' @importFrom dplyr select matches rename_all recode contains
-#' @importFrom tidyr fill
-#'
 #' @examples
 #' model <- lm(mpg ~ wt + cyl, data = mtcars)
 #' tidy_model_parameters(model)
 #' @export
 
 tidy_model_parameters <- function(model, ...) {
-  parameters::model_parameters(model, verbose = FALSE, ...) %>%
-    dplyr::select(-dplyr::matches("Difference")) %>%
-    parameters::standardize_names(style = "broom") %>%
-    dplyr::rename_all(.funs = dplyr::recode, "bayes.factor" = "bf10") %>%
-    tidyr::fill(dplyr::matches("^prior|^bf"), .direction = "updown") %>%
-    as_tibble(.)
+  stats_df <- parameters::model_parameters(model, verbose = FALSE, ...) %>%
+    select(-matches("Difference")) %>%
+    insight::standardize_names(style = "broom") %>%
+    rename_all(.funs = recode, "bayes.factor" = "bf10") %>%
+    tidyr::fill(matches("^prior|^bf"), .direction = "updown") %>%
+    mutate(across(matches("bf10"), ~ log(.x), .names = "log_e_{.col}"))
+
+  # Bayesian ANOVA designs -----------------------------------
+
+  if ("method" %in% names(stats_df)) {
+    if (stats_df$method[[1]] == "Bayes factors for linear models") {
+      # dataframe with posterior estimates for R-squared
+      # for within-subjects design, retain only marginal component
+      df_r2 <- performance::r2_bayes(model, average = TRUE, ci = stats_df$conf.level[[1]]) %>%
+        as_tibble(.) %>%
+        insight::standardize_names(style = "broom") %>%
+        rename_with(.fn = ~ paste0("r2.", .x), .cols = matches("^conf|^comp")) %>%
+        filter(if_any(matches("r2.component"), ~ (.x == "conditional")))
+
+      # combine everything
+      stats_df %<>% bind_cols(df_r2)
+    }
+  }
+
+  as_tibble(stats_df)
 }
 
 
@@ -26,28 +41,28 @@ tidy_model_parameters <- function(model, ...) {
 #' @title Convert `effectsize` package output to `tidyverse` conventions
 #'
 #' @param data Dataframe returned by `effectsize` functions.
-#'
-#' @importFrom effectsize get_effectsize_label
-#' @importFrom purrr compose attr_getter
-#' @importFrom dplyr select mutate contains rename_with
+#' @param ... Currently ignored.
 #'
 #' @examples
 #' df <- effectsize::cohens_d(sleep$extra, sleep$group)
 #' tidy_model_effectsize(df)
-#' @export
+#' @noRd
 
-tidy_model_effectsize <- function(data) {
-  dplyr::bind_cols(
+tidy_model_effectsize <- function(data, ...) {
+  bind_cols(
     data %>%
-      dplyr::mutate(effectsize = stats::na.omit(effectsize::get_effectsize_label(colnames(.)))[[1]]) %>%
-      parameters::standardize_names(style = "broom") %>%
-      dplyr::select(-dplyr::contains("term")) %>%
-      as_tibble(.),
-    dplyr::rename_with(get_ci_method(data), ~ paste0("conf.", .x))
+      mutate(effectsize = stats::na.omit(effectsize::get_effectsize_label(colnames(.)))) %>%
+      insight::standardize_names(style = "broom") %>%
+      select(-contains("term")),
+    rename_with(as_tibble(data %@% "ci_method"), ~ paste0("conf.", .x))
   )
 }
 
-#' helper to get ci-related info stored as attributes in `effectsize` outputs
+
+#' Final polishing before data is returned
+#' first have inferential statistics details and then estimation
 #' @noRd
 
-get_ci_method <- purrr::compose(as_tibble, purrr::attr_getter("ci_method"))
+polish_data <- function(data) {
+  relocate(as_tibble(data), matches("^effectsize$"), .before = matches("^estimate$"))
+}

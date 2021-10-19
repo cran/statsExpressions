@@ -36,17 +36,17 @@ test).
 You can specify just the initial letter.}
 
 \item{random}{
-The type of random effects distribution. One of "normal","t-dist","mixture", for standard normal, \eqn{t}-distribution or mixture of normals respectively.
+The type of random effects distribution. One of "normal", "t-dist", "mixture", for standard normal, \eqn{t}-distribution or mixture of normals respectively.
 }
 
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Confidence/Credible Interval (CI) level. Default to \code{0.95}
-(\verb{95\%}).}
+\item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
+return \verb{95\%} confidence/credible intervals (\code{0.95}).}
 
 \item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} functions.}
+mostly relevant in the context of \code{ggstatsplot} package functions.}
 
 \item{...}{Additional arguments passed to the respective meta-analysis
 function.}
@@ -65,48 +65,37 @@ If they are not available, you will be asked to install them.
 }
 \examples{
 \donttest{
-# run examples only if the needed packages are available
-if (all(unlist(lapply(
-  c("metaplus", "metafor", "metaBMA"), # needed packages
-  require,
-  character.only = TRUE,
-  quietly = TRUE,
-  warn.conflicts = FALSE
-)))) {
-  # note that the `print` calls below are not necessary for you to write
-  # they are in the documentation so that the website renders them
+# a dataframe with estimates and standard errors (`mag` dataset from `metaplus`)
+df <-
+  structure(list(
+    study = structure(c(
+      8L, 10L, 15L, 1L, 4L, 11L, 3L, 2L, 14L, 9L, 12L, 5L, 16L, 7L, 13L, 6L
+    ), .Label = c(
+      "Abraham", "Bertschat", "Ceremuzynski", "Feldstedt", "Golf",
+      "ISIS-4", "LIMIT-2", "Morton", "Pereira", "Rasmussen", "Schechter", "Schechter 1",
+      "Schechter 2", "Singh", "Smith", "Thogersen"
+    ), class = "factor"),
+    estimate = c(
+      -0.8303483, -1.056053, -1.27834, -0.0434851, 0.2231435,
+      -2.40752, -1.280934, -1.191703, -0.695748, -2.208274, -2.03816,
+      -0.8501509, -0.7932307, -0.2993399, -1.570789, 0.0575873
+    ),
+    std.error = c(
+      1.24701799987009, 0.41407060026039, 0.808139200261935,
+      1.42950999996502, 0.489168400451215, 1.07220799987689, 1.1937340001022,
+      1.66129199992054, 0.536177600240816, 1.10964800004326, 0.780726300312728,
+      0.618448600127771, 0.625866199758383, 0.146572899950844,
+      0.574039500383031, 0.0316420922190679
+    )
+  ), row.names = c(NA, -16L), class = "data.frame")
 
-  # setup
-  set.seed(123)
-  library(statsExpressions)
-  options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
+# setup
+set.seed(123)
+library(statsExpressions)
+options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 
-  # renaming to what `statsExpressions` expects
-  df <- dplyr::rename(mag, estimate = yi, std.error = sei)
-
-  # ----------------------- parametric ---------------------------------------
-
-  print(meta_analysis(data = df))
-
-  # ----------------------- random -----------------------------------------
-
-  print(meta_analysis(
-    data = df,
-    type = "random",
-    random = "normal"
-  ))
-
-  # ----------------------- Bayes Factor -----------------------------------
-
-  meta_analysis(
-    data = df,
-    type = "bayes",
-
-    # additional arguments given to `metaBMA`
-    iter = 5000,
-    summarize = "integrate",
-    control = list(adapt_delta = 0.99, max_treedepth = 15)
-  )
-}
+meta_analysis(df) # parametric
+# meta_analysis(df, type = "random", random = "normal") # robust
+# meta_analysis(df, type = "bayes") # Bayesian
 }
 }

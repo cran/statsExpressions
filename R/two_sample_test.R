@@ -1,20 +1,12 @@
 #' @title Two-sample tests
 #' @name two_sample_test
 #'
-#' @inheritParams ipmisc::long_to_wide_converter
-#' @inheritParams ipmisc::stats_type_switch
+#' @inheritParams long_to_wide_converter
+#' @inheritParams stats_type_switch
 #' @inheritParams one_sample_test
 #' @inheritParams oneway_anova
 #' @inheritParams stats::t.test
 #' @inheritParams expr_template
-#'
-#' @importFrom dplyr select rename_all recode mutate
-#' @importFrom rlang !!! expr enexpr ensym exec new_formula
-#' @importFrom tidyr drop_na
-#' @importFrom stats t.test  wilcox.test
-#' @importFrom BayesFactor ttestBF
-#' @importFrom WRS2 yuen akp.effect yuend dep.effect
-#' @importFrom effectsize cohens_d hedges_g rank_biserial
 #'
 #' @description
 #'
@@ -23,7 +15,7 @@
 #'
 #'  To see details about functions which are internally used to carry out these
 #'  analyses, see the following vignette-
-#'  \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
+#'  <https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html>
 #'
 #' @examples
 #' \donttest{
@@ -32,7 +24,7 @@
 #' library(statsExpressions)
 #' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
-#' # ----------------------- parametric -------------------------------------
+#' # parametric -------------------------------------
 #'
 #' # between-subjects design
 #' two_sample_test(
@@ -44,15 +36,15 @@
 #'
 #' # within-subjects design
 #' two_sample_test(
-#'   data = VR_dilemma,
-#'   x = modality,
-#'   y = score,
+#'   data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
+#'   x = condition,
+#'   y = desire,
 #'   paired = TRUE,
-#'   subject.id = id,
+#'   subject.id = subject,
 #'   type = "p"
 #' )
 #'
-#' # ----------------------- non-parametric ----------------------------------
+#' # non-parametric ----------------------------------
 #'
 #' # between-subjects design
 #' two_sample_test(
@@ -64,15 +56,15 @@
 #'
 #' # within-subjects design
 #' two_sample_test(
-#'   data = VR_dilemma,
-#'   x = modality,
-#'   y = score,
+#'   data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
+#'   x = condition,
+#'   y = desire,
 #'   paired = TRUE,
-#'   subject.id = id,
+#'   subject.id = subject,
 #'   type = "np"
 #' )
 #'
-#' # ------------------------------ robust ----------------------------------
+#' # robust ----------------------------------
 #'
 #' # between-subjects design
 #' two_sample_test(
@@ -84,15 +76,15 @@
 #'
 #' # within-subjects design
 #' two_sample_test(
-#'   data = VR_dilemma,
-#'   x = modality,
-#'   y = score,
+#'   data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
+#'   x = condition,
+#'   y = desire,
 #'   paired = TRUE,
-#'   subject.id = id,
+#'   subject.id = subject,
 #'   type = "r"
 #' )
 #'
-#' #' # ------------------------------ Bayesian ------------------------------
+#' #' # Bayesian ------------------------------
 #'
 #' # between-subjects design
 #' two_sample_test(
@@ -104,11 +96,11 @@
 #'
 #' # within-subjects design
 #' two_sample_test(
-#'   data = VR_dilemma,
-#'   x = modality,
-#'   y = score,
+#'   data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
+#'   x = condition,
+#'   y = desire,
 #'   paired = TRUE,
-#'   subject.id = id,
+#'   subject.id = subject,
 #'   type = "bayes"
 #' )
 #' }
@@ -132,10 +124,10 @@ two_sample_test <- function(data,
                             top.text = NULL,
                             ...) {
   # standardize the type of statistics
-  type <- ipmisc::stats_type_switch(type)
+  type <- stats_type_switch(type)
 
   # make sure both quoted and unquoted arguments are supported
-  c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
+  c(x, y) %<-% c(ensym(x), ensym(y))
 
   # properly removing NAs if it's a paired design
   data %<>%
@@ -147,18 +139,18 @@ two_sample_test <- function(data,
       spread = ifelse(type %in% c("bayes", "robust"), paired, FALSE)
     )
 
-  # ----------------------- parametric ---------------------------------------
+  # parametric ---------------------------------------
 
   if (type == "parametric") {
     # preparing expression parameters
-    c(no.parameters, k.df) %<-% c(1L, ifelse(isTRUE(paired) || isTRUE(var.equal), 0L, k))
+    c(no.parameters, k.df) %<-% c(1L, ifelse(paired || var.equal, 0L, k))
     .f <- stats::t.test
 
     if (effsize.type %in% c("unbiased", "g")) .f.es <- effectsize::hedges_g
     if (effsize.type %in% c("biased", "d")) .f.es <- effectsize::cohens_d
   }
 
-  # ----------------------- non-parametric ------------------------------------
+  # non-parametric ------------------------------------
 
   if (type == "nonparametric") {
     # preparing expression parameters
@@ -169,9 +161,9 @@ two_sample_test <- function(data,
   # preparing expression
   if (type %in% c("parametric", "nonparametric")) {
     # extracting test details
-    stats_df <- rlang::exec(
+    stats_df <- exec(
       .f,
-      formula = rlang::new_formula(y, x),
+      formula = new_formula(y, x),
       data = data,
       paired = paired,
       alternative = alternative,
@@ -181,9 +173,9 @@ two_sample_test <- function(data,
       tidy_model_parameters(.)
 
     # extracting effect size details
-    effsize_df <- rlang::exec(
+    effsize_df <- exec(
       .f.es,
-      x = rlang::new_formula(y, x),
+      x = new_formula(y, x),
       data = data,
       paired = paired,
       pooled_sd = FALSE,
@@ -191,83 +183,56 @@ two_sample_test <- function(data,
       verbose = FALSE
     ) %>%
       tidy_model_effectsize(.)
-
-    # these can be really big values
-    if (type == "nonparametric") stats_df %<>% dplyr::mutate(statistic = log(statistic))
   }
 
-  # ----------------------- robust ---------------------------------------
+  # robust ---------------------------------------
 
   if (type == "robust") {
     # expression parameters
-    c(no.parameters, k.df) %<-% c(1L, ifelse(isTRUE(paired), 0L, k))
+    c(no.parameters, k.df) %<-% c(1L, ifelse(paired, 0L, k))
 
-    # running robust analysis
-    if (isFALSE(paired)) {
-      # computing effect size and its confidence interval
-      effsize_df <- WRS2::akp.effect(
-        formula = rlang::new_formula(y, x),
-        data = data,
-        EQVAR = FALSE,
-        tr = tr,
-        nboot = nboot,
-        alpha = 1 - conf.level
-      ) %>%
-        tidy_model_parameters(.)
+    # common arguments
+    .f.args <- list(formula = new_formula(y, x), data = data, x = data[[2]], y = data[[3]])
+    .f.es.args <- list(EQVAR = FALSE, nboot = nboot, alpha = 1 - conf.level, tr = tr)
 
-      # Yuen's test for trimmed means
-      stats_df <- WRS2::yuen(formula = rlang::new_formula(y, x), data = data, tr = tr) %>%
-        tidy_model_parameters(.)
-    }
+    # which functions to be used for hypothesis testing and estimation?
+    if (!paired) c(.f, .f.es) %<-% c(WRS2::yuen, WRS2::akp.effect)
+    if (paired) c(.f, .f.es) %<-% c(WRS2::yuend, WRS2::dep.effect)
 
-    if (isTRUE(paired)) {
-      # Yuen's paired test for trimmed means
-      stats_df <- WRS2::yuend(x = data[2], y = data[3], tr = tr) %>%
-        tidy_model_parameters(.)
-
-      # computing effect size and its confidence interval
-      effsize_df <- WRS2::dep.effect(x = data[2], y = data[3], tr = tr, nboot = nboot) %>%
-        as_tibble(as.data.frame(.), rownames = "effectsize") %>%
-        dplyr::filter(effectsize == "AKP") %>%
-        dplyr::mutate(
-          effectsize = "Algina-Keselman-Penfield robust standardized difference",
-          conf.level = 0.95
-        ) %>%
-        dplyr::select(estimate = Est, conf.low = ci.low, conf.high = ci.up, conf.level, effectsize)
-    }
+    effsize_df <- tidy_model_parameters(exec(.f.es, !!!.f.args, !!!.f.es.args), keep = "AKP")
+    stats_df <- tidy_model_parameters(exec(.f, !!!.f.args, !!!.f.es.args))
   }
 
   # final returns
   if (type != "bayes") {
     # combining dataframes
-    stats_df <- dplyr::bind_cols(dplyr::select(stats_df, -dplyr::matches("^est|^eff|conf|^ci")), effsize_df)
-
-    # expression
-    stats_df %<>%
-      dplyr::mutate(expression = list(expr_template(
-        no.parameters = no.parameters,
-        data = .,
-        paired = paired,
-        n = ifelse(isTRUE(paired), length(unique(data$rowid)), nrow(data)),
-        k = k,
-        k.df = k.df
-      )))
+    stats_df <- bind_cols(select(stats_df, -matches("^est|^eff|conf|^ci")), select(effsize_df, -matches("term")))
   }
 
-  # ----------------------- Bayesian ---------------------------------------
+  # Bayesian ---------------------------------------
 
   # running Bayesian t-test
   if (type == "bayes") {
-    if (!paired) .f.args <- list(formula = new_formula(y, x), rscale = bf.prior, paired = paired)
-    if (paired) .f.args <- list(x = data[[2]], y = data[[3]], rscale = bf.prior, paired = paired)
+    if (!paired) .f.args <- list(formula = new_formula(y, x), paired = paired)
+    if (paired) .f.args <- list(x = data[[2]], y = data[[3]], paired = paired)
 
     # creating a `BayesFactor` object
-    bf_object <- rlang::exec(BayesFactor::ttestBF, data = as.data.frame(data), !!!.f.args)
-
-    # final return
-    stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text)
+    stats_df <- exec(BayesFactor::ttestBF, data = as.data.frame(data), rscale = bf.prior, !!!.f.args) %>%
+      tidy_model_parameters(ci = conf.level)
   }
 
+  # expression ---------------------------------------
+
   # return the output
-  as_tibble(stats_df)
+  polish_data(stats_df) %>%
+    mutate(expression = list(expr_template(
+      no.parameters = no.parameters,
+      data = .,
+      paired = paired,
+      n = ifelse(paired, length(unique(data$rowid)), nrow(data)),
+      k = k,
+      k.df = k.df,
+      top.text = top.text,
+      bayesian = ifelse(type == "bayes", TRUE, FALSE)
+    )))
 }

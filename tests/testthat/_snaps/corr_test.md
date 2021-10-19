@@ -1,61 +1,61 @@
 # corr_test works - nonparametric
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
       # A tibble: 1 x 11
-        parameter1 parameter2 estimate conf.level conf.low conf.high statistic
-        <chr>      <chr>         <dbl>      <dbl>    <dbl>     <dbl>     <dbl>
-      1 rating     length        0.495      0.999    0.153     0.731      10.6
-           p.value method               n.obs effectsize          
-             <dbl> <chr>                <int> <chr>               
-      1 0.00000344 Spearman correlation    79 Spearman correlation
+        parameter1 parameter2 effectsize           estimate conf.level conf.low
+        <chr>      <chr>      <chr>                   <dbl>      <dbl>    <dbl>
+      1 rating     length     Spearman correlation    0.495      0.999    0.153
+        conf.high statistic    p.value method               n.obs
+            <dbl>     <dbl>      <dbl> <chr>                <int>
+      1     0.731    41453. 0.00000344 Spearman correlation    79
 
 ---
 
     Code
       df1$expression[[1]]
     Output
-      paste("log"["e"](italic("S")), " = ", "10.63231", ", ", italic("p"), 
-          " = ", "3.4438e-06", ", ", widehat(rho)["Spearman"], " = ", 
-          "0.49546", ", CI"["99.9%"], " [", "0.15344", ", ", "0.73147", 
-          "], ", italic("n")["pairs"], " = ", "79")
+      paste(italic("S"), " = ", "4.1e+04", ", ", italic("p"), " = ", 
+          "3.4438e-06", ", ", widehat(rho)["Spearman"], " = ", "0.49546", 
+          ", CI"["99.9%"], " [", "0.15344", ", ", "0.73147", "], ", 
+          italic("n")["pairs"], " = ", "79")
 
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
       # A tibble: 1 x 11
-        parameter1 parameter2 estimate conf.level conf.low conf.high statistic
-        <chr>      <chr>         <dbl>      <dbl>    <dbl>     <dbl>     <dbl>
-      1 wt         mpg          -0.886       0.95   -0.945    -0.774      9.24
-         p.value method               n.obs effectsize          
-           <dbl> <chr>                <int> <chr>               
-      1 1.49e-11 Spearman correlation    32 Spearman correlation
+        parameter1 parameter2 effectsize           estimate conf.level conf.low
+        <chr>      <chr>      <chr>                   <dbl>      <dbl>    <dbl>
+      1 wt         mpg        Spearman correlation   -0.886       0.95   -0.945
+        conf.high statistic  p.value method               n.obs
+            <dbl>     <dbl>    <dbl> <chr>                <int>
+      1    -0.774    10292. 1.49e-11 Spearman correlation    32
 
 ---
 
     Code
       df2$expression[[1]]
     Output
-      paste("log"["e"](italic("S")), " = ", "9.24", ", ", italic("p"), 
-          " = ", "1.49e-11", ", ", widehat(rho)["Spearman"], " = ", 
-          "-0.89", ", CI"["95%"], " [", "-0.94", ", ", "-0.77", "], ", 
-          italic("n")["pairs"], " = ", "32")
+      paste(italic("S"), " = ", "1e+04", ", ", italic("p"), " = ", 
+          "1.49e-11", ", ", widehat(rho)["Spearman"], " = ", "-0.89", 
+          ", CI"["95%"], " [", "-0.94", ", ", "-0.77", "], ", italic("n")["pairs"], 
+          " = ", "32")
 
 # corr_test works - parametric
 
     Code
-      dplyr::select(df, -expression)
+      select(df, -expression)
     Output
       # A tibble: 1 x 12
-        parameter1 parameter2 estimate conf.level conf.low conf.high statistic
-        <chr>      <chr>         <dbl>      <dbl>    <dbl>     <dbl>     <dbl>
-      1 brainwt    sleep_rem    -0.221        0.9   -0.438    0.0201     -1.54
-        df.error p.value method              n.obs effectsize         
-           <int>   <dbl> <chr>               <int> <chr>              
-      1       46   0.131 Pearson correlation    48 Pearson correlation
+        parameter1 parameter2 effectsize          estimate conf.level conf.low
+        <chr>      <chr>      <chr>                  <dbl>      <dbl>    <dbl>
+      1 brainwt    sleep_rem  Pearson correlation   -0.221        0.9   -0.438
+        conf.high statistic df.error p.value method              n.obs
+            <dbl>     <dbl>    <int>   <dbl> <chr>               <int>
+      1    0.0201     -1.54       46   0.131 Pearson correlation    48
 
 ---
 
@@ -70,18 +70,18 @@
 # corr_test works - robust
 
     Code
-      dplyr::select(df, -expression)
+      select(df, -expression)
     Output
       # A tibble: 1 x 12
-        parameter1 parameter2  estimate conf.level conf.low conf.high statistic
-        <chr>      <chr>          <dbl>      <dbl>    <dbl>     <dbl>     <dbl>
-      1 brainwt    sleep_total   -0.549        0.5   -0.611    -0.481     -4.83
-        df.error   p.value method                         n.obs
-           <int>     <dbl> <chr>                          <int>
-      1       54 0.0000117 Winsorized Pearson correlation    56
-        effectsize                    
-        <chr>                         
-      1 Winsorized Pearson correlation
+        parameter1 parameter2  effectsize                     estimate conf.level
+        <chr>      <chr>       <chr>                             <dbl>      <dbl>
+      1 brainwt    sleep_total Winsorized Pearson correlation   -0.549        0.5
+        conf.low conf.high statistic df.error   p.value method                        
+           <dbl>     <dbl>     <dbl>    <int>     <dbl> <chr>                         
+      1   -0.611    -0.481     -4.83       54 0.0000117 Winsorized Pearson correlation
+        n.obs
+        <int>
+      1    56
 
 ---
 
@@ -100,8 +100,8 @@
     Output
       atop(displaystyle("huh"), expr = paste("log"["e"] * "(BF"["01"] * 
           ") = " * "1.07" * ", ", widehat(rho)["Pearson"]^"posterior" * 
-          " = " * "-0.12" * ", ", "CI"["95%"]^"HDI" * " [" * "-0.24" * 
-          ", " * "0.02" * "], ", italic("r")["beta"]^"JZS" * " = " * 
+          " = " * "-0.12" * ", ", "CI"["95%"]^"HDI" * " [" * "-0.28" * 
+          ", " * "0.04" * "], ", italic("r")["beta"]^"JZS" * " = " * 
           "1.41"))
 
 # bayes factor (correlation test) - with NAs
@@ -110,7 +110,7 @@
       subtitle1$expression[[1]]
     Output
       paste("log"["e"] * "(BF"["01"] * ") = " * "0.49" * ", ", widehat(rho)["Pearson"]^"posterior" * 
-          " = " * "-0.21" * ", ", "CI"["99%"]^"HDI" * " [" * "-0.41" * 
-          ", " * "0.03" * "], ", italic("r")["beta"]^"JZS" * " = " * 
+          " = " * "-0.21" * ", ", "CI"["99%"]^"HDI" * " [" * "-0.47" * 
+          ", " * "0.05" * "], ", italic("r")["beta"]^"JZS" * " = " * 
           "1.25")
 

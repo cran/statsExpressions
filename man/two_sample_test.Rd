@@ -71,8 +71,8 @@ repeated measures/within-subjects or between-subjects. The default is
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Confidence/Credible Interval (CI) level. Default to \code{0.95}
-(\verb{95\%}).}
+\item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
+return \verb{95\%} confidence/credible intervals (\code{0.95}).}
 
 \item{effsize.type}{Type of effect size needed for \emph{parametric} tests. The
 argument can be \code{"d"} (for Cohen's \emph{d}) or \code{"g"} (for Hedge's \emph{g}).}
@@ -97,7 +97,7 @@ of an error, try reducing the value of \code{tr}, which is by default set to
 for the effect size (Default: \code{100L}).}
 
 \item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} functions.}
+mostly relevant in the context of \code{ggstatsplot} package functions.}
 
 \item{...}{Currently ignored.}
 }
@@ -116,7 +116,7 @@ set.seed(123)
 library(statsExpressions)
 options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 
-# ----------------------- parametric -------------------------------------
+# parametric -------------------------------------
 
 # between-subjects design
 two_sample_test(
@@ -128,15 +128,15 @@ two_sample_test(
 
 # within-subjects design
 two_sample_test(
-  data = VR_dilemma,
-  x = modality,
-  y = score,
+  data = dplyr::filter(bugs_long, condition \%in\% c("HDHF", "HDLF")),
+  x = condition,
+  y = desire,
   paired = TRUE,
-  subject.id = id,
+  subject.id = subject,
   type = "p"
 )
 
-# ----------------------- non-parametric ----------------------------------
+# non-parametric ----------------------------------
 
 # between-subjects design
 two_sample_test(
@@ -148,15 +148,15 @@ two_sample_test(
 
 # within-subjects design
 two_sample_test(
-  data = VR_dilemma,
-  x = modality,
-  y = score,
+  data = dplyr::filter(bugs_long, condition \%in\% c("HDHF", "HDLF")),
+  x = condition,
+  y = desire,
   paired = TRUE,
-  subject.id = id,
+  subject.id = subject,
   type = "np"
 )
 
-# ------------------------------ robust ----------------------------------
+# robust ----------------------------------
 
 # between-subjects design
 two_sample_test(
@@ -168,15 +168,15 @@ two_sample_test(
 
 # within-subjects design
 two_sample_test(
-  data = VR_dilemma,
-  x = modality,
-  y = score,
+  data = dplyr::filter(bugs_long, condition \%in\% c("HDHF", "HDLF")),
+  x = condition,
+  y = desire,
   paired = TRUE,
-  subject.id = id,
+  subject.id = subject,
   type = "r"
 )
 
-#' # ------------------------------ Bayesian ------------------------------
+#' # Bayesian ------------------------------
 
 # between-subjects design
 two_sample_test(
@@ -188,11 +188,11 @@ two_sample_test(
 
 # within-subjects design
 two_sample_test(
-  data = VR_dilemma,
-  x = modality,
-  y = score,
+  data = dplyr::filter(bugs_long, condition \%in\% c("HDHF", "HDLF")),
+  x = condition,
+  y = desire,
   paired = TRUE,
-  subject.id = id,
+  subject.id = subject,
   type = "bayes"
 )
 }

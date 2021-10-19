@@ -60,8 +60,8 @@ there are four levels this will be \code{ratio = c(0.25,0.25,0.25,0.25)}, etc.}
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Confidence/Credible Interval (CI) level. Default to \code{0.95}
-(\verb{95\%}).}
+\item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
+return \verb{95\%} confidence/credible intervals (\code{0.95}).}
 
 \item{sampling.plan}{Character describing the sampling plan. Possible options
 are \code{"indepMulti"} (independent multinomial; default), \code{"poisson"},
@@ -77,7 +77,7 @@ hypothesis under the alternative, and corresponds to Gunel and Dickey's
 (1974) \code{"a"} parameter.}
 
 \item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} functions.}
+mostly relevant in the context of \code{ggstatsplot} package functions.}
 
 \item{...}{Additional arguments (currently ignored).}
 }

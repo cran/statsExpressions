@@ -6,10 +6,9 @@
 #'   `0`).
 #' @param effsize.type Type of effect size needed for *parametric* tests. The
 #'   argument can be `"d"` (for Cohen's *d*) or `"g"` (for Hedge's *g*).
-#' @inheritParams ipmisc::long_to_wide_converter
-#' @inheritParams ipmisc::stats_type_switch
+#' @inheritParams long_to_wide_converter
+#' @inheritParams stats_type_switch
 #' @inheritParams expr_template
-#' @inheritParams bf_extractor
 #' @inheritParams two_sample_test
 #' @inheritParams oneway_anova
 #' @inheritParams stats::t.test
@@ -26,24 +25,17 @@
 #'   Internal function `.f` used to carry out statistical test:
 #'   - **parametric**: `stats::t.test`
 #'   - **nonparametric**: `stats::wilcox.test`
-#'   - **robust**: `trimcibt` (custom)
+#'   - **robust**: `WRS2::trimcibt`
 #'   - **bayes**: `BayesFactor::ttestBF`
 #'
 #'   Internal function `.f.es` used to compute effect size:
 #'   - **parametric**: `effectsize::cohens_d`, `effectsize::hedges_g`
 #'   - **nonparametric**: `effectsize::rank_biserial`
-#'   - **robust**: `trimcibt` (custom)
+#'   - **robust**: `WRS2::trimcibt`
 #'   - **bayes**: `bayestestR::describe_posterior`
 #'
 #' For more, see-
-#' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
-#'
-#' @importFrom dplyr select mutate pull rename_all recode
-#' @importFrom ipmisc stats_type_switch
-#' @importFrom effectsize cohens_d hedges_g rank_biserial
-#' @importFrom stats t.test wilcox.test na.omit
-#' @importFrom rlang !!! exec
-#' @importFrom BayesFactor ttestBF
+#' <https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html>
 #'
 #' @examples
 #' \donttest{
@@ -104,12 +96,12 @@ one_sample_test <- function(data,
                             top.text = NULL,
                             ...) {
   # standardize the type of statistics
-  type <- ipmisc::stats_type_switch(type)
+  type <- stats_type_switch(type)
 
   # preparing the vector
-  x_vec <- stats::na.omit(data %>% dplyr::pull({{ x }}))
+  x_vec <- stats::na.omit(data %>% pull({{ x }}))
 
-  # ----------------------- parametric ---------------------------------------
+  # parametric ---------------------------------------
 
   if (type == "parametric") {
     # preparing expression parameters
@@ -119,7 +111,7 @@ one_sample_test <- function(data,
     if (effsize.type %in% c("biased", "d")) .f.es <- effectsize::cohens_d
   }
 
-  # ----------------------- non-parametric ---------------------------------------
+  # non-parametric ---------------------------------------
 
   if (type == "nonparametric") {
     # preparing expression parameters
@@ -130,12 +122,12 @@ one_sample_test <- function(data,
   # preparing expression
   if (type %in% c("parametric", "nonparametric")) {
     # extracting test details
-    stats_df <- rlang::exec(.f, x = x_vec, mu = test.value, alternative = alternative) %>%
+    stats_df <- exec(.f, x = x_vec, mu = test.value, alternative = alternative) %>%
       tidy_model_parameters(.) %>%
-      dplyr::select(-dplyr::matches("^est|^conf|^diff|^term|^ci"))
+      select(-matches("^est|^conf|^diff|^term|^ci"))
 
     # extracting effect size details
-    effsize_df <- rlang::exec(
+    effsize_df <- exec(
       .f.es,
       x = x_vec,
       mu = test.value,
@@ -144,64 +136,37 @@ one_sample_test <- function(data,
     ) %>%
       tidy_model_effectsize(.)
 
-    # these can be really big values
-    if (type == "nonparametric") stats_df %<>% dplyr::mutate(statistic = log(statistic))
-
     # dataframe
-    stats_df <- dplyr::bind_cols(stats_df, effsize_df)
+    stats_df <- bind_cols(stats_df, effsize_df)
   }
 
-  # ----------------------- robust ---------------------------------------
+  # robust ---------------------------------------
 
   if (type == "robust") {
     # bootstrap-t method for one-sample test
     no.parameters <- 0L
-    stats_df <- rlang::exec(trimcibt, x = x_vec, nv = test.value, tr = tr, ci = conf.level)
+    stats_df <- exec(WRS2::trimcibt, x = x_vec, nv = test.value, tr = tr, alpha = 1 - conf.level) %>%
+      tidy_model_parameters(.)
   }
 
-  # expression
-  if (type != "bayes") {
-    stats_df %<>%
-      dplyr::mutate(expression = list(expr_template(
-        no.parameters = no.parameters,
-        data = .,
-        n = length(x_vec),
-        k = k
-      )))
-  }
-
-  # ----------------------- Bayesian ---------------------------------------
+  # Bayesian ---------------------------------------
 
   # running Bayesian one-sample t-test
   if (type == "bayes") {
-    bf_object <- BayesFactor::ttestBF(x_vec, rscale = bf.prior, mu = test.value)
-
-    # final return
-    stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text)
+    stats_df <- BayesFactor::ttestBF(x_vec, rscale = bf.prior, mu = test.value) %>%
+      tidy_model_parameters(ci = conf.level)
   }
 
+  # expression ---------------------------------------
+
   # return the output
-  as_tibble(stats_df)
-}
-
-#' bootstrap-t method for one-sample test
-#' @importFrom WRS2 trimse
-#' @noRd
-
-trimcibt <- function(x, nv = 0, tr = 0.2, nboot = 100L, ci = 0.95, ...) {
-  test <- (mean(x, tr) - nv) / WRS2::trimse(x, tr)
-  data <- matrix(sample(x, size = length(x) * nboot, replace = TRUE), nrow = nboot) - mean(x, tr)
-  tval <- sort(abs(apply(data, 1, mean, tr) / apply(data, 1, WRS2::trimse, tr)))
-  icrit <- round(ci * nboot)
-
-  tibble(
-    statistic = test,
-    p.value = (sum(abs(test) <= abs(tval))) / nboot,
-    method = "Bootstrap-t method for one-sample test",
-    estimate = mean(x, tr),
-    conf.low = mean(x, tr) - tval[icrit] * WRS2::trimse(x, tr),
-    conf.high = mean(x, tr) + tval[icrit] * WRS2::trimse(x, tr),
-    conf.level = ci,
-    effectsize = "Trimmed mean"
-  )
+  polish_data(stats_df) %>%
+    mutate(expression = list(expr_template(
+      data = .,
+      no.parameters = no.parameters,
+      n = length(x_vec),
+      k = k,
+      top.text = top.text,
+      bayesian = ifelse(type == "bayes", TRUE, FALSE)
+    )))
 }

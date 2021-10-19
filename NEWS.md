@@ -1,8 +1,56 @@
+# statsExpressions 1.2.0
+
+BREAKING CHANGES
+
+  - A number of effect size estimates and their confidence intervals have
+    changed due to respective changes made in `{effectsize}` package version
+    `0.5` release. For full details of these changes, see:
+    <https://easystats.github.io/effectsize/news/index.html>
+
+  - For the same reason, the effect size for one-way contingency table has
+    changed from Cramer's *V* to Pearson's *C*.
+
+NEW FUNCTIONS
+
+  - `centrality_description()` function added to describe distribution for each
+    level of a grouping variable and create an expression describing a
+    centrality measure.
+
+  - Adds new experimental function `tidy_model_expressions()` to create
+    expressions for dataframes containing tidied results from regression model
+    objects.
+
+MAJOR CHANGES
+
+  - Removes the redundant `bf_extractor` function. The `tidy_model_parameters`
+    does the same thing.
+
+  - Exports more utility functions (`long_to_wide_converter`, `format_num`,
+    `stats_type_switch`) to get rid of reliance on `ipmisc` package.
+
+  - To be consistent with the expressions, the dataframe for Bayesian analysis
+    now also contain log of Bayes Factor values.
+
+  - The `tidy_model_effectsize()` function is no longer exported as it is
+    helpful only for the internal workings of the package.
+
+  - Given that these values can be really high, the statistic values for
+    non-parametric tests were shown on a log scale, but this is a highly
+    non-standard practice that has caused a lot of confusion among users. In
+    light of this feedback, the functions no longer return these values on a log
+    scale but in a scientific notation to keep the statistical expressions
+    short.
+
+MINOR CHANGES
+
+  - Removes `VR_dilemma` dataset, which lacked enough variation to be a good
+    dataset to use in examples or tests.
+
 # statsExpressions 1.1.0
 
 MAJOR CHANGES
 
-  - There is a new _JOSS_ paper about `statsExpressions` package!!
+  - There is a new _JOSS_ paper about `{statsExpressions}` package!!
     <https://joss.theoj.org/papers/10.21105/joss.03236>
 
   - The effect size for independent trimmed means two-sample test has been
@@ -33,7 +81,7 @@ MINOR CHANGES
 
 # statsExpressions 1.0.0
 
-This is the first **stable** release of `statsExpressions`!
+This is the first **stable** release of `{statsExpressions}`!
 
 There is good news and there is bad news that accompanies this milestone.
 
@@ -112,7 +160,7 @@ BREAKING CHANGES
       `expr_anova_bayes` are now removed in favor of a single function
       `oneway_anova`.
 
-  - `statsExpressions` no longer internally relies on `tidyBF`. All Bayesian
+  - `{statsExpressions}` no longer internally relies on `tidyBF`. All Bayesian
     analysis is carried out in this package itself. This was done to make the
     maintenance of this package easier and helps with some major internal code
     refactoring. As such, all re-exported functions from `tidyBF` have also been
@@ -269,7 +317,7 @@ MAJOR CHANGES
 
   - Retires the internal `effsize_t_parametric` helper function in favor of
     relying functions from `effectsize`, which is now added as a dependency.
-    Similarly, `statsExpressions` now relies on `effectsize` to compute effect
+    Similarly, `{statsExpressions}` now relies on `effectsize` to compute effect
     sizes for ANOVA designs, instead of `sjstats`.
 
   - For parametric *t*-tests and ANOVAs, confidence intervals for effect sizes

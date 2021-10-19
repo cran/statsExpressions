@@ -7,10 +7,10 @@
 #'
 #' To see details about functions which are internally used to carry out these
 #' analyses, see the following vignette-
-#' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
+#' <https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html>
 #'
-#' @inheritParams ipmisc::long_to_wide_converter
-#' @inheritParams ipmisc::stats_type_switch
+#' @inheritParams long_to_wide_converter
+#' @inheritParams stats_type_switch
 #' @param conf.level Scalar between `0` and `1`. If unspecified, the defaults
 #'   return `95%` confidence/credible intervals (`0.95`).
 #' @param effsize.type Type of effect size needed for *parametric* tests. The
@@ -29,7 +29,6 @@
 #'   corresponds to scale for fixed effects.
 #' @inheritParams two_sample_test
 #' @inheritParams expr_template
-#' @inheritParams bf_extractor
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams stats::oneway.test
 #'
@@ -38,18 +37,6 @@
 #' to install the development version of `BayesFactor` (`0.9.12-4.3`). You can
 #' download it by running:
 #' `remotes::install_github("richarddmorey/BayesFactor/pkg/BayesFactor")`.
-#'
-#' @importFrom dplyr select rename
-#' @importFrom rlang !! !!! expr enexpr ensym exec new_formula
-#' @importFrom stats oneway.test
-#' @importFrom WRS2 t1way rmanova wmcpAKP
-#' @importFrom stats friedman.test kruskal.test
-#' @importFrom effectsize rank_epsilon_squared kendalls_w omega_squared eta_squared
-#' @importFrom ipmisc long_to_wide_converter
-#' @importFrom BayesFactor ttestBF anovaBF
-#' @importFrom parameters model_parameters
-#' @importFrom performance model_performance
-#' @importFrom insight check_if_installed
 #'
 #' @examples
 #' \donttest{
@@ -161,47 +148,52 @@ oneway_anova <- function(data,
                          ...) {
 
   # standardize the type of statistics
-  type <- ipmisc::stats_type_switch(type)
+  type <- stats_type_switch(type)
 
   # make sure both quoted and unquoted arguments are supported
-  c(x, y) %<-% c(rlang::ensym(x), rlang::ensym(y))
+  c(x, y) %<-% c(ensym(x), ensym(y))
 
   # data cleanup
   data %<>%
-    ipmisc::long_to_wide_converter(
+    long_to_wide_converter(
       x = {{ x }},
       y = {{ y }},
       subject.id = {{ subject.id }},
       paired = paired,
       spread = FALSE
     ) %>%
-    dplyr::mutate(rowid = as.factor(rowid))
+    mutate(rowid = as.factor(rowid))
 
-  # ----------------------- parametric ---------------------------------------
+  #  parametric ---------------------------------------
 
   if (type == "parametric") {
+    # expression details
+    k.df <- ifelse(!paired, 0L, k)
+    k.df.error <- ifelse(!paired && var.equal, 0L, k)
+    no.parameters <- 2L
+
     # which effect size?
     if (effsize.type %in% c("unbiased", "omega")) .f.es <- effectsize::omega_squared
     if (effsize.type %in% c("biased", "eta")) .f.es <- effectsize::eta_squared
 
-    if (isTRUE(paired)) {
+    if (paired) {
       # check if `afex` is installed
-      insight::check_if_installed("afex")
+      insight::check_if_installed("afex", minimum_version = "1.0-0")
 
       # Fisher's ANOVA
       mod <- afex::aov_ez(
         id = "rowid",
-        dv = rlang::as_string(y),
+        dv = as_string(y),
         data = data,
-        within = rlang::as_string(x),
+        within = as_string(x),
         include_aov = TRUE
       )
     }
 
-    if (isFALSE(paired)) {
+    if (!paired) {
       # Welch's ANOVA
       mod <- stats::oneway.test(
-        formula = rlang::new_formula(y, x),
+        formula = new_formula(y, x),
         data = data,
         var.equal = var.equal
       )
@@ -209,41 +201,38 @@ oneway_anova <- function(data,
 
     # tidying it up
     stats_df <- tidy_model_parameters(mod)
-    effsize_df <- rlang::exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
+    effsize_df <- exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
       tidy_model_effectsize(.)
 
     # combining dataframes
-    stats_df <- dplyr::bind_cols(stats_df, effsize_df)
-
-    # expression details
-    if (isTRUE(paired)) var.equal <- TRUE
-    k.df <- ifelse(isFALSE(paired), 0L, k)
-    k.df.error <- ifelse(isFALSE(paired) && isTRUE(var.equal), 0L, k)
-    no.parameters <- 2L
+    stats_df <- bind_cols(stats_df, effsize_df)
   }
 
-  # ----------------------- non-parametric ------------------------------------
+  # non-parametric ------------------------------------
 
   if (type == "nonparametric") {
+    # expression details
+    c(no.parameters, k.df, k.df.error) %<-% c(1L, 0L, 0L)
+
     # Friedman test
-    if (isTRUE(paired)) {
+    if (paired) {
       c(.f, .f.es) %<-% c(stats::friedman.test, effectsize::kendalls_w)
       .f.args <- list(formula = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
       .f.es.args <- list(x = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
     }
 
     # Kruskal-Wallis test
-    if (isFALSE(paired)) {
+    if (!paired) {
       c(.f, .f.es) %<-% c(stats::kruskal.test, effectsize::rank_epsilon_squared)
-      .f.args <- list(formula = rlang::new_formula(y, x))
-      .f.es.args <- list(x = rlang::new_formula(y, x))
+      .f.args <- list(formula = new_formula(y, x))
+      .f.es.args <- list(x = new_formula(y, x))
     }
 
     # extracting test details
-    stats_df <- tidy_model_parameters(rlang::exec(.f, !!!.f.args, data = data))
+    stats_df <- tidy_model_parameters(exec(.f, !!!.f.args, data = data))
 
     # computing respective effect sizes
-    effsize_df <- rlang::exec(
+    effsize_df <- exec(
       .fn = .f.es,
       data = data,
       ci = conf.level,
@@ -254,30 +243,29 @@ oneway_anova <- function(data,
       tidy_model_effectsize(.)
 
     # dataframe
-    stats_df <- dplyr::bind_cols(stats_df, effsize_df)
-
-    # expression details
-    c(no.parameters, k.df, k.df.error) %<-% c(1L, 0L, 0L)
+    stats_df <- bind_cols(stats_df, effsize_df)
   }
 
-  # ----------------------- robust ---------------------------------------
+  # robust ---------------------------------------
 
   if (type == "robust") {
+    # expression details
+    c(no.parameters, k.df, k.df.error) %<-% c(2L, ifelse(paired, k, 0L), k)
+
     # heteroscedastic one-way repeated measures ANOVA for trimmed means
-    if (isTRUE(paired)) {
-      # test
+    if (paired) {
       mod <- WRS2::rmanova(
-        y = data[[rlang::as_name(y)]],
-        groups = data[[rlang::as_name(x)]],
+        y = data[[as_name(y)]],
+        groups = data[[as_name(x)]],
         blocks = data[["rowid"]],
         tr = tr
       )
     }
 
     # heteroscedastic one-way ANOVA for trimmed means
-    if (isFALSE(paired)) {
+    if (!paired) {
       mod <- WRS2::t1way(
-        formula = rlang::new_formula(y, x),
+        formula = new_formula(y, x),
         data = data,
         tr = tr,
         alpha = 1 - conf.level,
@@ -289,34 +277,17 @@ oneway_anova <- function(data,
     stats_df <- tidy_model_parameters(mod)
 
     # for paired designs, WRS2 currently doesn't return effect size
-    if (isTRUE(paired)) {
-      effsize_df <- ipmisc::long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
-        wAKPavg(dplyr::select(-rowid), tr = tr, nboot = nboot) %>%
-        dplyr::mutate(effectsize = "Algina-Keselman-Penfield robust standardized difference average")
+    if (paired) {
+      effsize_df <- long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
+        WRS2::wmcpAKP(select(-rowid), tr = tr, nboot = nboot) %>%
+        tidy_model_parameters(.)
 
       # combine dataframes
-      stats_df <- dplyr::bind_cols(stats_df, effsize_df)
+      stats_df <- bind_cols(stats_df, effsize_df)
     }
-
-    # expression details
-    c(no.parameters, k.df, k.df.error) %<-% c(2L, ifelse(isTRUE(paired), k, 0L), k)
   }
 
-  # final returns
-  if (type != "bayes") {
-    stats_df %<>%
-      dplyr::mutate(expression = list(expr_template(
-        no.parameters = no.parameters,
-        data = .,
-        n = ifelse(isTRUE(paired), length(unique(data$rowid)), nrow(data)),
-        paired = paired,
-        k = k,
-        k.df = k.df,
-        k.df.error = k.df.error
-      )))
-  }
-
-  # ----------------------- Bayesian ---------------------------------------
+  # Bayesian ---------------------------------------
 
   # running Bayesian t-test
   if (type == "bayes") {
@@ -328,24 +299,28 @@ oneway_anova <- function(data,
       )
     }
 
-    # creating a `BayesFactor` object
-    bf_object <- rlang::exec(
+    # extract a dataframe
+    stats_df <- exec(
       BayesFactor::anovaBF,
       data = as.data.frame(data),
       progress = FALSE,
       !!!.f.args
-    )
-
-    # final return
-    stats_df <- bf_extractor(bf_object, conf.level, k = k, top.text = top.text)
+    ) %>%
+      tidy_model_parameters(ci = conf.level)
   }
 
-  as_tibble(stats_df)
-}
+  # expression ---------------------------------------
 
-#' @noRd
-
-wAKPavg <- function(x, tr = 0.2, nboot = 100L, ...) {
-  A <- WRS2::wmcpAKP(x, tr, nboot)
-  tibble("estimate" = A[[1]], "conf.low" = A[[2]], "conf.high" = A[[3]], "conf.level" = 0.95)
+  polish_data(stats_df) %>%
+    mutate(expression = list(expr_template(
+      data = .,
+      no.parameters = no.parameters,
+      n = ifelse(paired, length(unique(data$rowid)), nrow(data)),
+      paired = paired,
+      k = k,
+      k.df = k.df,
+      k.df.error = k.df.error,
+      top.text = top.text,
+      bayesian = ifelse(type == "bayes", TRUE, FALSE)
+    )))
 }

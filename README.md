@@ -1,20 +1,18 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# `statsExpressions`: Tidy dataframes and expressions with statistical details
+# `{statsExpressions}`: Tidy dataframes and expressions with statistical details
 
-| Package                                                                                                                                                   | Status                                                                                                                                                                                                 | Usage                                                                                                                                                       | GitHub                                                                                                                                                                   | Miscellaneous                                                                                                                                                                   |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [![CRAN\_Release\_Badge](http://www.r-pkg.org/badges/version-ago/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                  | [![Build Status](https://travis-ci.org/IndrajeetPatil/statsExpressions.svg?branch=master)](https://travis-ci.org/IndrajeetPatil/statsExpressions)                                                      | [![Daily downloads badge](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)     | [![GitHub version](https://img.shields.io/badge/GitHub-1.0.0-orange.svg?style=flat-square)](https://github.com/IndrajeetPatil/statsExpressions/)                         | [![Website](https://img.shields.io/badge/website-statsExpressions-orange.svg?colorB=E91E63)](https://indrajeetpatil.github.io/statsExpressions/)                                |
-| [![CRAN Checks](https://cranchecks.info/badges/summary/statsExpressions)](https://cran.r-project.org/web/checks/check_results_statsExpressions.html)      | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/IndrajeetPatil/statsExpressions?branch=master&svg=true)](https://ci.appveyor.com/project/IndrajeetPatil/statsExpressions) | [![Weekly downloads badge](https://cranlogs.r-pkg.org/badges/last-week/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)   | [![Forks](https://img.shields.io/badge/forks-16-blue.svg)](https://github.com/IndrajeetPatil/statsExpressions/)                                                          | [![CodeFactor](https://www.codefactor.io/repository/github/indrajeetpatil/statsExpressions/badge)](https://www.codefactor.io/repository/github/indrajeetpatil/statsExpressions) |
-| [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.6.0-6666ff.svg)](https://cran.r-project.org/)                                                | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)                                                                        | [![Monthly downloads badge](https://cranlogs.r-pkg.org/badges/last-month/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![Github Issues](https://img.shields.io/badge/issues-8-red.svg)](https://github.com/IndrajeetPatil/statsExpressions/issues)                                             | [![pkgdown](https://github.com/IndrajeetPatil/pairwiseComparisons/workflows/pkgdown/badge.svg)](https://github.com/IndrajeetPatil/pairwiseComparisons/actions)                  |
-| [![code size](https://img.shields.io/github/languages/code-size/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions) | [![Coverage Status](https://coveralls.io/repos/github/IndrajeetPatil/statsExpressions/badge.svg?branch=master)](https://coveralls.io/github/IndrajeetPatil/statsExpressions?branch=master)             | [![Total downloads badge](https://cranlogs.r-pkg.org/badges/grand-total/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)  | [![Github Stars](https://img.shields.io/github/stars/IndrajeetPatil/statsExpressions.svg?style=social&label=Github)](https://github.com/IndrajeetPatil/statsExpressions) | [![DOI](https://joss.theoj.org/papers/10.21105/joss.03236/status.svg)](https://doi.org/10.21105/joss.03236)                                                                     |
-| [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)                                          | [![Codecov test coverage](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/master/graph/badge.svg)](https://codecov.io/gh/IndrajeetPatil/statsExpressions?branch=master)                   | [![lints](https://github.com/IndrajeetPatil/statsExpressions/workflows/lint/badge.svg)](https://github.com/IndrajeetPatil/statsExpressions)                 | [![Last-changedate](https://img.shields.io/badge/last%20change-2021--05--29-yellowgreen.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master)         | [![GitHub last commit](https://img.shields.io/github/last-commit/IndrajeetPatil/statsExpressions.svg)](https://github.com/IndrajeetPatil/statsExpressions/commits/master)       |
-| [![status](https://tinyverse.netlify.com/badge/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                    | [![R build status](https://github.com/IndrajeetPatil/statsExpressions/workflows/R-CMD-check/badge.svg)](https://github.com/IndrajeetPatil/statsExpressions)                                            | [![CoC](https://img.shields.io/badge/CoC-v2.0%20adopted-ff69b4.svg)](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html)                 | [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)                                                              | [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/IndrajeetPatil/statsExpressions/issues)            |
+| Package                                                                                                                                              | Status                                                                                                                                                                     | Usage                                                                                                                                                       | GitHub                                                                                                                                                                   | Miscellaneous                                                                                                                                                                   |
+|------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![CRAN_Release_Badge](https://www.r-pkg.org/badges/version-ago/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)              | [![R build status](https://github.com/IndrajeetPatil/statsExpressions/workflows/R-CMD-check/badge.svg)](https://github.com/IndrajeetPatil/statsExpressions)                | [![Daily downloads badge](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)     | [![contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/IndrajeetPatil/statsExpressions/issues)             | [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)                                                                |
+| [![CRAN Checks](https://cranchecks.info/badges/summary/statsExpressions)](https://cran.r-project.org/web/checks/check_results_statsExpressions.html) | [![lints](https://github.com/IndrajeetPatil/statsExpressions/workflows/lint/badge.svg)](https://github.com/IndrajeetPatil/statsExpressions)                                | [![Weekly downloads badge](https://cranlogs.r-pkg.org/badges/last-week/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)   | [![status](https://tinyverse.netlify.com/badge/statsExpressions)](https://CRAN.R-project.org/package=statsExpressions)                                                   | [![minimal R version](https://img.shields.io/badge/R%3E%3D-4.0-6666ff.svg)](https://cran.r-project.org/)                                                                        |
+| [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)                           | [![Codecov](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/master/graph/badge.svg)](https://app.codecov.io/gh/IndrajeetPatil/statsExpressions?branch=master) | [![Monthly downloads badge](https://cranlogs.r-pkg.org/badges/last-month/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![CoC](https://img.shields.io/badge/CoC-v2.0%20adopted-ff69b4.svg)](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html)                              | [![CodeFactor](https://www.codefactor.io/repository/github/indrajeetpatil/statsExpressions/badge)](https://www.codefactor.io/repository/github/indrajeetpatil/statsExpressions) |
+| [![Project Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)                                         | [![DOI](https://joss.theoj.org/papers/10.21105/joss.03236/status.svg)](https://doi.org/10.21105/joss.03236)                                                                | [![Total downloads badge](https://cranlogs.r-pkg.org/badges/grand-total/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions)  | [![Github Stars](https://img.shields.io/github/stars/IndrajeetPatil/statsExpressions.svg?style=social&label=Github)](https://github.com/IndrajeetPatil/statsExpressions) | [![pkgdown](https://github.com/IndrajeetPatil/pairwiseComparisons/workflows/pkgdown/badge.svg)](https://github.com/IndrajeetPatil/pairwiseComparisons/actions)                  |
 
 # Introduction <img src="man/figures/logo.png" align="right" width="240" />
 
-The `statsExpressions` package has two key aims:
+The `{statsExpressions}` package has two key aims:
 
 -   to provide a consistent syntax to do statistical analysis with tidy
     data (in pipe-friendly manner),
@@ -34,13 +32,10 @@ straightforward either because even functions from the same package can
 return a list, a matrix, an array, a dataframe, etc., depending on the
 function.
 
-This is where `statsExpressions` comes in: It can be thought of as a
+This is where `{statsExpressions}` comes in: It can be thought of as a
 unified portal through which most of the functionality in these
 underlying packages can be accessed, with a simpler interface and no
 requirement to change data format.
-
-This package forms the statistical processing backend for
-[`ggstatsplot`](https://indrajeetpatil.github.io/ggstatsplot/) package.
 
 # Installation
 
@@ -131,24 +126,27 @@ mtcars %>% oneway_anova(cyl, wt, type = "nonparametric")
 #>   parameter1 parameter2 statistic df.error   p.value
 #>   <chr>      <chr>          <dbl>    <int>     <dbl>
 #> 1 wt         cyl             22.8        2 0.0000112
-#>   method                       estimate conf.level conf.low conf.high
-#>   <chr>                           <dbl>      <dbl>    <dbl>     <dbl>
-#> 1 Kruskal-Wallis rank sum test    0.736       0.95    0.600     0.868
-#>   effectsize      conf.method          conf.iterations expression
-#>   <chr>           <chr>                          <int> <list>    
-#> 1 Epsilon2 (rank) percentile bootstrap             100 <language>
+#>   method                       effectsize      estimate conf.level conf.low
+#>   <chr>                        <chr>              <dbl>      <dbl>    <dbl>
+#> 1 Kruskal-Wallis rank sum test Epsilon2 (rank)    0.736       0.95    0.624
+#>   conf.high conf.method          conf.iterations expression
+#>       <dbl> <chr>                          <int> <list>    
+#> 1         1 percentile bootstrap             100 <language>
 
 mtcars %>% oneway_anova(cyl, wt, type = "robust")
 #> # A tibble: 1 x 11
-#>   statistic    df df.error p.value estimate conf.level conf.low conf.high
-#>       <dbl> <dbl>    <dbl>   <dbl>    <dbl>      <dbl>    <dbl>     <dbl>
-#> 1      12.7     2     12.2 0.00102     1.04       0.95    0.787      1.60
-#>   effectsize                        
-#>   <chr>                             
-#> 1 Explanatory measure of effect size
-#>   method                                            expression
-#>   <chr>                                             <list>    
-#> 1 A heteroscedastic one-way ANOVA for trimmed means <language>
+#>   statistic    df df.error p.value
+#>       <dbl> <dbl>    <dbl>   <dbl>
+#> 1      12.7     2     12.2 0.00102
+#>   method                                           
+#>   <chr>                                            
+#> 1 A heteroscedastic one-way ANOVA for trimmed means
+#>   effectsize                         estimate conf.level conf.low conf.high
+#>   <chr>                                 <dbl>      <dbl>    <dbl>     <dbl>
+#> 1 Explanatory measure of effect size     1.05       0.95    0.843      1.50
+#>   expression
+#>   <list>    
+#> 1 <language>
 ```
 
 All possible output dataframes from functions are tabulated here:
@@ -170,13 +168,15 @@ mtcars %>%
   knitr::kable()
 ```
 
-| statistic | p.value | method                                 | estimate | conf.low | conf.high | conf.level | effectsize   |
-|----------:|--------:|:---------------------------------------|---------:|---------:|----------:|-----------:|:-------------|
-|  1.179181 |    0.22 | Bootstrap-t method for one-sample test |    3.197 | 2.872163 |  3.521837 |       0.95 | Trimmed mean |
+| statistic | p.value | n.obs | method                                 | effectsize   | estimate | conf.level | conf.low | conf.high |
+|----------:|--------:|------:|:---------------------------------------|:-------------|---------:|-----------:|---------:|----------:|
+|  1.179181 |   0.275 |    32 | Bootstrap-t method for one-sample test | Trimmed mean |    3.197 |       0.95 | 2.854246 |  3.539754 |
 
-These functions also play nicely with `dplyr` function. For example,
-let’s say we want to run a one-sample *t*-test for all levels of a
-certain grouping variable. Here is how you can do it:
+These functions are also compatible with other popular data manipulation
+packages.
+
+For example, let’s say we want to run a one-sample *t*-test for all
+levels of a certain grouping variable. We can use `dplyr` to do so:
 
 ``` r
 # for reproducibility
@@ -190,21 +190,21 @@ mtcars %>%
   group_modify(~ one_sample_test(.x, wt, test.value = 3), .keep = TRUE) %>%
   ungroup()
 #> # A tibble: 3 x 15
-#>     cyl    mu statistic df.error  p.value method            alternative estimate
-#>   <dbl> <dbl>     <dbl>    <dbl>    <dbl> <chr>             <chr>          <dbl>
-#> 1     4     3    -4.16        10 0.00195  One Sample t-test two.sided     -1.16 
-#> 2     6     3     0.870        6 0.418    One Sample t-test two.sided      0.286
-#> 3     8     3     4.92        13 0.000278 One Sample t-test two.sided      1.24 
-#>   conf.level conf.low conf.high effectsize conf.method conf.distribution
-#>        <dbl>    <dbl>     <dbl> <chr>      <chr>       <chr>            
-#> 1       0.95   -1.97     -0.422 Hedges' g  ncp         t                
-#> 2       0.95   -0.419     1.01  Hedges' g  ncp         t                
-#> 3       0.95    0.565     1.98  Hedges' g  ncp         t                
-#>   expression
-#>   <list>    
-#> 1 <language>
-#> 2 <language>
-#> 3 <language>
+#>     cyl    mu statistic df.error  p.value method            alternative
+#>   <dbl> <dbl>     <dbl>    <dbl>    <dbl> <chr>             <chr>      
+#> 1     4     3    -4.16        10 0.00195  One Sample t-test two.sided  
+#> 2     6     3     0.870        6 0.418    One Sample t-test two.sided  
+#> 3     8     3     4.92        13 0.000278 One Sample t-test two.sided  
+#>   effectsize estimate conf.level conf.low conf.high conf.method
+#>   <chr>         <dbl>      <dbl>    <dbl>     <dbl> <chr>      
+#> 1 Hedges' g    -1.16        0.95   -1.97     -0.422 ncp        
+#> 2 Hedges' g     0.286       0.95   -0.419     1.01  ncp        
+#> 3 Hedges' g     1.24        0.95    0.565     1.98  ncp        
+#>   conf.distribution expression
+#>   <chr>             <list>    
+#> 1 t                 <language>
+#> 2 t                 <language>
+#> 3 t                 <language>
 ```
 
 # Using expressions in custom plots
@@ -220,6 +220,20 @@ to follow the gold standard for statistical reporting.
 For example, here are results from Welch’s *t*-test:
 
 <img src="man/figures/stats_reporting_format.png" align="center" />
+
+## Example: Expressions for centrality measure
+
+``` r
+library(ggplot2)
+
+# displaying mean for each level of `cyl`
+centrality_description(mtcars, cyl, wt) |>
+  ggplot(aes(cyl, wt)) + 
+  geom_point() + 
+  geom_label(aes(label = expression), parse = TRUE)
+```
+
+<img src="man/figures/README-centrality-1.png" width="100%" />
 
 ## Example: Expressions for one-way ANOVAs
 
@@ -291,12 +305,11 @@ library(ggplot2)
 library(gghalves)
 library(ggbeeswarm)
 library(hrbrthemes)
-library(statsExpressions)
 
 # create a plot
 ggplot(ToothGrowth, aes(supp, len)) +
   geom_half_boxplot() +
-  geom_beeswarm(beeswarmArgs = list(side = 1)) +
+  geom_beeswarm() +
   theme_ipsum_rc() +
   # adding a subtitle with
   labs(
@@ -316,18 +329,19 @@ expressions.
 # setup
 set.seed(123)
 library(ggplot2)
-library(statsExpressions)
 library(tidyr)
 library(PairedData)
 data(PrisonStress)
 
+# get data in tidy format
+df <- pivot_longer(PrisonStress, starts_with("PSS"), "PSS", values_to = "stress")
+
 # plot
 paired.plotProfiles(PrisonStress, "PSSbefore", "PSSafter", subjects = "Subject") +
-  # `statsExpressions` needs data in the tidy format
   labs(
     title = "Two-sample Wilcoxon paired test",
     subtitle = two_sample_test(
-      data = pivot_longer(PrisonStress, starts_with("PSS"), "PSS", values_to = "stress"),
+      data = df,
       x = PSS,
       y = stress,
       paired = TRUE,
@@ -345,7 +359,6 @@ paired.plotProfiles(PrisonStress, "PSSbefore", "PSSafter", subjects = "Subject")
 # setup
 set.seed(123)
 library(ggplot2)
-library(statsExpressions)
 
 # creating a histogram plot
 ggplot(mtcars, aes(wt)) +
@@ -368,7 +381,6 @@ Let’s look at another example where we want to run correlation analysis:
 # setup
 set.seed(123)
 library(ggplot2)
-library(statsExpressions)
 
 # create a scatter plot
 ggplot(mtcars, aes(mpg, wt)) +
@@ -390,7 +402,6 @@ For categorical/nominal data - one-sample:
 # setup
 set.seed(123)
 library(ggplot2)
-library(statsExpressions)
 
 # basic pie chart
 ggplot(as.data.frame(table(mpg$class)), aes(x = "", y = Freq, fill = factor(Var1))) +
@@ -404,7 +415,7 @@ ggplot(as.data.frame(table(mpg$class)), aes(x = "", y = Freq, fill = factor(Var1
     y = NULL,
     title = "Pie Chart of class (type of car)",
     subtitle = contingency_table(as.data.frame(table(mpg$class)), Var1, counts = Freq)$expression[[1]],
-    caption = "One-sample goodness of fit proportion test"
+    caption = "One-sample goodness-of-fit test"
   )
 ```
 
@@ -417,13 +428,12 @@ having to display them in plots:
 # setup
 set.seed(123)
 library(ggplot2)
-library(statsExpressions)
 
 # Pearson's chi-squared test of independence
 contingency_table(mtcars, am, cyl)$expression[[1]]
 #> paste(chi["Pearson"]^2, "(", "2", ") = ", "8.74", ", ", italic("p"), 
 #>     " = ", "0.013", ", ", widehat(italic("V"))["Cramer"], " = ", 
-#>     "0.46", ", CI"["95%"], " [", "0.00", ", ", "0.78", "], ", 
+#>     "0.46", ", CI"["95%"], " [", "0.00", ", ", "1.00", "], ", 
 #>     italic("n")["obs"], " = ", "32")
 ```
 
@@ -443,7 +453,7 @@ viz_forest(
   xlab = "Cohen's d",
   variant = "thick",
   type = "cumulative"
-) + # use `statsExpressions` to create expression containing results
+) + # use `{statsExpressions}` to create expression containing results
   labs(
     title = "Meta-analysis of Pietschnig, Voracek, and Formann (2010) on the Mozart effect",
     subtitle = meta_analysis(dplyr::rename(mozart, estimate = d, std.error = se))$expression[[1]]
@@ -464,13 +474,12 @@ included:
 # setup
 set.seed(123)
 library(ggplot2)
-library(statsExpressions)
 
 # extracting detailed expression
 (res_expr <- oneway_anova(iris, Species, Sepal.Length, var.equal = TRUE)$expression[[1]])
 #> paste(italic("F")["Fisher"], "(", "2", ",", "147", ") = ", "119.26", 
 #>     ", ", italic("p"), " = ", "1.67e-31", ", ", widehat(omega["p"]^2), 
-#>     " = ", "0.61", ", CI"["95%"], " [", "0.52", ", ", "0.68", 
+#>     " = ", "0.61", ", CI"["95%"], " [", "0.53", ", ", "1.00", 
 #>     "], ", italic("n")["obs"], " = ", "150")
 
 # adapting the details to your liking
@@ -495,10 +504,19 @@ for example, if you want to know more about how one-way
 (between-subjects) ANOVA, you can run `?stats::oneway.test` in your R
 console.
 
+## `centrality_description`
+
+| Type           | Measure                                           | Function used                       |
+|----------------|---------------------------------------------------|-------------------------------------|
+| Parametric     | mean                                              | `parameters::describe_distribution` |
+| Non-parametric | median                                            | `parameters::describe_distribution` |
+| Robust         | trimmed mean                                      | `parameters::describe_distribution` |
+| Bayesian       | MAP (maximum *a posteriori* probability) estimate | `parameters::describe_distribution` |
+
 ## `two_sample_test` + `oneway_anova`
 
-No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
-=&gt; `oneway_anova`
+No. of groups: `2` => `two_sample_test`<br> No. of groups: `> 2` =>
+`oneway_anova`
 
 ### between-subjects
 
@@ -506,10 +524,10 @@ No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
 
 | Type           | No. of groups | Test                                            | Function used          |
 |----------------|---------------|-------------------------------------------------|------------------------|
-| Parametric     | &gt; 2        | Fisher’s or Welch’s one-way ANOVA               | `stats::oneway.test`   |
-| Non-parametric | &gt; 2        | Kruskal–Wallis one-way ANOVA                    | `stats::kruskal.test`  |
-| Robust         | &gt; 2        | Heteroscedastic one-way ANOVA for trimmed means | `WRS2::t1way`          |
-| Bayes Factor   | &gt; 2        | Fisher’s ANOVA                                  | `BayesFactor::anovaBF` |
+| Parametric     | \> 2          | Fisher’s or Welch’s one-way ANOVA               | `stats::oneway.test`   |
+| Non-parametric | \> 2          | Kruskal–Wallis one-way ANOVA                    | `stats::kruskal.test`  |
+| Robust         | \> 2          | Heteroscedastic one-way ANOVA for trimmed means | `WRS2::t1way`          |
+| Bayes Factor   | \> 2          | Fisher’s ANOVA                                  | `BayesFactor::anovaBF` |
 | Parametric     | 2             | Student’s or Welch’s *t*-test                   | `stats::t.test`        |
 | Non-parametric | 2             | Mann–Whitney *U* test                           | `stats::wilcox.test`   |
 | Robust         | 2             | Yuen’s test for trimmed means                   | `WRS2::yuen`           |
@@ -517,16 +535,16 @@ No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
 
 **Effect size estimation**
 
-| Type           | No. of groups | Effect size                                                                                                                                                                                            | CI? | Function used                                          |
-|----------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|--------------------------------------------------------|
-| Parametric     | &gt; 2        | ![\\eta\_{p}^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Ceta_%7Bp%7D%5E2 "\eta_{p}^2"), ![\\omega\_{p}^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Comega_%7Bp%7D%5E2 "\omega_{p}^2") | ✅   | `effectsize::omega_squared`, `effectsize::eta_squared` |
-| Non-parametric | &gt; 2        | ![\\epsilon\_{ordinal}^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Cepsilon_%7Bordinal%7D%5E2 "\epsilon_{ordinal}^2")                                                                          | ✅   | `effectsize::rank_epsilon_squared`                     |
-| Robust         | &gt; 2        | ![\\xi](https://chart.apis.google.com/chart?cht=tx&chl=%5Cxi "\xi") (Explanatory measure of effect size)                                                                                               | ✅   | `WRS2::t1way`                                          |
-| Bayes Factor   | &gt; 2        | ![R\_{Bayesian}^2](https://chart.apis.google.com/chart?cht=tx&chl=R_%7BBayesian%7D%5E2 "R_{Bayesian}^2")                                                                                               | ✅   | `performance::r2_bayes`                                |
-| Parametric     | 2             | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                               | ✅   | `effectsize::cohens_d`, `effectsize::hedges_g`         |
-| Non-parametric | 2             | *r* (rank-biserial correlation)                                                                                                                                                                        | ✅   | `effectsize::rank_biserial`                            |
-| Robust         | 2             | ![\\delta\_{R}^{AKP}](https://chart.apis.google.com/chart?cht=tx&chl=%5Cdelta_%7BR%7D%5E%7BAKP%7D "\delta_{R}^{AKP}") (Algina-Keselman-Penfield robust standardized difference)                        | ✅   | `WRS2::akp.effect`                                     |
-| Bayesian       | 2             | ![\\delta\_{posterior}](https://chart.apis.google.com/chart?cht=tx&chl=%5Cdelta_%7Bposterior%7D "\delta_{posterior}")                                                                                  | ✅   | `bayestestR::describe_posterior`                       |
+| Type           | No. of groups | Effect size                                                                                                                                                                        | CI? | Function used                                          |
+|----------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|--------------------------------------------------------|
+| Parametric     | \> 2          | ![\\eta\_{p}^2](https://latex.codecogs.com/svg.latex?%5Ceta_%7Bp%7D%5E2 "\eta_{p}^2"), ![\\omega\_{p}^2](https://latex.codecogs.com/svg.latex?%5Comega_%7Bp%7D%5E2 "\omega_{p}^2") | ✅   | `effectsize::omega_squared`, `effectsize::eta_squared` |
+| Non-parametric | \> 2          | ![\\epsilon\_{ordinal}^2](https://latex.codecogs.com/svg.latex?%5Cepsilon_%7Bordinal%7D%5E2 "\epsilon_{ordinal}^2")                                                                | ✅   | `effectsize::rank_epsilon_squared`                     |
+| Robust         | \> 2          | ![\\xi](https://latex.codecogs.com/svg.latex?%5Cxi "\xi") (Explanatory measure of effect size)                                                                                     | ✅   | `WRS2::t1way`                                          |
+| Bayes Factor   | \> 2          | ![R\_{Bayesian}^2](https://latex.codecogs.com/svg.latex?R_%7BBayesian%7D%5E2 "R_{Bayesian}^2")                                                                                     | ✅   | `performance::r2_bayes`                                |
+| Parametric     | 2             | Cohen’s *d*, Hedge’s *g*                                                                                                                                                           | ✅   | `effectsize::cohens_d`, `effectsize::hedges_g`         |
+| Non-parametric | 2             | *r* (rank-biserial correlation)                                                                                                                                                    | ✅   | `effectsize::rank_biserial`                            |
+| Robust         | 2             | ![\\delta\_{R}^{AKP}](https://latex.codecogs.com/svg.latex?%5Cdelta_%7BR%7D%5E%7BAKP%7D "\delta_{R}^{AKP}") (Algina-Keselman-Penfield robust standardized difference)              | ✅   | `WRS2::akp.effect`                                     |
+| Bayesian       | 2             | ![\\delta\_{posterior}](https://latex.codecogs.com/svg.latex?%5Cdelta_%7Bposterior%7D "\delta_{posterior}")                                                                        | ✅   | `bayestestR::describe_posterior`                       |
 
 ### within-subjects
 
@@ -534,10 +552,10 @@ No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
 
 | Type           | No. of groups | Test                                                              | Function used          |
 |----------------|---------------|-------------------------------------------------------------------|------------------------|
-| Parametric     | &gt; 2        | One-way repeated measures ANOVA                                   | `afex::aov_ez`         |
-| Non-parametric | &gt; 2        | Friedman rank sum test                                            | `stats::friedman.test` |
-| Robust         | &gt; 2        | Heteroscedastic one-way repeated measures ANOVA for trimmed means | `WRS2::rmanova`        |
-| Bayes Factor   | &gt; 2        | One-way repeated measures ANOVA                                   | `BayesFactor::anovaBF` |
+| Parametric     | \> 2          | One-way repeated measures ANOVA                                   | `afex::aov_ez`         |
+| Non-parametric | \> 2          | Friedman rank sum test                                            | `stats::friedman.test` |
+| Robust         | \> 2          | Heteroscedastic one-way repeated measures ANOVA for trimmed means | `WRS2::rmanova`        |
+| Bayes Factor   | \> 2          | One-way repeated measures ANOVA                                   | `BayesFactor::anovaBF` |
 | Parametric     | 2             | Student’s *t*-test                                                | `stats::t.test`        |
 | Non-parametric | 2             | Wilcoxon signed-rank test                                         | `stats::wilcox.test`   |
 | Robust         | 2             | Yuen’s test on trimmed means for dependent samples                | `WRS2::yuend`          |
@@ -545,16 +563,16 @@ No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
 
 **Effect size estimation**
 
-| Type           | No. of groups | Effect size                                                                                                                                                                                            | CI? | Function used                                          |
-|----------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|--------------------------------------------------------|
-| Parametric     | &gt; 2        | ![\\eta\_{p}^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Ceta_%7Bp%7D%5E2 "\eta_{p}^2"), ![\\omega\_{p}^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Comega_%7Bp%7D%5E2 "\omega_{p}^2") | ✅   | `effectsize::omega_squared`, `effectsize::eta_squared` |
-| Non-parametric | &gt; 2        | ![W\_{Kendall}](https://chart.apis.google.com/chart?cht=tx&chl=W_%7BKendall%7D "W_{Kendall}") (Kendall’s coefficient of concordance)                                                                   | ✅   | `effectsize::kendalls_w`                               |
-| Robust         | &gt; 2        | ![\\delta\_{R-avg}^{AKP}](https://chart.apis.google.com/chart?cht=tx&chl=%5Cdelta_%7BR-avg%7D%5E%7BAKP%7D "\delta_{R-avg}^{AKP}") (Algina-Keselman-Penfield robust standardized difference average)    | ✅   | `WRS2::wmcpAKP`                                        |
-| Bayes Factor   | &gt; 2        | ![R\_{Bayesian}^2](https://chart.apis.google.com/chart?cht=tx&chl=R_%7BBayesian%7D%5E2 "R_{Bayesian}^2")                                                                                               | ✅   | `performance::r2_bayes`                                |
-| Parametric     | 2             | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                               | ✅   | `effectsize::cohens_d`, `effectsize::hedges_g`         |
-| Non-parametric | 2             | *r* (rank-biserial correlation)                                                                                                                                                                        | ✅   | `effectsize::rank_biserial`                            |
-| Robust         | 2             | ![\\delta\_{R}^{AKP}](https://chart.apis.google.com/chart?cht=tx&chl=%5Cdelta_%7BR%7D%5E%7BAKP%7D "\delta_{R}^{AKP}") (Algina-Keselman-Penfield robust standardized difference)                        | ✅   | `WRS2::wmcpAKP`                                        |
-| Bayesian       | 2             | ![\\delta\_{posterior}](https://chart.apis.google.com/chart?cht=tx&chl=%5Cdelta_%7Bposterior%7D "\delta_{posterior}")                                                                                  | ✅   | `bayestestR::describe_posterior`                       |
+| Type           | No. of groups | Effect size                                                                                                                                                                               | CI? | Function used                                          |
+|----------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|--------------------------------------------------------|
+| Parametric     | \> 2          | ![\\eta\_{p}^2](https://latex.codecogs.com/svg.latex?%5Ceta_%7Bp%7D%5E2 "\eta_{p}^2"), ![\\omega\_{p}^2](https://latex.codecogs.com/svg.latex?%5Comega_%7Bp%7D%5E2 "\omega_{p}^2")        | ✅   | `effectsize::omega_squared`, `effectsize::eta_squared` |
+| Non-parametric | \> 2          | ![W\_{Kendall}](https://latex.codecogs.com/svg.latex?W_%7BKendall%7D "W_{Kendall}") (Kendall’s coefficient of concordance)                                                                | ✅   | `effectsize::kendalls_w`                               |
+| Robust         | \> 2          | ![\\delta\_{R-avg}^{AKP}](https://latex.codecogs.com/svg.latex?%5Cdelta_%7BR-avg%7D%5E%7BAKP%7D "\delta_{R-avg}^{AKP}") (Algina-Keselman-Penfield robust standardized difference average) | ✅   | `WRS2::wmcpAKP`                                        |
+| Bayes Factor   | \> 2          | ![R\_{Bayesian}^2](https://latex.codecogs.com/svg.latex?R_%7BBayesian%7D%5E2 "R_{Bayesian}^2")                                                                                            | ✅   | `performance::r2_bayes`                                |
+| Parametric     | 2             | Cohen’s *d*, Hedge’s *g*                                                                                                                                                                  | ✅   | `effectsize::cohens_d`, `effectsize::hedges_g`         |
+| Non-parametric | 2             | *r* (rank-biserial correlation)                                                                                                                                                           | ✅   | `effectsize::rank_biserial`                            |
+| Robust         | 2             | ![\\delta\_{R}^{AKP}](https://latex.codecogs.com/svg.latex?%5Cdelta_%7BR%7D%5E%7BAKP%7D "\delta_{R}^{AKP}") (Algina-Keselman-Penfield robust standardized difference)                     | ✅   | `WRS2::wmcpAKP`                                        |
+| Bayesian       | 2             | ![\\delta\_{posterior}](https://latex.codecogs.com/svg.latex?%5Cdelta_%7Bposterior%7D "\delta_{posterior}")                                                                               | ✅   | `bayestestR::describe_posterior`                       |
 
 ## `one_sample_test`
 
@@ -564,17 +582,17 @@ No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
 |----------------|------------------------------------------|------------------------|
 | Parametric     | One-sample Student’s *t*-test            | `stats::t.test`        |
 | Non-parametric | One-sample Wilcoxon test                 | `stats::wilcox.test`   |
-| Robust         | Bootstrap-*t* method for one-sample test | `trimcibt` (custom)    |
+| Robust         | Bootstrap-*t* method for one-sample test | `WRS2::trimcibt`       |
 | Bayesian       | One-sample Student’s *t*-test            | `BayesFactor::ttestBF` |
 
 **Effect size estimation**
 
-| Type           | Effect size                                                                                                           | CI? | Function used                                  |
-|----------------|-----------------------------------------------------------------------------------------------------------------------|-----|------------------------------------------------|
-| Parametric     | Cohen’s *d*, Hedge’s *g*                                                                                              | ✅   | `effectsize::cohens_d`, `effectsize::hedges_g` |
-| Non-parametric | *r* (rank-biserial correlation)                                                                                       | ✅   | `effectsize::rank_biserial`                    |
-| Robust         | trimmed mean                                                                                                          | ✅   | `trimcibt` (custom)                            |
-| Bayes Factor   | ![\\delta\_{posterior}](https://chart.apis.google.com/chart?cht=tx&chl=%5Cdelta_%7Bposterior%7D "\delta_{posterior}") | ✅   | `bayestestR::describe_posterior`               |
+| Type           | Effect size                                                                                                 | CI? | Function used                                  |
+|----------------|-------------------------------------------------------------------------------------------------------------|-----|------------------------------------------------|
+| Parametric     | Cohen’s *d*, Hedge’s *g*                                                                                    | ✅   | `effectsize::cohens_d`, `effectsize::hedges_g` |
+| Non-parametric | *r* (rank-biserial correlation)                                                                             | ✅   | `effectsize::rank_biserial`                    |
+| Robust         | trimmed mean                                                                                                | ✅   | `trimcibt` (custom)                            |
+| Bayes Factor   | ![\\delta\_{posterior}](https://latex.codecogs.com/svg.latex?%5Cdelta_%7Bposterior%7D "\delta_{posterior}") | ✅   | `bayestestR::describe_posterior`               |
 
 ## `corr_test`
 
@@ -593,47 +611,47 @@ No. of groups: `2` =&gt; `two_sample_test`<br> No. of groups: `> 2`
 
 **Hypothesis testing**
 
-| Type                      | Design   | Test                                                                                                   | Function used                     |
-|---------------------------|----------|--------------------------------------------------------------------------------------------------------|-----------------------------------|
-| Parametric/Non-parametric | Unpaired | Pearson’s ![\\chi^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Cchi%5E2 "\chi^2") test          | `stats::chisq.test`               |
-| Bayesian                  | Unpaired | Bayesian Pearson’s ![\\chi^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Cchi%5E2 "\chi^2") test | `BayesFactor::contingencyTableBF` |
-| Parametric/Non-parametric | Paired   | McNemar’s ![\\chi^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Cchi%5E2 "\chi^2") test          | `stats::mcnemar.test`             |
-| Bayesian                  | Paired   | ❌                                                                                                      | ❌                                 |
+| Type                      | Design   | Test                                                                                         | Function used                     |
+|---------------------------|----------|----------------------------------------------------------------------------------------------|-----------------------------------|
+| Parametric/Non-parametric | Unpaired | Pearson’s ![\\chi^2](https://latex.codecogs.com/svg.latex?%5Cchi%5E2 "\chi^2") test          | `stats::chisq.test`               |
+| Bayesian                  | Unpaired | Bayesian Pearson’s ![\\chi^2](https://latex.codecogs.com/svg.latex?%5Cchi%5E2 "\chi^2") test | `BayesFactor::contingencyTableBF` |
+| Parametric/Non-parametric | Paired   | McNemar’s ![\\chi^2](https://latex.codecogs.com/svg.latex?%5Cchi%5E2 "\chi^2") test          | `stats::mcnemar.test`             |
+| Bayesian                  | Paired   | ❌                                                                                            | ❌                                 |
 
 **Effect size estimation**
 
-| Type                      | Design   | Effect size                                                         | CI? | Function used           |
-|---------------------------|----------|---------------------------------------------------------------------|-----|-------------------------|
-| Parametric/Non-parametric | Unpaired | Cramer’s ![V](https://chart.apis.google.com/chart?cht=tx&chl=V "V") | ✅   | `effectsize::cramers_v` |
-| Bayesian                  | Unpaired | Cramer’s ![V](https://chart.apis.google.com/chart?cht=tx&chl=V "V") | ✅   | `effectsize::cramers_v` |
-| Parametric/Non-parametric | Paired   | Cohen’s ![g](https://chart.apis.google.com/chart?cht=tx&chl=g "g")  | ✅   | `effectsize::cohens_g`  |
-| Bayesian                  | Paired   | ❌                                                                   | ❌   | ❌                       |
+| Type                      | Design   | Effect size                                               | CI? | Function used           |
+|---------------------------|----------|-----------------------------------------------------------|-----|-------------------------|
+| Parametric/Non-parametric | Unpaired | Cramer’s ![V](https://latex.codecogs.com/svg.latex?V "V") | ✅   | `effectsize::cramers_v` |
+| Bayesian                  | Unpaired | Cramer’s ![V](https://latex.codecogs.com/svg.latex?V "V") | ✅   | `effectsize::cramers_v` |
+| Parametric/Non-parametric | Paired   | Cohen’s ![g](https://latex.codecogs.com/svg.latex?g "g")  | ✅   | `effectsize::cohens_g`  |
+| Bayesian                  | Paired   | ❌                                                         | ❌   | ❌                       |
 
 ### one-way table
 
 **Hypothesis testing**
 
-| Type                      | Test                                                                                                         | Function used       |
-|---------------------------|--------------------------------------------------------------------------------------------------------------|---------------------|
-| Parametric/Non-parametric | Goodness of fit ![\\chi^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Cchi%5E2 "\chi^2") test          | `stats::chisq.test` |
-| Bayesian                  | Bayesian Goodness of fit ![\\chi^2](https://chart.apis.google.com/chart?cht=tx&chl=%5Cchi%5E2 "\chi^2") test | (custom)            |
+| Type                      | Test                                                                                               | Function used       |
+|---------------------------|----------------------------------------------------------------------------------------------------|---------------------|
+| Parametric/Non-parametric | Goodness of fit ![\\chi^2](https://latex.codecogs.com/svg.latex?%5Cchi%5E2 "\chi^2") test          | `stats::chisq.test` |
+| Bayesian                  | Bayesian Goodness of fit ![\\chi^2](https://latex.codecogs.com/svg.latex?%5Cchi%5E2 "\chi^2") test | (custom)            |
 
 **Effect size estimation**
 
-| Type                      | Effect size                                                         | CI? | Function used                    |
-|---------------------------|---------------------------------------------------------------------|-----|----------------------------------|
-| Parametric/Non-parametric | Cramer’s ![V](https://chart.apis.google.com/chart?cht=tx&chl=V "V") | ✅   | `bayestestR::describe_posterior` |
-| Bayesian                  | ❌                                                                   | ❌   | ❌                                |
+| Type                      | Effect size                                                | CI? | Function used            |
+|---------------------------|------------------------------------------------------------|-----|--------------------------|
+| Parametric/Non-parametric | Pearson’s ![C](https://latex.codecogs.com/svg.latex?C "C") | ✅   | `effectsize::pearsons_c` |
+| Bayesian                  | ❌                                                          | ❌   | ❌                        |
 
 ## `meta_analysis`
 
 **Hypothesis testing** and **Effect size estimation**
 
-| Type       | Test                                             | Effect size                                                               | CI? | Function used          |
-|------------|--------------------------------------------------|---------------------------------------------------------------------------|-----|------------------------|
-| Parametric | Meta-analysis via random-effects models          | ![\\beta](https://chart.apis.google.com/chart?cht=tx&chl=%5Cbeta "\beta") | ✅   | `metafor::metafor`     |
-| Robust     | Meta-analysis via robust random-effects models   | ![\\beta](https://chart.apis.google.com/chart?cht=tx&chl=%5Cbeta "\beta") | ✅   | `metaplus::metaplus`   |
-| Bayes      | Meta-analysis via Bayesian random-effects models | ![\\beta](https://chart.apis.google.com/chart?cht=tx&chl=%5Cbeta "\beta") | ✅   | `metaBMA::meta_random` |
+| Type       | Test                                             | Effect size                                                     | CI? | Function used          |
+|------------|--------------------------------------------------|-----------------------------------------------------------------|-----|------------------------|
+| Parametric | Meta-analysis via random-effects models          | ![\\beta](https://latex.codecogs.com/svg.latex?%5Cbeta "\beta") | ✅   | `metafor::metafor`     |
+| Robust     | Meta-analysis via robust random-effects models   | ![\\beta](https://latex.codecogs.com/svg.latex?%5Cbeta "\beta") | ✅   | `metaplus::metaplus`   |
+| Bayes      | Meta-analysis via Bayesian random-effects models | ![\\beta](https://latex.codecogs.com/svg.latex?%5Cbeta "\beta") | ✅   | `metaBMA::meta_random` |
 
 # Usage in `ggstatsplot`
 

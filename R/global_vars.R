@@ -22,12 +22,14 @@ utils::globalVariables(
     ".f",
     ".f.es",
     "bf10",
-    "estimate.LB",
-    "estimate.UB",
+    "conf.low",
+    "conf.high",
     "r2.component",
     "conf.level",
     ".fn",
-    ".ns"
+    ".ns",
+    "n",
+    "p.value"
   ),
   package = "statsExpressions",
   add = FALSE

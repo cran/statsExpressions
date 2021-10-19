@@ -7,22 +7,21 @@ test_that(
 
     # `statsExpressions` output
     set.seed(123)
-    df1 <-
-      suppressWarnings(
-        two_sample_test(
-          ToothGrowth,
-          x = supp,
-          y = len,
-          effsize.type = "d",
-          var.equal = TRUE,
-          conf.level = 0.99,
-          k = 5
-        )
+    df1 <- suppressWarnings(
+      two_sample_test(
+        ToothGrowth,
+        x = supp,
+        y = len,
+        effsize.type = "d",
+        var.equal = TRUE,
+        conf.level = 0.99,
+        k = 5
       )
+    )
 
     # testing all details
     set.seed(123)
-    expect_snapshot(dplyr::select(df1, -expression))
+    expect_snapshot(select(df1, -expression))
     expect_snapshot(df1$expression[[1]])
   }
 )
@@ -34,22 +33,21 @@ test_that(
 
     # `statsExpressions` output
     set.seed(123)
-    df1 <-
-      suppressWarnings(
-        two_sample_test(
-          ToothGrowth,
-          x = supp,
-          y = len,
-          effsize.type = "g",
-          var.equal = FALSE,
-          conf.level = 0.90,
-          k = 3
-        )
+    df1 <- suppressWarnings(
+      two_sample_test(
+        ToothGrowth,
+        x = supp,
+        y = len,
+        effsize.type = "g",
+        var.equal = FALSE,
+        conf.level = 0.90,
+        k = 3
       )
+    )
 
     # testing all details
     set.seed(123)
-    expect_snapshot(dplyr::select(df1, -expression))
+    expect_snapshot(select(df1, -expression))
     expect_snapshot(df1$expression[[1]])
   }
 )
@@ -61,23 +59,22 @@ test_that(
 
     # output from `statsExpressions` helper subtitle
     set.seed(123)
-    df1 <-
-      suppressWarnings(two_sample_test(
-        data = dplyr::filter(
-          iris_long,
-          condition %in% c("Sepal.Length", "Sepal.Width")
-        ),
-        x = condition,
-        y = value,
-        paired = TRUE,
-        effsize.type = "g",
-        k = 4,
-        conf.level = 0.50
-      ))
+    df1 <- suppressWarnings(two_sample_test(
+      data = filter(
+        iris_long,
+        condition %in% c("Sepal.Length", "Sepal.Width")
+      ),
+      x = condition,
+      y = value,
+      paired = TRUE,
+      effsize.type = "g",
+      k = 4,
+      conf.level = 0.50
+    ))
 
     # testing all details
     set.seed(123)
-    expect_snapshot(dplyr::select(df1, -expression))
+    expect_snapshot(select(df1, -expression))
     expect_snapshot(df1$expression[[1]])
   }
 )
@@ -90,19 +87,18 @@ test_that(
 
     # output from `statsExpressions` helper subtitle
     set.seed(123)
-    df1 <-
-      two_sample_test(
-        data = dplyr::filter(bugs_long, condition %in% c("HDHF", "HDLF")),
-        x = condition,
-        y = desire,
-        paired = TRUE,
-        effsize.type = "d",
-        k = 3
-      )
+    df1 <- two_sample_test(
+      data = filter(bugs_long, condition %in% c("HDHF", "HDLF")),
+      x = condition,
+      y = desire,
+      paired = TRUE,
+      effsize.type = "d",
+      k = 3
+    )
 
     # testing all details
     set.seed(123)
-    expect_snapshot(dplyr::select(df1, -expression))
+    expect_snapshot(select(df1, -expression))
     expect_snapshot(df1$expression[[1]])
   }
 )
@@ -140,7 +136,7 @@ test_that(
         45L
       ), class = "data.frame")
 
-    df <- dplyr::filter(df, condition %in% c(1, 5))
+    df <- filter(df, condition %in% c(1, 5))
 
     # incorrect
     set.seed(123)
@@ -157,7 +153,7 @@ test_that(
     set.seed(123)
     expr2 <-
       two_sample_test(
-        data = dplyr::arrange(df, id),
+        data = arrange(df, id),
         x = condition,
         y = score,
         paired = TRUE

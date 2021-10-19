@@ -6,13 +6,13 @@ test_that(
     skip_if(getRversion() < "4.0")
     skip_if_not_installed("metaplus")
 
-    # renaming to what `statsExpressions` expects
+    # renaming to what `{statsExpressions}` expects
     set.seed(123)
     data(mag, package = "metaplus")
     dat <-
       mag %>%
-      dplyr::rename(estimate = yi, std.error = sei) %>%
-      dplyr::sample_frac(0.4)
+      rename(estimate = yi, std.error = sei) %>%
+      sample_frac(0.4)
 
     # df
     set.seed(123)
@@ -24,7 +24,7 @@ test_that(
 
     # testing all details
     set.seed(123)
-    expect_snapshot(dplyr::select(df, -expression))
+    expect_snapshot(select(df, -expression))
     expect_snapshot(df$expression[[1]])
   }
 )

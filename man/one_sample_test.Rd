@@ -47,8 +47,8 @@ You can specify just the initial letter.}
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Confidence/Credible Interval (CI) level. Default to \code{0.95}
-(\verb{95\%}).}
+\item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
+return \verb{95\%} confidence/credible intervals (\code{0.95}).}
 
 \item{tr}{Trim level for the mean when carrying out \code{robust} tests. In case
 of an error, try reducing the value of \code{tr}, which is by default set to
@@ -65,7 +65,7 @@ corresponds to scale for fixed effects.}
 argument can be \code{"d"} (for Cohen's \emph{d}) or \code{"g"} (for Hedge's \emph{g}).}
 
 \item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} functions.}
+mostly relevant in the context of \code{ggstatsplot} package functions.}
 
 \item{...}{Currently ignored.}
 }
@@ -80,7 +80,7 @@ Internal function \code{.f} used to carry out statistical test:
 \itemize{
 \item \strong{parametric}: \code{stats::t.test}
 \item \strong{nonparametric}: \code{stats::wilcox.test}
-\item \strong{robust}: \code{trimcibt} (custom)
+\item \strong{robust}: \code{WRS2::trimcibt}
 \item \strong{bayes}: \code{BayesFactor::ttestBF}
 }
 
@@ -88,7 +88,7 @@ Internal function \code{.f.es} used to compute effect size:
 \itemize{
 \item \strong{parametric}: \code{effectsize::cohens_d}, \code{effectsize::hedges_g}
 \item \strong{nonparametric}: \code{effectsize::rank_biserial}
-\item \strong{robust}: \code{trimcibt} (custom)
+\item \strong{robust}: \code{WRS2::trimcibt}
 \item \strong{bayes}: \code{bayestestR::describe_posterior}
 }
 

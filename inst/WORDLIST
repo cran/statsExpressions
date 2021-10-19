@@ -1,7 +1,6 @@
 AKP
 AKP's
 Algina
-AppVeyor
 CoC
 CodeFactor
 Codecov
@@ -40,7 +39,6 @@ anthropods
 bayes
 bayestestR
 biserial
-changedate
 conf
 df
 disgustingness
@@ -54,7 +52,6 @@ hexsticker
 htests
 https
 imdb
-img
 indrajeetpatil
 io
 joss
@@ -64,14 +61,14 @@ noncentrality
 normals
 patilindrajeets
 pkgdown
+posteriori
 pre
 setosa
 sphericity
-svg
 theoj
 tibble
 ungroups
+vectorized
 versicolor
 virginica
 widehat
-yellowgreen

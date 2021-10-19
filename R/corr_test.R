@@ -8,19 +8,13 @@
 #'
 #' @references To see details about functions which are internally used to carry
 #'   out these analyses, see the following vignette-
-#' \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
+#' <https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html>
 #'
 #' @param x The column in `data` containing the explanatory variable to be
 #'   plotted on the `x`-axis.
 #' @param y The column in `data` containing the response (outcome) variable to
 #'   be plotted on the `y`-axis.
 #' @inheritParams oneway_anova
-#'
-#' @importFrom dplyr select case_when ungroup
-#' @importFrom correlation correlation
-#' @importFrom ipmisc stats_type_switch
-#' @importFrom parameters standardize_names
-#' @importFrom tidyr drop_na
 #'
 #' @examples
 #' \donttest{
@@ -59,34 +53,32 @@ corr_test <- function(data,
                       ...) {
 
   # see which method was used to specify type of correlation
-  type <- ipmisc::stats_type_switch(type)
+  type <- stats_type_switch(type)
 
-  # ----------------- creating correlation dataframes -----------------------
+  # correlation dataframes -----------------------
 
   # creating a dataframe of results
   stats_df <- correlation::correlation(
-    data = tidyr::drop_na(dplyr::select(dplyr::ungroup(data), {{ x }}, {{ y }})),
+    data = tidyr::drop_na(select(ungroup(data), {{ x }}, {{ y }})),
     method = ifelse(type == "nonparametric", "spearman", "pearson"),
     ci = conf.level,
     bayesian = ifelse(type == "bayes", TRUE, FALSE),
     bayesian_prior = bf.prior,
     winsorize = ifelse(type == "robust", tr, FALSE)
   ) %>%
-    parameters::standardize_names(style = "broom") %>%
-    dplyr::mutate(effectsize = method)
+    insight::standardize_names(style = "broom") %>%
+    mutate(effectsize = method)
 
-  # ---------------------- preparing expression -------------------------------
+  # expression ---------------------------------------
 
   # no. of parameters
-  no.parameters <- ifelse(type %in% c("parametric", "robust"), 1L, 0L)
-  if (type == "nonparametric") stats_df %<>% dplyr::mutate(statistic = log(statistic))
-  if (type == "bayes") stats_df %<>% dplyr::rename("bf10" = "bayes.factor")
+  if (type == "bayes") stats_df %<>% rename("bf10" = "bayes.factor")
 
   # preparing expression
-  as_tibble(stats_df) %>%
-    dplyr::mutate(expression = list(expr_template(
-      data = stats_df,
-      no.parameters = no.parameters,
+  polish_data(stats_df) %>%
+    mutate(expression = list(expr_template(
+      data = .,
+      no.parameters = ifelse(type %in% c("parametric", "robust"), 1L, 0L),
       top.text = top.text,
       paired = TRUE,
       n = stats_df$n.obs[[1]],

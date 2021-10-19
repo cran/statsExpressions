@@ -1,15 +1,15 @@
 # one_sample_test parametric works
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
       # A tibble: 1 x 13
-           mu statistic df.error p.value method            alternative estimate
-        <dbl>     <dbl>    <dbl>   <dbl> <chr>             <chr>          <dbl>
-      1   120     -2.67       78 0.00910 One Sample t-test two.sided     -0.298
-        conf.level conf.low conf.high effectsize conf.method conf.distribution
-             <dbl>    <dbl>     <dbl> <chr>      <chr>       <chr>            
-      1       0.95   -0.524   -0.0743 Hedges' g  ncp         t                
+           mu statistic df.error p.value method            alternative effectsize
+        <dbl>     <dbl>    <dbl>   <dbl> <chr>             <chr>       <chr>     
+      1   120     -2.67       78 0.00910 One Sample t-test two.sided   Hedges' g 
+        estimate conf.level conf.low conf.high conf.method conf.distribution
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1   -0.298       0.95   -0.524   -0.0743 ncp         t                
 
 ---
 
@@ -24,15 +24,15 @@
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
       # A tibble: 1 x 13
-           mu statistic df.error p.value method            alternative estimate
-        <dbl>     <dbl>    <dbl>   <dbl> <chr>             <chr>          <dbl>
-      1   120     -2.67       78 0.00910 One Sample t-test two.sided     -0.301
-        conf.level conf.low conf.high effectsize conf.method conf.distribution
-             <dbl>    <dbl>     <dbl> <chr>      <chr>       <chr>            
-      1        0.9   -0.492    -0.111 Cohen's d  ncp         t                
+           mu statistic df.error p.value method            alternative effectsize
+        <dbl>     <dbl>    <dbl>   <dbl> <chr>             <chr>       <chr>     
+      1   120     -2.67       78 0.00910 One Sample t-test two.sided   Cohen's d 
+        estimate conf.level conf.low conf.high conf.method conf.distribution
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>            
+      1   -0.301        0.9   -0.492    -0.111 ncp         t                
 
 ---
 
@@ -47,61 +47,61 @@
 # one_sample_test non-parametric works
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
       # A tibble: 1 x 10
-        statistic p.value method                    alternative estimate conf.level
-            <dbl>   <dbl> <chr>                     <chr>          <dbl>      <dbl>
-      1      6.62   0.323 Wilcoxon signed rank test two.sided     -0.149       0.95
-        conf.low conf.high effectsize        conf.method
-           <dbl>     <dbl> <chr>             <chr>      
-      1   -0.416     0.143 r (rank biserial) normal     
+        statistic p.value method                    alternative effectsize       
+            <dbl>   <dbl> <chr>                     <chr>       <chr>            
+      1      754.   0.323 Wilcoxon signed rank test two.sided   r (rank biserial)
+        estimate conf.level conf.low conf.high conf.method
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>      
+      1   -0.149       0.95   -0.416     0.143 normal     
 
 ---
 
     Code
       df1$expression[[1]]
     Output
-      paste("log"["e"](italic("V")["Wilcoxon"]), " = ", "6.6247", ", ", 
-          italic("p"), " = ", "0.3227", ", ", widehat(italic("r"))["biserial"]^"rank", 
+      paste(italic("V")["Wilcoxon"], " = ", "753.5000", ", ", italic("p"), 
+          " = ", "0.3227", ", ", widehat(italic("r"))["biserial"]^"rank", 
           " = ", "-0.1486", ", CI"["95%"], " [", "-0.4162", ", ", "0.1427", 
           "], ", italic("n")["obs"], " = ", "60")
 
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
       # A tibble: 1 x 10
-        statistic   p.value method                    alternative estimate conf.level
-            <dbl>     <dbl> <chr>                     <chr>          <dbl>      <dbl>
-      1      5.57 0.0000125 Wilcoxon signed rank test two.sided     -0.672       0.95
-        conf.low conf.high effectsize        conf.method
-           <dbl>     <dbl> <chr>             <chr>      
-      1   -0.806    -0.472 r (rank biserial) normal     
+        statistic   p.value method                    alternative effectsize       
+            <dbl>     <dbl> <chr>                     <chr>       <chr>            
+      1       262 0.0000125 Wilcoxon signed rank test two.sided   r (rank biserial)
+        estimate conf.level conf.low conf.high conf.method
+           <dbl>      <dbl>    <dbl>     <dbl> <chr>      
+      1   -0.672       0.95   -0.806    -0.472 normal     
 
 ---
 
     Code
       df2$expression[[1]]
     Output
-      paste("log"["e"](italic("V")["Wilcoxon"]), " = ", "5.5683", ", ", 
-          italic("p"), " = ", "1.253e-05", ", ", widehat(italic("r"))["biserial"]^"rank", 
+      paste(italic("V")["Wilcoxon"], " = ", "262.0000", ", ", italic("p"), 
+          " = ", "1.253e-05", ", ", widehat(italic("r"))["biserial"]^"rank", 
           " = ", "-0.6717", ", CI"["95%"], " [", "-0.8058", ", ", "-0.4720", 
           "], ", italic("n")["obs"], " = ", "56")
 
 # one_sample_test robust works
 
     Code
-      dplyr::select(df1, -expression)
+      select(df1, -expression)
     Output
-      # A tibble: 1 x 8
-        statistic p.value method                                 estimate conf.low
-            <dbl>   <dbl> <chr>                                     <dbl>    <dbl>
-      1     0.787     0.3 Bootstrap-t method for one-sample test        9     3.81
-        conf.high conf.level effectsize  
-            <dbl>      <dbl> <chr>       
-      1      14.2       0.99 Trimmed mean
+      # A tibble: 1 x 9
+        statistic p.value n.obs method                                 effectsize  
+            <dbl>   <dbl> <int> <chr>                                  <chr>       
+      1     0.787   0.455    11 Bootstrap-t method for one-sample test Trimmed mean
+        estimate conf.level conf.low conf.high
+           <dbl>      <dbl>    <dbl>     <dbl>
+      1        9        0.9     6.55      11.5
 
 ---
 
@@ -109,22 +109,22 @@
       df1$expression[[1]]
     Output
       paste(italic("t")["bootstrapped"], " = ", "0.7866", ", ", italic("p"), 
-          " = ", "0.3000", ", ", widehat(mu)["trimmed"], " = ", "9.0000", 
-          ", CI"["99%"], " [", "3.8097", ", ", "14.1903", "], ", italic("n")["obs"], 
+          " = ", "0.4550", ", ", widehat(mu)["trimmed"], " = ", "9.0000", 
+          ", CI"["90%"], " [", "6.5487", ", ", "11.4513", "], ", italic("n")["obs"], 
           " = ", "11")
 
 ---
 
     Code
-      dplyr::select(df2, -expression)
+      select(df2, -expression)
     Output
-      # A tibble: 1 x 8
-        statistic p.value method                                 estimate conf.low
-            <dbl>   <dbl> <chr>                                     <dbl>    <dbl>
-      1     -3.81    0.02 Bootstrap-t method for one-sample test   0.0390   0.0112
-        conf.high conf.level effectsize  
-            <dbl>      <dbl> <chr>       
-      1    0.0667        0.9 Trimmed mean
+      # A tibble: 1 x 9
+        statistic p.value n.obs method                                 effectsize  
+            <dbl>   <dbl> <int> <chr>                                  <chr>       
+      1     -3.81    0.04    56 Bootstrap-t method for one-sample test Trimmed mean
+        estimate conf.level conf.low conf.high
+           <dbl>      <dbl>    <dbl>     <dbl>
+      1   0.0390       0.99  -0.0669     0.145
 
 ---
 
@@ -132,11 +132,22 @@
       df2$expression[[1]]
     Output
       paste(italic("t")["bootstrapped"], " = ", "-3.8075", ", ", italic("p"), 
-          " = ", "0.0200", ", ", widehat(mu)["trimmed"], " = ", "0.0390", 
-          ", CI"["90%"], " [", "0.0112", ", ", "0.0667", "], ", italic("n")["obs"], 
+          " = ", "0.0400", ", ", widehat(mu)["trimmed"], " = ", "0.0390", 
+          ", CI"["99%"], " [", "-0.0669", ", ", "0.1448", "], ", italic("n")["obs"], 
           " = ", "56")
 
 # one_sample_test bayes factor works
+
+    Code
+      names(df_results)
+    Output
+       [1] "term"               "estimate"           "conf.level"        
+       [4] "conf.low"           "conf.high"          "pd"                
+       [7] "rope.percentage"    "prior.distribution" "prior.location"    
+      [10] "prior.scale"        "bf10"               "method"            
+      [13] "log_e_bf10"         "expression"        
+
+---
 
     Code
       subtitle$expression[[1]]
