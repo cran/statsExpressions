@@ -1,3 +1,16 @@
+# statsExpressions 1.3.0
+
+BREAKING CHANGES
+
+  - The `format_num()` has been removed in favor of `insight::format_value()`.
+
+MINOR CHANGES
+
+  - The `expr_template()` has been renamed to more informative
+    `add_expression_col()` function and has a different API. It returns a
+    dataframe with the additional expression column instead of just the
+    expression.
+
 # statsExpressions 1.2.0
 
 BREAKING CHANGES

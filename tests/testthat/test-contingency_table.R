@@ -18,7 +18,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression[[1]])
+    expect_snapshot(as.character(df1$expression[[1]]))
 
     # with counts
     set.seed(123)
@@ -32,7 +32,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression[[1]])
+    expect_snapshot(as.character(df2$expression[[1]]))
 
     # contingency tab - with NAs --------------------------------------
 
@@ -48,7 +48,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df3, -expression))
-    expect_snapshot(df3$expression[[1]])
+    expect_snapshot(as.character(df3$expression[[1]]))
   }
 )
 
@@ -94,7 +94,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression[[1]])
+    expect_snapshot(as.character(df1$expression[[1]]))
 
     # paired data with NAs  ---------------------------------------------
 
@@ -126,7 +126,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression[[1]])
+    expect_snapshot(as.character(df2$expression[[1]]))
   }
 )
 
@@ -147,7 +147,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression[[1]])
+    expect_snapshot(as.character(df1$expression[[1]]))
 
     # with counts
     set.seed(123)
@@ -160,7 +160,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression[[1]])
+    expect_snapshot(as.character(df2$expression[[1]]))
 
     # one-sample test (with NAs) -------------------------------------
 
@@ -175,7 +175,7 @@ test_that(
     # testing all details
     set.seed(123)
     expect_snapshot(select(df3, -expression))
-    expect_snapshot(df3$expression[[1]])
+    expect_snapshot(as.character(df3$expression[[1]]))
   }
 )
 
@@ -186,18 +186,18 @@ test_that(
 
     # extracting results from where this function is implemented
     set.seed(123)
-    df <- contingency_table(
+    df1 <- contingency_table(
       data = mtcars,
       x = am,
       type = "bayes"
     )
 
-    # check bayes factor values
-    expect_equal(df$bf10, 0.2465787, tolerance = 0.001)
+    expect_snapshot(select(df1, -expression))
+    expect_snapshot(as.character(df1$expression[[1]]))
 
     # expr
     set.seed(123)
-    expr_text <- contingency_table(
+    df2 <- contingency_table(
       type = "bayes",
       data = mtcars,
       x = cyl,
@@ -205,7 +205,8 @@ test_that(
       top.text = "duh"
     )
 
-    expect_snapshot(expr_text$expression[[1]])
+    expect_snapshot(select(df2, -expression))
+    expect_snapshot(as.character(df2$expression[[1]]))
   }
 )
 
@@ -272,49 +273,9 @@ test_that(
 
     # expr text
     expect_snapshot(list(
-      expr_text1$expression[[1]],
-      expr_text2$expression[[1]],
-      expr_text3$expression[[1]]
+      as.character(expr_text1$expression[[1]]),
+      as.character(expr_text2$expression[[1]]),
+      as.character(expr_text3$expression[[1]])
     ))
   }
 )
-
-
-# checking edge cases -------------------------------------------------
-
-# TODO: see how to get this to work
-
-# test_that(
-#   desc = "works even in edge cases",
-#   code = {
-#     # too few observations
-#     data1 <- data.frame(
-#       x = c("a", "b", "b", "c", "c", "c"),
-#       y = c("a", "a", "a", "a", "b", "b")
-#     )
-#
-#     # subtitle
-#     set.seed(123)
-#     df1 <- suppressWarnings(contingency_table(data1, x, y))
-#
-#     # testing all details
-#     set.seed(123)
-#     expect_snapshot(select(df1, -expression))
-#     expect_snapshot(df1$expression[[1]])
-#
-#     # another dataset with a dropped level
-#     data2 <- filter(mtcars, am == "0")
-#
-#     set.seed(123)
-#     df2 <- contingency_table(data2, am, cyl)
-#
-#     # testing all details
-#     set.seed(123)
-#     expect_snapshot(select(df2, -expression))
-#     expect_snapshot(df2$expression[[1]])
-#
-#     df_eg <- data.frame(x = c("a"))
-#
-#     expect_null(contingency_table(type = "bayes", df_eg, x))
-#   }
-# )

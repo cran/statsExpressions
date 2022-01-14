@@ -28,15 +28,9 @@
 #'   of 1/2, sqrt(2)/2, and 1, respectively. In case of an ANOVA, this value
 #'   corresponds to scale for fixed effects.
 #' @inheritParams two_sample_test
-#' @inheritParams expr_template
+#' @inheritParams add_expression_col
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams stats::oneway.test
-#'
-#' @note
-#' To carry out Bayesian posterior estimation for ANOVA designs, you will need
-#' to install the development version of `BayesFactor` (`0.9.12-4.3`). You can
-#' download it by running:
-#' `remotes::install_github("richarddmorey/BayesFactor/pkg/BayesFactor")`.
 #'
 #' @examples
 #' \donttest{
@@ -50,18 +44,18 @@
 #' # between-subjects
 #' oneway_anova(
 #'   data = ggplot2::msleep,
-#'   x = vore,
-#'   y = sleep_rem
+#'   x    = vore,
+#'   y    = sleep_rem
 #' )
 #'
 #' if (require("afex", quietly = TRUE)) {
 #'   # within-subjects design
 #'   oneway_anova(
-#'     data = iris_long,
-#'     x = condition,
-#'     y = value,
+#'     data       = iris_long,
+#'     x          = condition,
+#'     y          = value,
 #'     subject.id = id,
-#'     paired = TRUE
+#'     paired     = TRUE
 #'   )
 #' }
 #'
@@ -70,19 +64,19 @@
 #' # between-subjects
 #' oneway_anova(
 #'   data = ggplot2::msleep,
-#'   x = vore,
-#'   y = sleep_rem,
+#'   x    = vore,
+#'   y    = sleep_rem,
 #'   type = "np"
 #' )
 #'
 #' # within-subjects design
 #' oneway_anova(
-#'   data = iris_long,
-#'   x = condition,
-#'   y = value,
+#'   data       = iris_long,
+#'   x          = condition,
+#'   y          = value,
 #'   subject.id = id,
-#'   paired = TRUE,
-#'   type = "np"
+#'   paired     = TRUE,
+#'   type       = "np"
 #' )
 #'
 #' # ----------------------- robust -------------------------------------
@@ -90,19 +84,19 @@
 #' # between-subjects
 #' oneway_anova(
 #'   data = ggplot2::msleep,
-#'   x = vore,
-#'   y = sleep_rem,
+#'   x    = vore,
+#'   y    = sleep_rem,
 #'   type = "r"
 #' )
 #'
 #' # within-subjects design
 #' oneway_anova(
-#'   data = iris_long,
-#'   x = condition,
-#'   y = value,
+#'   data       = iris_long,
+#'   x          = condition,
+#'   y          = value,
 #'   subject.id = id,
-#'   paired = TRUE,
-#'   type = "r"
+#'   paired     = TRUE,
+#'   type       = "r"
 #' )
 #'
 #' # ----------------------- Bayesian -------------------------------------
@@ -110,23 +104,20 @@
 #' # between-subjects
 #' oneway_anova(
 #'   data = ggplot2::msleep,
-#'   x = vore,
-#'   y = sleep_rem,
+#'   x    = vore,
+#'   y    = sleep_rem,
 #'   type = "bayes"
 #' )
 #'
 #' # within-subjects design
-#' # needs `BayesFactor 0.9.12-4.3` or above
-#' if (utils::packageVersion("BayesFactor") >= package_version("0.9.12-4.3")) {
-#'   oneway_anova(
-#'     data = iris_long,
-#'     x = condition,
-#'     y = value,
-#'     subject.id = id,
-#'     paired = TRUE,
-#'     type = "bayes"
-#'   )
-#' }
+#' oneway_anova(
+#'   data       = iris_long,
+#'   x          = condition,
+#'   y          = value,
+#'   subject.id = id,
+#'   paired     = TRUE,
+#'   type       = "bayes"
+#' )
 #' }
 #' @export
 
@@ -156,11 +147,11 @@ oneway_anova <- function(data,
   # data cleanup
   data %<>%
     long_to_wide_converter(
-      x = {{ x }},
-      y = {{ y }},
+      x          = {{ x }},
+      y          = {{ y }},
       subject.id = {{ subject.id }},
-      paired = paired,
-      spread = FALSE
+      paired     = paired,
+      spread     = FALSE
     ) %>%
     mutate(rowid = as.factor(rowid))
 
@@ -168,76 +159,71 @@ oneway_anova <- function(data,
 
   if (type == "parametric") {
     # expression details
-    k.df <- ifelse(!paired, 0L, k)
-    k.df.error <- ifelse(!paired && var.equal, 0L, k)
-    no.parameters <- 2L
+    c(k.df, k.df.error) %<-% c(ifelse(!paired, 0L, k), ifelse(!paired && var.equal, 0L, k))
 
     # which effect size?
+    # styler: off
     if (effsize.type %in% c("unbiased", "omega")) .f.es <- effectsize::omega_squared
-    if (effsize.type %in% c("biased", "eta")) .f.es <- effectsize::eta_squared
+    if (effsize.type %in% c("biased", "eta")) .f.es     <- effectsize::eta_squared
+    # styler: on
 
     if (paired) {
       # check if `afex` is installed
-      insight::check_if_installed("afex", minimum_version = "1.0-0")
+      check_if_installed("afex", minimum_version = "1.0-0")
 
       # Fisher's ANOVA
       mod <- afex::aov_ez(
-        id = "rowid",
-        dv = as_string(y),
-        data = data,
-        within = as_string(x),
+        id          = "rowid",
+        dv          = as_string(y),
+        data        = data,
+        within      = as_string(x),
         include_aov = TRUE
       )
     }
 
-    if (!paired) {
-      # Welch's ANOVA
-      mod <- stats::oneway.test(
-        formula = new_formula(y, x),
-        data = data,
-        var.equal = var.equal
-      )
-    }
+    # Welch's ANOVA
+    if (!paired) mod <- stats::oneway.test(new_formula(y, x), data, var.equal = var.equal)
 
-    # tidying it up
-    stats_df <- tidy_model_parameters(mod)
-    effsize_df <- exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
-      tidy_model_effectsize(.)
-
-    # combining dataframes
-    stats_df <- bind_cols(stats_df, effsize_df)
+    # tidying up outputs and combining dataframes
+    stats_df <- bind_cols(
+      tidy_model_parameters(mod),
+      exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
+        tidy_model_effectsize(.)
+    )
   }
 
   # non-parametric ------------------------------------
 
   if (type == "nonparametric") {
     # expression details
-    c(no.parameters, k.df, k.df.error) %<-% c(1L, 0L, 0L)
+    c(k.df, k.df.error) %<-% c(0L, 0L)
 
+    # styler: off
     # Friedman test
     if (paired) {
       c(.f, .f.es) %<-% c(stats::friedman.test, effectsize::kendalls_w)
-      .f.args <- list(formula = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
-      .f.es.args <- list(x = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
+      .f.args       <- list(formula = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
+      .f.es.args    <- list(x = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
     }
 
     # Kruskal-Wallis test
     if (!paired) {
       c(.f, .f.es) %<-% c(stats::kruskal.test, effectsize::rank_epsilon_squared)
-      .f.args <- list(formula = new_formula(y, x))
-      .f.es.args <- list(x = new_formula(y, x))
+      .f.args       <- list(formula = new_formula(y, x))
+      .f.es.args    <- list(x = new_formula(y, x))
     }
+    # styler: on
 
     # extracting test details
     stats_df <- tidy_model_parameters(exec(.f, !!!.f.args, data = data))
 
     # computing respective effect sizes
     effsize_df <- exec(
-      .fn = .f.es,
-      data = data,
-      ci = conf.level,
+      .fn        = .f.es,
+      data       = data,
+      ci         = conf.level,
       iterations = nboot,
-      verbose = FALSE,
+      verbose    = FALSE,
       !!!.f.es.args
     ) %>%
       tidy_model_effectsize(.)
@@ -250,15 +236,15 @@ oneway_anova <- function(data,
 
   if (type == "robust") {
     # expression details
-    c(no.parameters, k.df, k.df.error) %<-% c(2L, ifelse(paired, k, 0L), k)
+    c(k.df, k.df.error) %<-% c(ifelse(paired, k, 0L), k)
 
     # heteroscedastic one-way repeated measures ANOVA for trimmed means
     if (paired) {
       mod <- WRS2::rmanova(
-        y = data[[as_name(y)]],
-        groups = data[[as_name(x)]],
-        blocks = data[["rowid"]],
-        tr = tr
+        y       = data[[as_name(y)]],
+        groups  = data[[as_name(x)]],
+        blocks  = data[["rowid"]],
+        tr      = tr
       )
     }
 
@@ -266,10 +252,10 @@ oneway_anova <- function(data,
     if (!paired) {
       mod <- WRS2::t1way(
         formula = new_formula(y, x),
-        data = data,
-        tr = tr,
-        alpha = 1 - conf.level,
-        nboot = nboot
+        data    = data,
+        tr      = tr,
+        alpha   = 1 - conf.level,
+        nboot   = nboot
       )
     }
 
@@ -294,15 +280,17 @@ oneway_anova <- function(data,
     if (!paired) .f.args <- list(formula = new_formula(y, x), rscaleFixed = bf.prior)
     if (paired) {
       .f.args <- list(
-        formula = new_formula(rlang::enexpr(y), expr(!!rlang::enexpr(x) + rowid)),
-        rscaleFixed = bf.prior, whichRandom = "rowid", rscaleRandom = 1
+        formula      = new_formula(enexpr(y), expr(!!enexpr(x) + rowid)),
+        rscaleFixed  = bf.prior,
+        whichRandom  = "rowid",
+        rscaleRandom = 1
       )
     }
 
     # extract a dataframe
     stats_df <- exec(
       BayesFactor::anovaBF,
-      data = as.data.frame(data),
+      data     = as.data.frame(data),
       progress = FALSE,
       !!!.f.args
     ) %>%
@@ -311,16 +299,13 @@ oneway_anova <- function(data,
 
   # expression ---------------------------------------
 
-  polish_data(stats_df) %>%
-    mutate(expression = list(expr_template(
-      data = .,
-      no.parameters = no.parameters,
-      n = ifelse(paired, length(unique(data$rowid)), nrow(data)),
-      paired = paired,
-      k = k,
-      k.df = k.df,
-      k.df.error = k.df.error,
-      top.text = top.text,
-      bayesian = ifelse(type == "bayes", TRUE, FALSE)
-    )))
+  add_expression_col(
+    data       = stats_df,
+    n          = ifelse(paired, length(unique(data$rowid)), nrow(data)),
+    paired     = paired,
+    k          = k,
+    k.df       = k.df,
+    k.df.error = k.df.error,
+    top.text   = top.text
+  )
 }

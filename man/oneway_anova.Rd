@@ -103,12 +103,6 @@ To see details about functions which are internally used to carry out these
 analyses, see the following vignette-
 \url{https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html}
 }
-\note{
-To carry out Bayesian posterior estimation for ANOVA designs, you will need
-to install the development version of \code{BayesFactor} (\verb{0.9.12-4.3}). You can
-download it by running:
-\code{remotes::install_github("richarddmorey/BayesFactor/pkg/BayesFactor")}.
-}
 \examples{
 \donttest{
 # for reproducibility
@@ -121,18 +115,18 @@ options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 # between-subjects
 oneway_anova(
   data = ggplot2::msleep,
-  x = vore,
-  y = sleep_rem
+  x    = vore,
+  y    = sleep_rem
 )
 
 if (require("afex", quietly = TRUE)) {
   # within-subjects design
   oneway_anova(
-    data = iris_long,
-    x = condition,
-    y = value,
+    data       = iris_long,
+    x          = condition,
+    y          = value,
     subject.id = id,
-    paired = TRUE
+    paired     = TRUE
   )
 }
 
@@ -141,19 +135,19 @@ if (require("afex", quietly = TRUE)) {
 # between-subjects
 oneway_anova(
   data = ggplot2::msleep,
-  x = vore,
-  y = sleep_rem,
+  x    = vore,
+  y    = sleep_rem,
   type = "np"
 )
 
 # within-subjects design
 oneway_anova(
-  data = iris_long,
-  x = condition,
-  y = value,
+  data       = iris_long,
+  x          = condition,
+  y          = value,
   subject.id = id,
-  paired = TRUE,
-  type = "np"
+  paired     = TRUE,
+  type       = "np"
 )
 
 # ----------------------- robust -------------------------------------
@@ -161,19 +155,19 @@ oneway_anova(
 # between-subjects
 oneway_anova(
   data = ggplot2::msleep,
-  x = vore,
-  y = sleep_rem,
+  x    = vore,
+  y    = sleep_rem,
   type = "r"
 )
 
 # within-subjects design
 oneway_anova(
-  data = iris_long,
-  x = condition,
-  y = value,
+  data       = iris_long,
+  x          = condition,
+  y          = value,
   subject.id = id,
-  paired = TRUE,
-  type = "r"
+  paired     = TRUE,
+  type       = "r"
 )
 
 # ----------------------- Bayesian -------------------------------------
@@ -181,22 +175,19 @@ oneway_anova(
 # between-subjects
 oneway_anova(
   data = ggplot2::msleep,
-  x = vore,
-  y = sleep_rem,
+  x    = vore,
+  y    = sleep_rem,
   type = "bayes"
 )
 
 # within-subjects design
-# needs `BayesFactor 0.9.12-4.3` or above
-if (utils::packageVersion("BayesFactor") >= package_version("0.9.12-4.3")) {
-  oneway_anova(
-    data = iris_long,
-    x = condition,
-    y = value,
-    subject.id = id,
-    paired = TRUE,
-    type = "bayes"
-  )
-}
+oneway_anova(
+  data       = iris_long,
+  x          = condition,
+  y          = value,
+  subject.id = id,
+  paired     = TRUE,
+  type       = "bayes"
+)
 }
 }

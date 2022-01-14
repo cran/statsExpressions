@@ -6,3 +6,6 @@ knitr::opts_chunk$set(
   message = FALSE
 )
 
+## ----citation, echo=FALSE, comment = ""---------------------------------------
+citation("statsExpressions")
+

@@ -9,9 +9,7 @@ output:
     fig.asp: 0.618
     dpi: 300
     toc: true
-    toc_depth: 3
-    warning: FALSE
-    message: FALSE
+    toc_depth: 4
 vignette: >
   %\VignetteIndexEntry{Dataframe outputs}
   %\VignetteEngine{knitr::rmarkdown}
@@ -38,9 +36,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
+```{r citation, echo=FALSE, comment = ""}
+citation("statsExpressions")
+```
 
-The `statsExpressions` package has two key aims: to provide a consistent syntax
+## Introduction
+
+The `{statsExpressions}` package has two key aims: to provide a consistent syntax
 to do statistical analysis with tidy data, and to provide statistical
 expressions (i.e., a pre-formatted in-text statistical result) for plotting
 functions. Currently, it supports common types of statistical approaches and
@@ -59,11 +61,11 @@ by these packages downstream in their workflow, this is not straightforward
 either because even functions from the same package can return a list, a matrix,
 an array, a dataframe, etc., depending on the function.
 
-This is where `statsExpressions` comes in: It can be thought of as a unified
+This is where `{statsExpressions}` comes in: It can be thought of as a unified
 portal through which most of the functionality in these underlying packages can
 be accessed, with a simpler interface and no requirement to change data format.
 
-# Dataframes
+## Dataframes
 
 The dataframe will contain the following columns (the exact columns will depend
 on the test and the statistical approach):
@@ -71,8 +73,7 @@ on the test and the statistical approach):
   - `statistic`: the numeric value of a statistic.
 
   - `df`: the numeric value of a parameter being modeled (often degrees
-    of freedom for the test); note that if `no.parameters = 0L` (e.g., for
-    non-parametric tests), this column will be irrelevant.
+    of freedom for the test).
 
   - `df.error` and `df`: relevant only if the statistic in question has
     two degrees of freedom (e.g., anova).
@@ -95,7 +96,9 @@ For details about the tests and types of effect size estimates they correspond
 to, see:
 <https://indrajeetpatil.github.io/statsExpressions/articles/stats_details.html>
 
-# One-sample tests
+Note that all examples are preceded by `set.seed()` calls for reproducibility.
+
+## One-sample tests
 
 ```{r onesample}
 # setup
@@ -103,53 +106,49 @@ library(statsExpressions)
 
 # ----------------------- parametric ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 one_sample_test(
-  data = ggplot2::msleep,
-  x = brainwt,
+  data       = ggplot2::msleep,
+  x          = brainwt,
   test.value = 0.275,
-  type = "parametric",
+  type       = "parametric"
 )
 
 # ----------------------- non-parametric -----------------------------------
 
-# for reproducibility
 set.seed(123)
 one_sample_test(
-  data = ggplot2::msleep,
-  x = brainwt,
+  data       = ggplot2::msleep,
+  x          = brainwt,
   test.value = 0.275,
-  type = "nonparametric",
+  type       = "nonparametric"
 )
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
 one_sample_test(
-  data = ggplot2::msleep,
-  x = brainwt,
+  data       = ggplot2::msleep,
+  x          = brainwt,
   test.value = 0.275,
-  type = "robust",
+  type       = "robust"
 )
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 one_sample_test(
-  data = ggplot2::msleep,
-  x = brainwt,
+  data       = ggplot2::msleep,
+  x          = brainwt,
   test.value = 0.275,
-  type = "bayes",
-  bf.prior = 0.8,
+  type       = "bayes",
+  bf.prior   = 0.8
 )
 ```
 
-# Two-sample tests
+## Two-sample tests
 
-## within-subjects design
+### within-subjects design
 
 ```{r twosample_w}
 # setup
@@ -160,58 +159,54 @@ df <- dplyr::filter(bugs_long, condition %in% c("LDLF", "LDHF"))
 
 # ----------------------- parametric ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = df,
-  x = condition,
-  y = desire,
-  paired = TRUE,
+  data       = df,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
   subject.id = subject,
-  type = "p",
+  type       = "p"
 )
 
 # ----------------------- non-parametric -----------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = df,
-  x = condition,
-  y = desire,
-  paired = TRUE,
+  data       = df,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
   subject.id = subject,
-  type = "np"
+  type       = "np"
 )
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = df,
-  x = condition,
-  y = desire,
-  paired = TRUE,
+  data       = df,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
   subject.id = subject,
-  type = "r"
+  type       = "r"
 )
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = df,
-  x = condition,
-  y = desire,
-  paired = TRUE,
+  data       = df,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
   subject.id = subject,
-  type = "bayes"
+  type       = "bayes"
 )
 ```
 
-## between-subjects design
+### between-subjects design
 
 ```{r twosample_b}
 # setup
@@ -220,64 +215,59 @@ library(statsExpressions)
 
 # ----------------------- parametric ---------------------------------------
 
-# for reproducibility
-set.seed(123)
 # unequal variance
+set.seed(123)
 two_sample_test(
-  data = ToothGrowth,
-  x = supp,
-  y = len,
-  type = "p"
+  data      = ToothGrowth,
+  x         = supp,
+  y         = len,
+  type      = "p"
 )
 
-# for reproducibility
-set.seed(123)
 # equal variance
+set.seed(123)
 two_sample_test(
-  data = ToothGrowth,
-  x = supp,
-  y = len,
+  data      = ToothGrowth,
+  x         = supp,
+  y         = len,
   var.equal = TRUE,
-  type = "p"
+  type      = "p"
 )
 
 # ----------------------- non-parametric -----------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = ToothGrowth,
-  x = supp,
-  y = len,
-  type = "np"
+  data      = ToothGrowth,
+  x         = supp,
+  y         = len,
+  type      = "np"
 )
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = ToothGrowth,
-  x = supp,
-  y = len,
-  type = "r"
+  data      = ToothGrowth,
+  x         = supp,
+  y         = len,
+  type      = "r"
 )
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 two_sample_test(
-  data = ToothGrowth,
-  x = supp,
-  y = len,
-  type = "bayes"
+  data      = ToothGrowth,
+  x         = supp,
+  y         = len,
+  type      = "bayes"
 )
 ```
 
-# One-way ANOVAs
+## One-way ANOVAs
 
-## within-subjects design
+### within-subjects design
 
 ```{r anova_w}
 # setup
@@ -286,131 +276,133 @@ library(statsExpressions)
 # ----------------------- parametric ---------------------------------------
 
 if (require("afex", quietly = TRUE)) {
-  # for reproducibility
   set.seed(123)
   oneway_anova(
-    data = bugs_long,
-    x = condition,
-    y = desire,
-    paired = TRUE,
+    data       = bugs_long,
+    x          = condition,
+    y          = desire,
+    paired     = TRUE,
     subject.id = subject,
-    type = "p"
+    type       = "p"
   )
 }
 
 # ----------------------- non-parametric -----------------------------------
 
-# for reproducibility
 set.seed(123)
 oneway_anova(
-  data = bugs_long,
-  x = condition,
-  y = desire,
-  paired = TRUE,
+  data       = bugs_long,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
   subject.id = subject,
-  type = "np"
+  type       = "np"
 )
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
 oneway_anova(
-  data = bugs_long,
-  x = condition,
-  y = desire,
-  paired = TRUE,
+  data       = bugs_long,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
   subject.id = subject,
-  type = "r"
+  type       = "r"
 )
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-if (utils::packageVersion("BayesFactor") >= package_version("0.9.12-4.3")) {
-  # for reproducibility
-  set.seed(123)
-  oneway_anova(
-    data = bugs_long,
-    x = condition,
-    y = desire,
-    paired = TRUE,
-    subject.id = subject,
-    type = "bayes"
-  )
-}
+set.seed(123)
+oneway_anova(
+  data       = bugs_long,
+  x          = condition,
+  y          = desire,
+  paired     = TRUE,
+  subject.id = subject,
+  type       = "bayes"
+)
 ```
 
-## between-subjects design
+### between-subjects design
 
 ```{r anova_b}
-# setup
+## setup
 library(statsExpressions)
 
 # ----------------------- parametric ---------------------------------------
 
-# for reproducibility
-set.seed(123)
 # unequal variance
+set.seed(123)
 oneway_anova(
-  data = iris,
-  x = Species,
-  y = Sepal.Length,
-  type = "p"
+  data      = iris,
+  x         = Species,
+  y         = Sepal.Length,
+  type      = "p"
 )
 
-# for reproducibility
-set.seed(123)
 # equal variance
+set.seed(123)
 oneway_anova(
-  data = iris,
-  x = Species,
-  y = Sepal.Length,
+  data      = iris,
+  x         = Species,
+  y         = Sepal.Length,
   var.equal = TRUE,
-  type = "p"
+  type      = "p"
 )
 
 # ----------------------- non-parametric -----------------------------------
 
-# for reproducibility
 set.seed(123)
 oneway_anova(
-  data = iris,
-  x = Species,
-  y = Sepal.Length,
-  type = "np"
+  data      = iris,
+  x         = Species,
+  y         = Sepal.Length,
+  type      = "np"
 )
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
 oneway_anova(
-  data = iris,
-  x = Species,
-  y = Sepal.Length,
-  type = "r"
+  data      = iris,
+  x         = Species,
+  y         = Sepal.Length,
+  type      = "r"
 )
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 oneway_anova(
-  data = iris,
-  x = Species,
-  y = Sepal.Length,
-  type = "bayes"
+  data      = iris,
+  x         = Species,
+  y         = Sepal.Length,
+  type      = "bayes"
 )
 ```
 
-# Contingency table analyses
+## Contingency table analyses
+
+### association test
 
 ```{r conttabs}
-# for reproducibility
 set.seed(123)
 library(statsExpressions)
 
-# create data structure
+# ------------------------ frequentist -----------------------------
+
+# unpaired
+set.seed(123)
+contingency_table(
+  data   = mtcars,
+  x      = am,
+  y      = cyl,
+  paired = FALSE
+)
+
+# paired
+## create data structure
 paired_data <-
   structure(
     list(
@@ -431,143 +423,128 @@ paired_data <-
     row.names = c(NA, -4L)
   )
 
-# ------------------------ non-Bayesian -----------------------------
 
-# association tests
-
-# unpaired
 set.seed(123)
 contingency_table(
-  data = mtcars,
-  x = am,
-  y = cyl,
-  paired = FALSE,
-)
-
-# paired
-set.seed(123)
-contingency_table(
-  data = paired_data,
-  x = response_before,
-  y = response_after,
+  data   = paired_data,
+  x      = response_before,
+  y      = response_after,
   paired = TRUE,
   counts = "Freq"
 )
 
-# goodness-of-fit tests
+# ------------------------ Bayesian -----------------------------
+
+# unpaired
+set.seed(123)
+contingency_table(
+  data   = mtcars,
+  x      = am,
+  y      = cyl,
+  paired = FALSE,
+  type   = "bayes"
+)
+```
+
+### goodness-of-fit tests
+
+```{r gof}
+# ------------------------ frequentist -----------------------------
 
 # with counts
 set.seed(123)
 contingency_table(
-  data = as.data.frame(HairEyeColor),
-  x = Eye,
+  data   = as.data.frame(HairEyeColor),
+  x      = Eye,
   counts = Freq,
 )
 
 # ------------------------ Bayesian -----------------------------
 
-# association test
+set.seed(123)
 contingency_table(
-  data = mtcars,
-  x = am,
-  y = cyl,
-  paired = FALSE,
-  type = "bayes"
-)
-
-# goodness-of-fit test
-contingency_table(
-  data = as.data.frame(HairEyeColor),
-  x = Eye,
+  data   = as.data.frame(HairEyeColor),
+  x      = Eye,
   counts = Freq,
-  ratio = c(0.2, 0.2, 0.3, 0.3),
-  type = "bayes"
+  ratio  = c(0.2, 0.2, 0.3, 0.3),
+  type   = "bayes"
 )
 ```
 
-# Correlation analyses
+## Correlation analyses
 
 ```{r corr}
-# for reproducibility
 set.seed(123)
 library(statsExpressions)
 
 # ----------------------- parametric ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 corr_test(
   data = mtcars,
-  x = wt,
-  y = mpg,
+  x    = wt,
+  y    = mpg,
   type = "parametric"
 )
 
 # ----------------------- non-parametric -----------------------------------
 
-# for reproducibility
 set.seed(123)
 corr_test(
   data = mtcars,
-  x = wt,
-  y = mpg,
+  x    = wt,
+  y    = mpg,
   type = "nonparametric"
 )
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
 corr_test(
   data = mtcars,
-  x = wt,
-  y = mpg,
+  x    = wt,
+  y    = mpg,
   type = "robust"
 )
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-# for reproducibility
 set.seed(123)
 corr_test(
   data = mtcars,
-  x = wt,
-  y = mpg,
+  x    = wt,
+  y    = mpg,
   type = "bayes"
 )
 ```
 
-# Meta-analysis
+## Meta-analysis
 
 ```{r meta}
-# for reproducibility
 set.seed(123)
 library(statsExpressions)
 library(metaplus)
 
-# renaming to what `statsExpressions` expects
+# renaming to what `{statsExpressions}` expects
 df <- dplyr::rename(mag, estimate = yi, std.error = sei)
 
 # ----------------------- parametric ---------------------------------------
 
-# for reproducibility
 set.seed(123)
-meta_analysis(data = df, type = "parametric")
+meta_analysis(df, type = "parametric")
 
 # ----------------------- robust --------------------------------------------
 
-# for reproducibility
 set.seed(123)
-meta_analysis(data = df, type = "robust")
+meta_analysis(df, type = "robust")
 
-# ----------------------- Bayes Factor ---------------------------------------
+# ----------------------- Bayesian ---------------------------------------
 
-# for reproducibility
 set.seed(123)
-meta_analysis(data = df, type = "bayes")
+meta_analysis(df, type = "bayes")
 ```
 
-# Centrality description
+## Centrality description
 
 ```{r centrality}
 # ----------------------- parametric -----------------------
@@ -591,6 +568,6 @@ set.seed(123)
 centrality_description(sleep, group, extra, type = "b")
 ```
 
-# Suggestions
+## Suggestions
 
 If you find any bugs or have any suggestions/remarks, please file an issue on GitHub: <https://github.com/IndrajeetPatil/statsExpressions/issues>

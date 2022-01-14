@@ -8,7 +8,7 @@
 #'   argument can be `"d"` (for Cohen's *d*) or `"g"` (for Hedge's *g*).
 #' @inheritParams long_to_wide_converter
 #' @inheritParams stats_type_switch
-#' @inheritParams expr_template
+#' @inheritParams add_expression_col
 #' @inheritParams two_sample_test
 #' @inheritParams oneway_anova
 #' @inheritParams stats::t.test
@@ -47,38 +47,38 @@
 #' # ----------------------- parametric ---------------------------------------
 #'
 #' one_sample_test(
-#'   data = ggplot2::msleep,
-#'   x = brainwt,
+#'   data       = ggplot2::msleep,
+#'   x          = brainwt,
 #'   test.value = 0.275,
-#'   type = "parametric"
+#'   type       = "parametric"
 #' )
 #'
 #' # ----------------------- non-parametric -----------------------------------
 #'
 #' one_sample_test(
-#'   data = ggplot2::msleep,
-#'   x = brainwt,
+#'   data       = ggplot2::msleep,
+#'   x          = brainwt,
 #'   test.value = 0.275,
-#'   type = "nonparametric"
+#'   type       = "nonparametric"
 #' )
 #'
 #' # ----------------------- robust --------------------------------------------
 #'
 #' one_sample_test(
-#'   data = ggplot2::msleep,
-#'   x = brainwt,
+#'   data       = ggplot2::msleep,
+#'   x          = brainwt,
 #'   test.value = 0.275,
-#'   type = "robust"
+#'   type       = "robust"
 #' )
 #'
 #' # ---------------------------- Bayesian -----------------------------------
 #'
 #' one_sample_test(
-#'   data = ggplot2::msleep,
-#'   x = brainwt,
+#'   data       = ggplot2::msleep,
+#'   x          = brainwt,
 #'   test.value = 0.275,
-#'   type = "bayes",
-#'   bf.prior = 0.8
+#'   type       = "bayes",
+#'   bf.prior   = 0.8
 #' )
 #' }
 #' @export
@@ -103,21 +103,19 @@ one_sample_test <- function(data,
 
   # parametric ---------------------------------------
 
+  # preparing expression parameters
   if (type == "parametric") {
-    # preparing expression parameters
-    no.parameters <- 1L
     .f <- stats::t.test
+    # styler: off
     if (effsize.type %in% c("unbiased", "g")) .f.es <- effectsize::hedges_g
-    if (effsize.type %in% c("biased", "d")) .f.es <- effectsize::cohens_d
+    if (effsize.type %in% c("biased", "d")) .f.es   <- effectsize::cohens_d
+    # styler: on
   }
 
   # non-parametric ---------------------------------------
 
-  if (type == "nonparametric") {
-    # preparing expression parameters
-    no.parameters <- 0L
-    c(.f, .f.es) %<-% c(stats::wilcox.test, effectsize::rank_biserial)
-  }
+  # preparing expression parameters
+  if (type == "nonparametric") c(.f, .f.es) %<-% c(stats::wilcox.test, effectsize::rank_biserial)
 
   # preparing expression
   if (type %in% c("parametric", "nonparametric")) {
@@ -129,10 +127,10 @@ one_sample_test <- function(data,
     # extracting effect size details
     effsize_df <- exec(
       .f.es,
-      x = x_vec,
-      mu = test.value,
+      x       = x_vec,
+      mu      = test.value,
       verbose = FALSE,
-      ci = conf.level
+      ci      = conf.level
     ) %>%
       tidy_model_effectsize(.)
 
@@ -144,7 +142,6 @@ one_sample_test <- function(data,
 
   if (type == "robust") {
     # bootstrap-t method for one-sample test
-    no.parameters <- 0L
     stats_df <- exec(WRS2::trimcibt, x = x_vec, nv = test.value, tr = tr, alpha = 1 - conf.level) %>%
       tidy_model_parameters(.)
   }
@@ -153,20 +150,17 @@ one_sample_test <- function(data,
 
   # running Bayesian one-sample t-test
   if (type == "bayes") {
-    stats_df <- BayesFactor::ttestBF(x_vec, rscale = bf.prior, mu = test.value) %>%
+    stats_df <- BayesFactor::ttestBF(x = x_vec, rscale = bf.prior, mu = test.value) %>%
       tidy_model_parameters(ci = conf.level)
   }
 
   # expression ---------------------------------------
 
-  # return the output
-  polish_data(stats_df) %>%
-    mutate(expression = list(expr_template(
-      data = .,
-      no.parameters = no.parameters,
-      n = length(x_vec),
-      k = k,
-      top.text = top.text,
-      bayesian = ifelse(type == "bayes", TRUE, FALSE)
-    )))
+  # add column with expression
+  add_expression_col(
+    data     = stats_df,
+    n        = length(x_vec),
+    k        = k,
+    top.text = top.text
+  )
 }

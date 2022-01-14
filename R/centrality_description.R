@@ -42,13 +42,15 @@ centrality_description <- function(data,
   # standardize
   type <- stats_type_switch(type)
 
+  # styler: off
   # which centrality measure?
   centrality <- case_when(
-    type == "parametric" ~ "mean",
+    type == "parametric"    ~ "mean",
     type == "nonparametric" ~ "median",
-    type == "robust" ~ "trimmed",
-    type == "bayes" ~ "MAP"
+    type == "robust"        ~ "trimmed",
+    type == "bayes"         ~ "MAP"
   )
+  # styler: on
 
   # dataframe -------------------------------------
 
@@ -58,22 +60,22 @@ centrality_description <- function(data,
     mutate({{ x }} := droplevels(as.factor({{ x }}))) %>%
     group_by({{ x }}) %>%
     group_modify(
-      .f = ~ insight::standardize_names(
+      .f = ~ standardize_names(
         data = datawizard::describe_distribution(
-          x = .,
+          x          = .,
           centrality = centrality,
-          threshold = tr,
-          verbose = FALSE,
-          ci = 0.95 # TODO: https://github.com/easystats/bayestestR/issues/429
+          threshold  = tr,
+          verbose    = FALSE,
+          ci         = 0.95 # TODO: https://github.com/easystats/bayestestR/issues/429
         ),
         style = "broom"
       )
     ) %>%
     ungroup() %>%
-    rowwise() %>%
-    mutate(expression = paste0("list(~widehat(mu)[", centrality, "]=='", format_value(estimate, k), "')")) %>%
-    ungroup() %>%
-    mutate(n_label = paste0({{ x }}, "\n(n = ", .prettyNum(n), ")")) %>%
+    mutate(
+      expression = glue("widehat(mu)[{centrality}]=='{format_value(estimate, k)}'"),
+      n_label = paste0({{ x }}, "\n(n = ", .prettyNum(n), ")")
+    ) %>%
     arrange({{ x }}) %>%
     select({{ x }}, !!as.character(ensym(y)) := estimate, n_obs = n, everything())
 }

@@ -52,38 +52,38 @@
 #'
 #' # association test
 #' contingency_table(
-#'   data = mtcars,
-#'   x = am,
-#'   y = cyl,
+#'   data   = mtcars,
+#'   x      = am,
+#'   y      = cyl,
 #'   paired = FALSE
 #' )
 #'
 #' # goodness-of-fit test
 #' contingency_table(
-#'   data = as.data.frame(HairEyeColor),
-#'   x = Eye,
+#'   data   = as.data.frame(HairEyeColor),
+#'   x      = Eye,
 #'   counts = Freq,
-#'   ratio = c(0.2, 0.2, 0.3, 0.3)
+#'   ratio  = c(0.2, 0.2, 0.3, 0.3)
 #' )
 #'
 #' # ------------------------ Bayesian -----------------------------
 #'
 #' # association test
 #' contingency_table(
-#'   data = mtcars,
-#'   x = am,
-#'   y = cyl,
+#'   data   = mtcars,
+#'   x      = am,
+#'   y      = cyl,
 #'   paired = FALSE,
-#'   type = "bayes"
+#'   type   = "bayes"
 #' )
 #'
 #' # goodness-of-fit test
 #' contingency_table(
-#'   data = as.data.frame(HairEyeColor),
-#'   x = Eye,
+#'   data   = as.data.frame(HairEyeColor),
+#'   x      = Eye,
 #'   counts = Freq,
-#'   ratio = c(0.2, 0.2, 0.3, 0.3),
-#'   type = "bayes"
+#'   ratio  = c(0.2, 0.2, 0.3, 0.3),
+#'   type   = "bayes"
 #' )
 #' }
 #' @export
@@ -151,11 +151,11 @@ contingency_table <- function(data,
       # extract a tidy dataframe
       stats_df <- BayesFactor::contingencyTableBF(
         table(data),
-        sampleType = sampling.plan,
-        fixedMargin = fixed.margin,
+        sampleType         = sampling.plan,
+        fixedMargin        = fixed.margin,
         priorConcentration = prior.concentration
       ) %>%
-        tidy_model_parameters(ci = conf.level)
+        tidy_model_parameters(ci = conf.level, cramers_v = TRUE)
     }
 
     # one-way table
@@ -179,53 +179,38 @@ contingency_table <- function(data,
       # BF = (log) prob of data under alternative - (log) prob of data under null
       # computing Bayes Factor and formatting the results
       stats_df <- tibble(
-        bf10 = exp(BayesFactor::logMeanExpLogs(pr_h1) - stats::dmultinom(as.matrix(xtab), NULL, ratio, TRUE)),
-        prior.scale = prior.concentration
+        bf10        = exp(BayesFactor::logMeanExpLogs(pr_h1) - stats::dmultinom(as.matrix(xtab), NULL, ratio, TRUE)),
+        prior.scale = prior.concentration,
+        method      = "Bayesian one-way contingency table analysis"
       )
 
-      # final expression
-      expression <- substitute(
-        atop(
-          displaystyle(top.text),
-          expr = paste(
-            "log"["e"] * "(BF"["01"] * ") = " * bf * ", ",
-            italic("a")["Gunel-Dickey"] * " = " * a
-          )
-        ),
-        env = list(
-          top.text = top.text,
-          bf = format_value(-log(stats_df$bf10), k),
-          a = format_value(stats_df$prior.scale, k)
-        )
-      )
+      prior.distribution <- list(quote(italic("a")["Gunel-Dickey"]))
 
-      # the final expression
-      if (is.null(top.text)) expression <- expression$expr
-
-      # computing Bayes Factor and formatting the results
-      stats_df %<>% mutate(expression = list(expression))
+      if (is.null(top.text)) {
+        stats_df %<>% mutate(expression = list(parse(text = glue("list(
+            log[e]*(BF['01'])=='{format_value(-log(bf10), k)}',
+            {prior.distribution}=='{format_value(prior.scale, k)}')"))))
+      } else {
+        stats_df %<>% mutate(expression = list(parse(text = glue("list(
+            atop('{top.text}',
+            list(log[e]*(BF['01'])=='{format_value(-log(bf10), k)}',
+            {prior.distribution}=='{format_value(prior.scale, k)}')))"))))
+      }
     }
   }
 
   # expression ---------------------------------------
 
   if (!(type == "bayes" && test == "1way")) {
-    stats_df %<>%
-      mutate(
-        expression = list(expr_template(
-          data = .,
-          no.parameters = 1L,
-          n = nrow(data),
-          paired = paired,
-          k = k,
-          top.text = top.text,
-          bayesian = ifelse(type == "bayes", TRUE, FALSE)
-        ))
-      ) %>%
-      polish_data()
+    stats_df %<>% add_expression_col(
+      n        = nrow(data),
+      paired   = paired,
+      k        = k,
+      top.text = top.text
+    )
   }
 
-  # return the output
+  # add column with expression
   stats_df
 }
 

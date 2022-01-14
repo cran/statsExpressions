@@ -26,15 +26,15 @@
 #' # without changing defaults
 #' corr_test(
 #'   data = ggplot2::midwest,
-#'   x = area,
-#'   y = percblack
+#'   x    = area,
+#'   y    = percblack
 #' )
 #'
 #' # changing defaults
 #' corr_test(
 #'   data = ggplot2::midwest,
-#'   x = area,
-#'   y = percblack,
+#'   x    = area,
+#'   y    = percblack,
 #'   type = "robust"
 #' )
 #' }
@@ -59,30 +59,23 @@ corr_test <- function(data,
 
   # creating a dataframe of results
   stats_df <- correlation::correlation(
-    data = tidyr::drop_na(select(ungroup(data), {{ x }}, {{ y }})),
-    method = ifelse(type == "nonparametric", "spearman", "pearson"),
-    ci = conf.level,
-    bayesian = ifelse(type == "bayes", TRUE, FALSE),
+    data           = tidyr::drop_na(select(ungroup(data), {{ x }}, {{ y }})),
+    method         = ifelse(type == "nonparametric", "spearman", "pearson"),
+    ci             = conf.level,
+    bayesian       = ifelse(type == "bayes", TRUE, FALSE),
     bayesian_prior = bf.prior,
-    winsorize = ifelse(type == "robust", tr, FALSE)
+    winsorize      = ifelse(type == "robust", tr, FALSE)
   ) %>%
-    insight::standardize_names(style = "broom") %>%
-    mutate(effectsize = method)
+    standardize_names(style = "broom")
 
   # expression ---------------------------------------
 
-  # no. of parameters
-  if (type == "bayes") stats_df %<>% rename("bf10" = "bayes.factor")
-
   # preparing expression
-  polish_data(stats_df) %>%
-    mutate(expression = list(expr_template(
-      data = .,
-      no.parameters = ifelse(type %in% c("parametric", "robust"), 1L, 0L),
-      top.text = top.text,
-      paired = TRUE,
-      n = stats_df$n.obs[[1]],
-      k = k,
-      bayesian = ifelse(type == "bayes", TRUE, FALSE)
-    )))
+  add_expression_col(
+    data     = stats_df,
+    top.text = top.text,
+    paired   = TRUE,
+    n        = stats_df$n.obs[[1]],
+    k        = k
+  )
 }
