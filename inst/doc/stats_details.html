@@ -12,7 +12,7 @@
 
 <meta name="author" content="Indrajeet Patil" />
 
-<meta name="date" content="2022-01-14" />
+<meta name="date" content="2022-03-29" />
 
 <title>Test and effect size details</title>
 
@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 
@@ -238,22 +239,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Test and effect size details</h1>
 <h4 class="author">Indrajeet Patil</h4>
-<h4 class="date">2022-01-14</h4>
+<h4 class="date">2022-03-29</h4>
 
 
 <div id="TOC">
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#birds-eye-view-summary">Bird’s-eye view summary</a></li>
+<li><a href="#summary-of-functionality">Summary of
+functionality</a></li>
 <li><a href="#summary-of-tests-and-effect-sizes">Summary of tests and
 effect sizes</a>
 <ul>
 <li><a href="#centrality_description"><code>centrality_description</code></a></li>
-<li><a href="#two_sample_test-oneway_anova"><code>two_sample_test</code>
-+ <code>oneway_anova</code></a>
+<li><a href="#oneway_anova"><code>oneway_anova</code></a>
 <ul>
 <li><a href="#between-subjects">between-subjects</a></li>
 <li><a href="#within-subjects">within-subjects</a></li>
+</ul></li>
+<li><a href="#two_sample_test"><code>two_sample_test</code></a>
+<ul>
+<li><a href="#between-subjects-1">between-subjects</a></li>
+<li><a href="#within-subjects-1">within-subjects</a></li>
 </ul></li>
 <li><a href="#one_sample_test"><code>one_sample_test</code></a></li>
 <li><a href="#corr_test"><code>corr_test</code></a></li>
@@ -302,10 +308,93 @@ source code. So, for example, if you want to know more about how one-way
 in your R console.</p>
 <p>Abbreviations used: CI = Confidence Interval</p>
 </div>
-<div id="birds-eye-view-summary" class="section level2">
-<h2>Bird’s-eye view summary</h2>
-<p>The table below summarizes all the different types of analyses
-currently supported in this package-</p>
+<div id="summary-of-functionality" class="section level2">
+<h2>Summary of functionality</h2>
+<p><strong>Summary of available analyses</strong></p>
+<table>
+<colgroup>
+<col width="58%" />
+<col width="25%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Test</th>
+<th>Function</th>
+<th>Lifecycle</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>one-sample <em>t</em>-test</td>
+<td><code>one_sample_test</code></td>
+<td><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBzdGFibGUiPjx0aXRsZT5saWZlY3ljbGU6IHN0YWJsZTwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIi8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjcikiPjxyZWN0IHdpZHRoPSI1NSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjU1IiB3aWR0aD0iNDMiIGhlaWdodD0iMjAiIGZpbGw9IiM0YzEiLz48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIGZpbGw9InVybCgjcykiLz48L2c+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLERlamFWdSBTYW5zLHNhbnMtc2VyaWYiIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGZvbnQtc2l6ZT0iMTEwIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMjg1IiB5PSIxNTAiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSI0NTAiPmxpZmVjeWNsZTwvdGV4dD48dGV4dCB4PSIyODUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIGZpbGw9IiNmZmYiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI3NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhYmxlPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGFibGU8L3RleHQ+PC9nPjwvc3ZnPg==" alt="lifecycle" /></a></td>
+</tr>
+<tr class="even">
+<td>two-sample <em>t</em>-test</td>
+<td><code>two_sample_test</code></td>
+<td><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBzdGFibGUiPjx0aXRsZT5saWZlY3ljbGU6IHN0YWJsZTwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIi8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjcikiPjxyZWN0IHdpZHRoPSI1NSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjU1IiB3aWR0aD0iNDMiIGhlaWdodD0iMjAiIGZpbGw9IiM0YzEiLz48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIGZpbGw9InVybCgjcykiLz48L2c+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLERlamFWdSBTYW5zLHNhbnMtc2VyaWYiIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGZvbnQtc2l6ZT0iMTEwIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMjg1IiB5PSIxNTAiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSI0NTAiPmxpZmVjeWNsZTwvdGV4dD48dGV4dCB4PSIyODUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIGZpbGw9IiNmZmYiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI3NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhYmxlPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGFibGU8L3RleHQ+PC9nPjwvc3ZnPg==" alt="lifecycle" /></a></td>
+</tr>
+<tr class="odd">
+<td>one-way ANOVA</td>
+<td><code>oneway_anova</code></td>
+<td><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBzdGFibGUiPjx0aXRsZT5saWZlY3ljbGU6IHN0YWJsZTwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIi8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjcikiPjxyZWN0IHdpZHRoPSI1NSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjU1IiB3aWR0aD0iNDMiIGhlaWdodD0iMjAiIGZpbGw9IiM0YzEiLz48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIGZpbGw9InVybCgjcykiLz48L2c+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLERlamFWdSBTYW5zLHNhbnMtc2VyaWYiIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGZvbnQtc2l6ZT0iMTEwIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMjg1IiB5PSIxNTAiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSI0NTAiPmxpZmVjeWNsZTwvdGV4dD48dGV4dCB4PSIyODUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIGZpbGw9IiNmZmYiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI3NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhYmxlPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGFibGU8L3RleHQ+PC9nPjwvc3ZnPg==" alt="lifecycle" /></a></td>
+</tr>
+<tr class="even">
+<td>correlation analysis</td>
+<td><code>corr_test</code></td>
+<td><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBzdGFibGUiPjx0aXRsZT5saWZlY3ljbGU6IHN0YWJsZTwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIi8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjcikiPjxyZWN0IHdpZHRoPSI1NSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjU1IiB3aWR0aD0iNDMiIGhlaWdodD0iMjAiIGZpbGw9IiM0YzEiLz48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIGZpbGw9InVybCgjcykiLz48L2c+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLERlamFWdSBTYW5zLHNhbnMtc2VyaWYiIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGZvbnQtc2l6ZT0iMTEwIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMjg1IiB5PSIxNTAiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSI0NTAiPmxpZmVjeWNsZTwvdGV4dD48dGV4dCB4PSIyODUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIGZpbGw9IiNmZmYiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI3NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhYmxlPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGFibGU8L3RleHQ+PC9nPjwvc3ZnPg==" alt="lifecycle" /></a></td>
+</tr>
+<tr class="odd">
+<td>contingency table analysis</td>
+<td><code>contingency_table</code></td>
+<td><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBzdGFibGUiPjx0aXRsZT5saWZlY3ljbGU6IHN0YWJsZTwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIi8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjcikiPjxyZWN0IHdpZHRoPSI1NSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjU1IiB3aWR0aD0iNDMiIGhlaWdodD0iMjAiIGZpbGw9IiM0YzEiLz48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIGZpbGw9InVybCgjcykiLz48L2c+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLERlamFWdSBTYW5zLHNhbnMtc2VyaWYiIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGZvbnQtc2l6ZT0iMTEwIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMjg1IiB5PSIxNTAiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSI0NTAiPmxpZmVjeWNsZTwvdGV4dD48dGV4dCB4PSIyODUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIGZpbGw9IiNmZmYiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI3NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhYmxlPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGFibGU8L3RleHQ+PC9nPjwvc3ZnPg==" alt="lifecycle" /></a></td>
+</tr>
+<tr class="even">
+<td>meta-analysis</td>
+<td><code>meta_analysis</code></td>
+<td><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBzdGFibGUiPjx0aXRsZT5saWZlY3ljbGU6IHN0YWJsZTwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIi8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjcikiPjxyZWN0IHdpZHRoPSI1NSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjU1IiB3aWR0aD0iNDMiIGhlaWdodD0iMjAiIGZpbGw9IiM0YzEiLz48cmVjdCB3aWR0aD0iOTgiIGhlaWdodD0iMjAiIGZpbGw9InVybCgjcykiLz48L2c+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IlZlcmRhbmEsR2VuZXZhLERlamFWdSBTYW5zLHNhbnMtc2VyaWYiIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGZvbnQtc2l6ZT0iMTEwIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMjg1IiB5PSIxNTAiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSI0NTAiPmxpZmVjeWNsZTwvdGV4dD48dGV4dCB4PSIyODUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIGZpbGw9IiNmZmYiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI3NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhYmxlPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGFibGU8L3RleHQ+PC9nPjwvc3ZnPg==" alt="lifecycle" /></a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary of details available for analyses</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Analysis</th>
+<th>Hypothesis testing</th>
+<th>Effect size estimation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(one/two-sample) <em>t</em>-test</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>one-way ANOVA</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>correlation</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>(one/two-way) contingency table</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>random-effects meta-analysis</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary of supported statistical approaches</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -368,43 +457,6 @@ currently supported in this package-</p>
 </tr>
 </tbody>
 </table>
-<p>Summary of Bayesian analysis</p>
-<table>
-<thead>
-<tr class="header">
-<th>Analysis</th>
-<th>Hypothesis testing</th>
-<th>Estimation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>(one/two-sample) <em>t</em>-test</td>
-<td>✅</td>
-<td>✅</td>
-</tr>
-<tr class="even">
-<td>one-way ANOVA</td>
-<td>✅</td>
-<td>✅</td>
-</tr>
-<tr class="odd">
-<td>correlation</td>
-<td>✅</td>
-<td>✅</td>
-</tr>
-<tr class="even">
-<td>(one/two-way) contingency table</td>
-<td>✅</td>
-<td>✅</td>
-</tr>
-<tr class="odd">
-<td>random-effects meta-analysis</td>
-<td>✅</td>
-<td>✅</td>
-</tr>
-</tbody>
-</table>
 </div>
 <div id="summary-of-tests-and-effect-sizes" class="section level2">
 <h2>Summary of tests and effect sizes</h2>
@@ -434,30 +486,28 @@ in your R console.</p>
 <tr class="odd">
 <td>Parametric</td>
 <td>mean</td>
-<td><code>parameters::describe_distribution</code></td>
+<td><code>parameters::describe_distribution()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>median</td>
-<td><code>parameters::describe_distribution</code></td>
+<td><code>parameters::describe_distribution()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>trimmed mean</td>
-<td><code>parameters::describe_distribution</code></td>
+<td><code>parameters::describe_distribution()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
 <td>MAP (maximum <em>a posteriori</em> probability) estimate</td>
-<td><code>parameters::describe_distribution</code></td>
+<td><code>parameters::describe_distribution()</code></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="two_sample_test-oneway_anova" class="section level3">
-<h3><code>two_sample_test</code> + <code>oneway_anova</code></h3>
-<p>No. of groups: <code>2</code> =&gt; <code>two_sample_test</code><br>
-No. of groups: <code>&gt; 2</code> =&gt; <code>oneway_anova</code></p>
+<div id="oneway_anova" class="section level3">
+<h3><code>oneway_anova</code></h3>
 <div id="between-subjects" class="section level4">
 <h4>between-subjects</h4>
 <p><strong>Hypothesis testing</strong></p>
@@ -481,49 +531,25 @@ No. of groups: <code>&gt; 2</code> =&gt; <code>oneway_anova</code></p>
 <td>Parametric</td>
 <td>&gt; 2</td>
 <td>Fisher’s or Welch’s one-way ANOVA</td>
-<td><code>stats::oneway.test</code></td>
+<td><code>stats::oneway.test()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>&gt; 2</td>
-<td>Kruskal–Wallis one-way ANOVA</td>
-<td><code>stats::kruskal.test</code></td>
+<td>Kruskal-Wallis one-way ANOVA</td>
+<td><code>stats::kruskal.test()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>&gt; 2</td>
 <td>Heteroscedastic one-way ANOVA for trimmed means</td>
-<td><code>WRS2::t1way</code></td>
+<td><code>WRS2::t1way()</code></td>
 </tr>
 <tr class="even">
 <td>Bayes Factor</td>
 <td>&gt; 2</td>
 <td>Fisher’s ANOVA</td>
-<td><code>BayesFactor::anovaBF</code></td>
-</tr>
-<tr class="odd">
-<td>Parametric</td>
-<td>2</td>
-<td>Student’s or Welch’s <em>t</em>-test</td>
-<td><code>stats::t.test</code></td>
-</tr>
-<tr class="even">
-<td>Non-parametric</td>
-<td>2</td>
-<td>Mann–Whitney <em>U</em> test</td>
-<td><code>stats::wilcox.test</code></td>
-</tr>
-<tr class="odd">
-<td>Robust</td>
-<td>2</td>
-<td>Yuen’s test for trimmed means</td>
-<td><code>WRS2::yuen</code></td>
-</tr>
-<tr class="even">
-<td>Bayesian</td>
-<td>2</td>
-<td>Student’s <em>t</em>-test</td>
-<td><code>BayesFactor::ttestBF</code></td>
+<td><code>BayesFactor::anovaBF()</code></td>
 </tr>
 </tbody>
 </table>
@@ -541,7 +567,7 @@ No. of groups: <code>&gt; 2</code> =&gt; <code>oneway_anova</code></p>
 <th>Type</th>
 <th>No. of groups</th>
 <th>Effect size</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
@@ -549,62 +575,31 @@ No. of groups: <code>&gt; 2</code> =&gt; <code>oneway_anova</code></p>
 <tr class="odd">
 <td>Parametric</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(\eta_{p}^2\)</span>, <span class="math inline">\(\omega_{p}^2\)</span></td>
-<td>✅</td>
-<td><code>effectsize::omega_squared</code>,
-<code>effectsize::eta_squared</code></td>
+<td>partial eta-squared, partial omega-squared</td>
+<td>Yes</td>
+<td><code>effectsize::omega_squared()</code>,
+<code>effectsize::eta_squared()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(\epsilon_{ordinal}^2\)</span></td>
-<td>✅</td>
-<td><code>effectsize::rank_epsilon_squared</code></td>
+<td>rank epsilon squared</td>
+<td>Yes</td>
+<td><code>effectsize::rank_epsilon_squared()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(\xi\)</span> (Explanatory measure of
-effect size)</td>
-<td>✅</td>
-<td><code>WRS2::t1way</code></td>
+<td>Explanatory measure of effect size</td>
+<td>Yes</td>
+<td><code>WRS2::t1way()</code></td>
 </tr>
 <tr class="even">
 <td>Bayes Factor</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(R_{Bayesian}^2\)</span></td>
-<td>✅</td>
-<td><code>performance::r2_bayes</code></td>
-</tr>
-<tr class="odd">
-<td>Parametric</td>
-<td>2</td>
-<td>Cohen’s <em>d</em>, Hedge’s <em>g</em></td>
-<td>✅</td>
-<td><code>effectsize::cohens_d</code>,
-<code>effectsize::hedges_g</code></td>
-</tr>
-<tr class="even">
-<td>Non-parametric</td>
-<td>2</td>
-<td><em>r</em> (rank-biserial correlation)</td>
-<td>✅</td>
-<td><code>effectsize::rank_biserial</code></td>
-</tr>
-<tr class="odd">
-<td>Robust</td>
-<td>2</td>
-<td><span class="math inline">\(\delta_{R}^{AKP}\)</span>
-(Algina-Keselman-Penfield robust standardized difference)</td>
-<td>✅</td>
-<td><code>WRS2::akp.effect</code></td>
-</tr>
-<tr class="even">
-<td>Bayesian</td>
-<td>2</td>
-<td><span class="math inline">\(\delta_{posterior}\)</span></td>
-<td>✅</td>
-<td><code>bayestestR::describe_posterior</code></td>
+<td>Bayesian R-squared</td>
+<td>Yes</td>
+<td><code>performance::r2_bayes()</code></td>
 </tr>
 </tbody>
 </table>
@@ -632,50 +627,26 @@ effect size)</td>
 <td>Parametric</td>
 <td>&gt; 2</td>
 <td>One-way repeated measures ANOVA</td>
-<td><code>afex::aov_ez</code></td>
+<td><code>afex::aov_ez()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>&gt; 2</td>
 <td>Friedman rank sum test</td>
-<td><code>stats::friedman.test</code></td>
+<td><code>stats::friedman.test()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>&gt; 2</td>
 <td>Heteroscedastic one-way repeated measures ANOVA for trimmed
 means</td>
-<td><code>WRS2::rmanova</code></td>
+<td><code>WRS2::rmanova()</code></td>
 </tr>
 <tr class="even">
 <td>Bayes Factor</td>
 <td>&gt; 2</td>
 <td>One-way repeated measures ANOVA</td>
-<td><code>BayesFactor::anovaBF</code></td>
-</tr>
-<tr class="odd">
-<td>Parametric</td>
-<td>2</td>
-<td>Student’s <em>t</em>-test</td>
-<td><code>stats::t.test</code></td>
-</tr>
-<tr class="even">
-<td>Non-parametric</td>
-<td>2</td>
-<td>Wilcoxon signed-rank test</td>
-<td><code>stats::wilcox.test</code></td>
-</tr>
-<tr class="odd">
-<td>Robust</td>
-<td>2</td>
-<td>Yuen’s test on trimmed means for dependent samples</td>
-<td><code>WRS2::yuend</code></td>
-</tr>
-<tr class="even">
-<td>Bayesian</td>
-<td>2</td>
-<td>Student’s <em>t</em>-test</td>
-<td><code>BayesFactor::ttestBF</code></td>
+<td><code>BayesFactor::anovaBF()</code></td>
 </tr>
 </tbody>
 </table>
@@ -693,7 +664,7 @@ means</td>
 <th>Type</th>
 <th>No. of groups</th>
 <th>Effect size</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
@@ -701,63 +672,220 @@ means</td>
 <tr class="odd">
 <td>Parametric</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(\eta_{p}^2\)</span>, <span class="math inline">\(\omega_{p}^2\)</span></td>
-<td>✅</td>
-<td><code>effectsize::omega_squared</code>,
-<code>effectsize::eta_squared</code></td>
+<td>partial eta-squared, partial omega-squared</td>
+<td>Yes</td>
+<td><code>effectsize::omega_squared()</code>,
+<code>effectsize::eta_squared()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(W_{Kendall}\)</span> (Kendall’s
-coefficient of concordance)</td>
-<td>✅</td>
-<td><code>effectsize::kendalls_w</code></td>
+<td>Kendall’s coefficient of concordance</td>
+<td>Yes</td>
+<td><code>effectsize::kendalls_w()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(\delta_{R-avg}^{AKP}\)</span>
-(Algina-Keselman-Penfield robust standardized difference average)</td>
-<td>✅</td>
-<td><code>WRS2::wmcpAKP</code></td>
+<td>Algina-Keselman-Penfield robust standardized difference average</td>
+<td>Yes</td>
+<td><code>WRS2::wmcpAKP()</code></td>
 </tr>
 <tr class="even">
 <td>Bayes Factor</td>
 <td>&gt; 2</td>
-<td><span class="math inline">\(R_{Bayesian}^2\)</span></td>
-<td>✅</td>
-<td><code>performance::r2_bayes</code></td>
+<td>Bayesian R-squared</td>
+<td>Yes</td>
+<td><code>performance::r2_bayes()</code></td>
 </tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="two_sample_test" class="section level3">
+<h3><code>two_sample_test</code></h3>
+<div id="between-subjects-1" class="section level4">
+<h4>between-subjects</h4>
+<p><strong>Hypothesis testing</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>No. of groups</th>
+<th>Test</th>
+<th>Function used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Parametric</td>
+<td>2</td>
+<td>Student’s or Welch’s <em>t</em>-test</td>
+<td><code>stats::t.test()</code></td>
+</tr>
+<tr class="even">
+<td>Non-parametric</td>
+<td>2</td>
+<td>Mann-Whitney <em>U</em> test</td>
+<td><code>stats::wilcox.test()</code></td>
+</tr>
+<tr class="odd">
+<td>Robust</td>
+<td>2</td>
+<td>Yuen’s test for trimmed means</td>
+<td><code>WRS2::yuen()</code></td>
+</tr>
+<tr class="even">
+<td>Bayesian</td>
+<td>2</td>
+<td>Student’s <em>t</em>-test</td>
+<td><code>BayesFactor::ttestBF()</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Effect size estimation</strong></p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="6%" />
+<col width="53%" />
+<col width="6%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>No. of groups</th>
+<th>Effect size</th>
+<th>CI available?</th>
+<th>Function used</th>
+</tr>
+</thead>
+<tbody>
 <tr class="odd">
 <td>Parametric</td>
 <td>2</td>
 <td>Cohen’s <em>d</em>, Hedge’s <em>g</em></td>
-<td>✅</td>
-<td><code>effectsize::cohens_d</code>,
-<code>effectsize::hedges_g</code></td>
+<td>Yes</td>
+<td><code>effectsize::cohens_d()</code>,
+<code>effectsize::hedges_g()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>2</td>
 <td><em>r</em> (rank-biserial correlation)</td>
-<td>✅</td>
-<td><code>effectsize::rank_biserial</code></td>
+<td>Yes</td>
+<td><code>effectsize::rank_biserial()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>2</td>
-<td><span class="math inline">\(\delta_{R}^{AKP}\)</span>
-(Algina-Keselman-Penfield robust standardized difference)</td>
-<td>✅</td>
-<td><code>WRS2::wmcpAKP</code></td>
+<td>Algina-Keselman-Penfield robust standardized difference</td>
+<td>Yes</td>
+<td><code>WRS2::akp.effect()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
 <td>2</td>
-<td><span class="math inline">\(\delta_{posterior}\)</span></td>
-<td>✅</td>
-<td><code>bayestestR::describe_posterior</code></td>
+<td>difference</td>
+<td>Yes</td>
+<td><code>bayestestR::describe_posterior()</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="within-subjects-1" class="section level4">
+<h4>within-subjects</h4>
+<p><strong>Hypothesis testing</strong></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="6%" />
+<col width="56%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>No. of groups</th>
+<th>Test</th>
+<th>Function used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Parametric</td>
+<td>2</td>
+<td>Student’s <em>t</em>-test</td>
+<td><code>stats::t.test()</code></td>
+</tr>
+<tr class="even">
+<td>Non-parametric</td>
+<td>2</td>
+<td>Wilcoxon signed-rank test</td>
+<td><code>stats::wilcox.test()</code></td>
+</tr>
+<tr class="odd">
+<td>Robust</td>
+<td>2</td>
+<td>Yuen’s test on trimmed means for dependent samples</td>
+<td><code>WRS2::yuend()</code></td>
+</tr>
+<tr class="even">
+<td>Bayesian</td>
+<td>2</td>
+<td>Student’s <em>t</em>-test</td>
+<td><code>BayesFactor::ttestBF()</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Effect size estimation</strong></p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="6%" />
+<col width="53%" />
+<col width="6%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>No. of groups</th>
+<th>Effect size</th>
+<th>CI available?</th>
+<th>Function used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Parametric</td>
+<td>2</td>
+<td>Cohen’s <em>d</em>, Hedge’s <em>g</em></td>
+<td>Yes</td>
+<td><code>effectsize::cohens_d()</code>,
+<code>effectsize::hedges_g()</code></td>
+</tr>
+<tr class="even">
+<td>Non-parametric</td>
+<td>2</td>
+<td><em>r</em> (rank-biserial correlation)</td>
+<td>Yes</td>
+<td><code>effectsize::rank_biserial()</code></td>
+</tr>
+<tr class="odd">
+<td>Robust</td>
+<td>2</td>
+<td>Algina-Keselman-Penfield robust standardized difference</td>
+<td>Yes</td>
+<td><code>WRS2::wmcpAKP()</code></td>
+</tr>
+<tr class="even">
+<td>Bayesian</td>
+<td>2</td>
+<td>difference</td>
+<td>Yes</td>
+<td><code>bayestestR::describe_posterior()</code></td>
 </tr>
 </tbody>
 </table>
@@ -809,7 +937,7 @@ coefficient of concordance)</td>
 <tr class="header">
 <th>Type</th>
 <th>Effect size</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
@@ -817,27 +945,27 @@ coefficient of concordance)</td>
 <tr class="odd">
 <td>Parametric</td>
 <td>Cohen’s <em>d</em>, Hedge’s <em>g</em></td>
-<td>✅</td>
-<td><code>effectsize::cohens_d</code>,
-<code>effectsize::hedges_g</code></td>
+<td>Yes</td>
+<td><code>effectsize::cohens_d()</code>,
+<code>effectsize::hedges_g()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td><em>r</em> (rank-biserial correlation)</td>
-<td>✅</td>
-<td><code>effectsize::rank_biserial</code></td>
+<td>Yes</td>
+<td><code>effectsize::rank_biserial()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>trimmed mean</td>
-<td>✅</td>
-<td><code>trimcibt</code> (custom)</td>
+<td>Yes</td>
+<td><code>WRS2::trimcibt()</code></td>
 </tr>
 <tr class="even">
 <td>Bayes Factor</td>
-<td><span class="math inline">\(\delta_{posterior}\)</span></td>
-<td>✅</td>
-<td><code>bayestestR::describe_posterior</code></td>
+<td>difference</td>
+<td>Yes</td>
+<td><code>bayestestR::describe_posterior()</code></td>
 </tr>
 </tbody>
 </table>
@@ -857,7 +985,7 @@ estimation</strong></p>
 <tr class="header">
 <th>Type</th>
 <th>Test</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
@@ -865,26 +993,26 @@ estimation</strong></p>
 <tr class="odd">
 <td>Parametric</td>
 <td>Pearson’s correlation coefficient</td>
-<td>✅</td>
-<td><code>correlation::correlation</code></td>
+<td>Yes</td>
+<td><code>correlation::correlation()</code></td>
 </tr>
 <tr class="even">
 <td>Non-parametric</td>
 <td>Spearman’s rank correlation coefficient</td>
-<td>✅</td>
-<td><code>correlation::correlation</code></td>
+<td>Yes</td>
+<td><code>correlation::correlation()</code></td>
 </tr>
 <tr class="odd">
 <td>Robust</td>
 <td>Winsorized Pearson correlation coefficient</td>
-<td>✅</td>
-<td><code>correlation::correlation</code></td>
+<td>Yes</td>
+<td><code>correlation::correlation()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
-<td>Pearson’s correlation coefficient</td>
-<td>✅</td>
-<td><code>correlation::correlation</code></td>
+<td>Bayesian Pearson’s correlation coefficient</td>
+<td>Yes</td>
+<td><code>correlation::correlation()</code></td>
 </tr>
 </tbody>
 </table>
@@ -913,27 +1041,26 @@ estimation</strong></p>
 <tr class="odd">
 <td>Parametric/Non-parametric</td>
 <td>Unpaired</td>
-<td>Pearson’s <span class="math inline">\(\chi^2\)</span> test</td>
-<td><code>stats::chisq.test</code></td>
+<td>Pearson’s chi-squared test</td>
+<td><code>stats::chisq.test()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
 <td>Unpaired</td>
-<td>Bayesian Pearson’s <span class="math inline">\(\chi^2\)</span>
-test</td>
-<td><code>BayesFactor::contingencyTableBF</code></td>
+<td>Bayesian Pearson’s chi-squared test</td>
+<td><code>BayesFactor::contingencyTableBF()</code></td>
 </tr>
 <tr class="odd">
 <td>Parametric/Non-parametric</td>
 <td>Paired</td>
-<td>McNemar’s <span class="math inline">\(\chi^2\)</span> test</td>
-<td><code>stats::mcnemar.test</code></td>
+<td>McNemar’s chi-squared test</td>
+<td><code>stats::mcnemar.test()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
 <td>Paired</td>
-<td>❌</td>
-<td>❌</td>
+<td>No</td>
+<td>No</td>
 </tr>
 </tbody>
 </table>
@@ -951,7 +1078,7 @@ test</td>
 <th>Type</th>
 <th>Design</th>
 <th>Effect size</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
@@ -959,30 +1086,30 @@ test</td>
 <tr class="odd">
 <td>Parametric/Non-parametric</td>
 <td>Unpaired</td>
-<td>Cramer’s <span class="math inline">\(V\)</span></td>
-<td>✅</td>
-<td><code>effectsize::cramers_v</code></td>
+<td>Cramer’s <em>V</em></td>
+<td>Yes</td>
+<td><code>effectsize::cramers_v()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
 <td>Unpaired</td>
-<td>Cramer’s <span class="math inline">\(V\)</span></td>
-<td>✅</td>
-<td><code>effectsize::cramers_v</code></td>
+<td>Cramer’s <em>V</em></td>
+<td>Yes</td>
+<td><code>effectsize::cramers_v()</code></td>
 </tr>
 <tr class="odd">
 <td>Parametric/Non-parametric</td>
 <td>Paired</td>
-<td>Cohen’s <span class="math inline">\(g\)</span></td>
-<td>✅</td>
-<td><code>effectsize::cohens_g</code></td>
+<td>Cohen’s <em>g</em></td>
+<td>Yes</td>
+<td><code>effectsize::cohens_g()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
 <td>Paired</td>
-<td>❌</td>
-<td>❌</td>
-<td>❌</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
 </tr>
 </tbody>
 </table>
@@ -1006,14 +1133,12 @@ test</td>
 <tbody>
 <tr class="odd">
 <td>Parametric/Non-parametric</td>
-<td>Goodness of fit <span class="math inline">\(\chi^2\)</span>
-test</td>
-<td><code>stats::chisq.test</code></td>
+<td>Goodness of fit chi-squared test</td>
+<td><code>stats::chisq.test()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
-<td>Bayesian Goodness of fit <span class="math inline">\(\chi^2\)</span>
-test</td>
+<td>Bayesian Goodness of fit chi-squared test</td>
 <td>(custom)</td>
 </tr>
 </tbody>
@@ -1030,22 +1155,22 @@ test</td>
 <tr class="header">
 <th>Type</th>
 <th>Effect size</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Parametric/Non-parametric</td>
-<td>Pearson’s <span class="math inline">\(C\)</span></td>
-<td>✅</td>
-<td><code>effectsize::pearsons_c</code></td>
+<td>Pearson’s <em>C</em></td>
+<td>Yes</td>
+<td><code>effectsize::pearsons_c()</code></td>
 </tr>
 <tr class="even">
 <td>Bayesian</td>
-<td>❌</td>
-<td>❌</td>
-<td>❌</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
 </tr>
 </tbody>
 </table>
@@ -1068,7 +1193,7 @@ estimation</strong></p>
 <th>Type</th>
 <th>Test</th>
 <th>Effect size</th>
-<th>CI?</th>
+<th>CI available?</th>
 <th>Function used</th>
 </tr>
 </thead>
@@ -1076,23 +1201,23 @@ estimation</strong></p>
 <tr class="odd">
 <td>Parametric</td>
 <td>Meta-analysis via random-effects models</td>
-<td><span class="math inline">\(\beta\)</span></td>
-<td>✅</td>
-<td><code>metafor::metafor</code></td>
+<td><em>beta</em></td>
+<td>Yes</td>
+<td><code>metafor::metafor()</code></td>
 </tr>
 <tr class="even">
 <td>Robust</td>
 <td>Meta-analysis via robust random-effects models</td>
-<td><span class="math inline">\(\beta\)</span></td>
-<td>✅</td>
-<td><code>metaplus::metaplus</code></td>
+<td><em>beta</em></td>
+<td>Yes</td>
+<td><code>metaplus::metaplus()</code></td>
 </tr>
 <tr class="odd">
 <td>Bayes</td>
 <td>Meta-analysis via Bayesian random-effects models</td>
-<td><span class="math inline">\(\beta\)</span></td>
-<td>✅</td>
-<td><code>metaBMA::meta_random</code></td>
+<td><em>beta</em></td>
+<td>Yes</td>
+<td><code>metaBMA::meta_random()</code></td>
 </tr>
 </tbody>
 </table>

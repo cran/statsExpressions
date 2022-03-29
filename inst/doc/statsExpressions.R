@@ -29,7 +29,7 @@ set.seed(123)
 citation("statsExpressions")
 
 ## ----df_p---------------------------------------------------------------------
-mtcars %>% oneway_anova(cyl, wt, type = "nonparametric") 
+mtcars %>% oneway_anova(cyl, wt, type = "nonparametric")
 
 mtcars %>% oneway_anova(cyl, wt, type = "robust")
 

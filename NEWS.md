@@ -1,3 +1,7 @@
+# statsExpressions 1.3.1
+
+  - Fixes breakages due to `{insight}` package update.
+
 # statsExpressions 1.3.0
 
 BREAKING CHANGES
