@@ -12,7 +12,7 @@
 
 <meta name="author" content="Indrajeet Patil" />
 
-<meta name="date" content="2022-03-29" />
+<meta name="date" content="2022-05-20" />
 
 <title>statsExpressions: R Package for Tidy Dataframes and Expressions with Statistical Details</title>
 
@@ -357,29 +357,31 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">statsExpressions: R Package for Tidy
 Dataframes and Expressions with Statistical Details</h1>
 <h4 class="author">Indrajeet Patil</h4>
-<h4 class="date">2022-03-29</h4>
+<h4 class="date">2022-05-20</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#summary">Summary</a></li>
-<li><a href="#statement-of-need">Statement of Need</a></li>
-<li><a href="#comparison-to-other-packages">Comparison to Other
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+<li><a href="#statement-of-need" id="toc-statement-of-need">Statement of
+Need</a></li>
+<li><a href="#comparison-to-other-packages" id="toc-comparison-to-other-packages">Comparison to Other
 Packages</a></li>
-<li><a href="#consistent-syntax-for-statistical-analysis">Consistent
-Syntax for Statistical Analysis</a></li>
-<li><a href="#tidy-dataframes-from-statistical-analysis">Tidy Dataframes
-from Statistical Analysis</a></li>
-<li><a href="#expressions-for-plots">Expressions for Plots</a></li>
-<li><a href="#licensing-and-availability">Licensing and
-Availability</a></li>
-<li><a href="#acknowledgements">Acknowledgements</a></li>
-<li><a href="#references">References</a></li>
+<li><a href="#consistent-syntax-for-statistical-analysis" id="toc-consistent-syntax-for-statistical-analysis">Consistent Syntax
+for Statistical Analysis</a></li>
+<li><a href="#tidy-dataframes-from-statistical-analysis" id="toc-tidy-dataframes-from-statistical-analysis">Tidy Dataframes from
+Statistical Analysis</a></li>
+<li><a href="#expressions-for-plots" id="toc-expressions-for-plots">Expressions for Plots</a></li>
+<li><a href="#licensing-and-availability" id="toc-licensing-and-availability">Licensing and Availability</a></li>
+<li><a href="#acknowledgements" id="toc-acknowledgements">Acknowledgements</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
 
 <p>This vignette can be cited as:</p>
 <pre><code>
+To cite package &#39;statsExpressions&#39; in publications use:
+
   Patil, I., (2021). statsExpressions: R Package for Tidy Dataframes
   and Expressions with Statistical Details. Journal of Open Source
   Software, 6(61), 3236, https://doi.org/10.21105/joss.03236
@@ -536,9 +538,9 @@ statistical approach can be modified by changing a single argument:</p>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   method                       effectsize      estimate conf.level conf.low</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                        &lt;chr&gt;              &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Kruskal-Wallis rank sum test Epsilon2 (rank)    0.736       0.95    0.624</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   conf.high conf.method          conf.iterations n.obs expression  </span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &lt;dbl&gt; &lt;chr&gt;                          &lt;int&gt; &lt;int&gt; &lt;list&gt;      </span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1         1 percentile bootstrap             100    32 &lt;expression&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   conf.high conf.method          conf.iterations n.obs expression</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &lt;dbl&gt; &lt;chr&gt;                          &lt;int&gt; &lt;int&gt; &lt;list&gt;    </span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1         1 percentile bootstrap             100    32 &lt;language&gt;</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span> <span class="fu">oneway_anova</span>(cyl, wt, <span class="at">type =</span> <span class="st">&quot;robust&quot;</span>)</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 12</span></span>
@@ -551,9 +553,9 @@ statistical approach can be modified by changing a single argument:</p>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   effectsize                         estimate conf.level conf.low conf.high</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                                 &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Explanatory measure of effect size     1.05       0.95    0.843      1.50</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   n.obs expression  </span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;list&gt;      </span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    32 &lt;expression&gt;</span></span></code></pre></div>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   n.obs expression</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;list&gt;    </span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    32 &lt;language&gt;</span></span></code></pre></div>
 <p>These functions are also compatible with other popular data
 manipulation packages. For example, we can use combination of
 <code>dplyr</code> and <code>{statsExpressions}</code> to repeat the
@@ -574,11 +576,11 @@ same statistical analysis across grouping variables.</p>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Pearson&#39;s C    0.414       0.95    0             1 ncp        </span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Pearson&#39;s C    0.141       0.95    0             1 ncp        </span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Pearson&#39;s C    0.581       0.95    0.265         1 ncp        </span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   conf.distribution n.obs expression  </span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;int&gt; &lt;list&gt;      </span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 chisq                11 &lt;expression&gt;</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 chisq                 7 &lt;expression&gt;</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 chisq                14 &lt;expression&gt;</span></span></code></pre></div>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   conf.distribution n.obs expression</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;int&gt; &lt;list&gt;    </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 chisq                11 &lt;language&gt;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 chisq                 7 &lt;language&gt;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 chisq                14 &lt;language&gt;</span></span></code></pre></div>
 </div>
 <div id="expressions-for-plots" class="section level2">
 <h2>Expressions for Plots</h2>

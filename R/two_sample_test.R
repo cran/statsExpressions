@@ -109,8 +109,6 @@
 #' )
 #' }
 #' @export
-
-# function body
 two_sample_test <- function(data,
                             x,
                             y,
@@ -125,7 +123,6 @@ two_sample_test <- function(data,
                             bf.prior = 0.707,
                             tr = 0.2,
                             nboot = 100L,
-                            top.text = NULL,
                             ...) {
   # standardize the type of statistics
   type <- stats_type_switch(type)
@@ -147,7 +144,7 @@ two_sample_test <- function(data,
 
   if (type == "parametric") {
     # styler: off
-    # preparing expression parameters
+
     k.df <- ifelse(paired || var.equal, 0L, k)
     .f   <- stats::t.test
     if (effsize.type %in% c("unbiased", "g")) .f.es <- effectsize::hedges_g
@@ -157,10 +154,8 @@ two_sample_test <- function(data,
 
   # non-parametric ------------------------------------
 
-  # preparing expression parameters
   if (type == "nonparametric") c(.f, .f.es) %<-% c(stats::wilcox.test, effectsize::rank_biserial)
 
-  # preparing expression
   if (type %in% c("parametric", "nonparametric")) {
     # extracting test details
     stats_df <- exec(
@@ -230,13 +225,11 @@ two_sample_test <- function(data,
 
   # expression ---------------------------------------
 
-  # add column with expression
   add_expression_col(
     data     = stats_df,
     paired   = paired,
-    n        = ifelse(paired, length(unique(data$rowid)), nrow(data)),
+    n        = ifelse(paired, length(unique(data$.rowid)), nrow(data)),
     k        = k,
-    k.df     = k.df,
-    top.text = top.text
+    k.df     = k.df
   )
 }

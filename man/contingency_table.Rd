@@ -17,14 +17,14 @@ contingency_table(
   sampling.plan = "indepMulti",
   fixed.margin = "rows",
   prior.concentration = 1,
-  top.text = NULL,
   ...
 )
 }
 \arguments{
-\item{data}{A dataframe (or a tibble) from which variables specified are to
+\item{data}{A data frame (or a tibble) from which variables specified are to
 be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
-be accepted.}
+be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
+ungrouped before they are entered as \code{data}.}
 
 \item{x}{The variable to use as the \strong{rows} in the contingency table.}
 
@@ -48,8 +48,8 @@ be returned.}
 
 You can specify just the initial letter.}
 
-\item{counts}{A string naming a variable in data containing counts, or \code{NULL}
-if each row represents a single observation.}
+\item{counts}{The variable in data containing counts, or \code{NULL} if each row
+represents a single observation.}
 
 \item{ratio}{A vector of proportions: the expected proportions for the
 proportion test (should sum to 1). Default is \code{NULL}, which means the null
@@ -76,13 +76,10 @@ to \code{1} by default. It indexes the expected deviation from the null
 hypothesis under the alternative, and corresponds to Gunel and Dickey's
 (1974) \code{"a"} parameter.}
 
-\item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} package functions.}
-
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-The returned tibble dataframe can contain some or all of the following columns (the exact columns will depend on the statistical test):
+The returned tibble data frame can contain some or all of the following columns (the exact columns will depend on the statistical test):
 \itemize{
 \item \code{statistic}: the numeric value of a statistic
 \item \code{df}: the numeric value of a parameter being modeled (often degrees

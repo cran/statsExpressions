@@ -1,3 +1,23 @@
+# statsExpressions 1.3.2
+
+NEW FUNCTIONS
+
+  - The `pairwise_comparisons()` function to carry out pairwise comparison tests
+    for one-way designs.
+
+MAJOR CHANGES
+
+  - Expressions with statistical details were sometimes in a column named
+    `label`, while other times in `expression` column. Now it will be
+    consistently in the `expression` column.
+
+  - Additionally, glue expressions were stored parsed in some data frame
+    outputs, while unparsed in others. Now it is consistently parsed.
+
+  - The `top.text` parameter has been removed from all functions. It was
+    relevant only in the context of `{ggstatsplot}` package. As that package no
+    longer uses it, it is no longer necessary to retain it.
+
 # statsExpressions 1.3.1
 
   - Fixes breakages due to `{insight}` package update.

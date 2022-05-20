@@ -15,14 +15,14 @@ one_sample_test(
   tr = 0.2,
   bf.prior = 0.707,
   effsize.type = "g",
-  top.text = NULL,
   ...
 )
 }
 \arguments{
-\item{data}{A dataframe (or a tibble) from which variables specified are to
+\item{data}{A data frame (or a tibble) from which variables specified are to
 be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
-be accepted.}
+be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
+ungrouped before they are entered as \code{data}.}
 
 \item{x}{A numeric variable from the dataframe \code{data}.}
 
@@ -64,13 +64,10 @@ corresponds to scale for fixed effects.}
 \item{effsize.type}{Type of effect size needed for \emph{parametric} tests. The
 argument can be \code{"d"} (for Cohen's \emph{d}) or \code{"g"} (for Hedge's \emph{g}).}
 
-\item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} package functions.}
-
 \item{...}{Currently ignored.}
 }
 \value{
-The returned tibble dataframe can contain some or all of the following columns (the exact columns will depend on the statistical test):
+The returned tibble data frame can contain some or all of the following columns (the exact columns will depend on the statistical test):
 \itemize{
 \item \code{statistic}: the numeric value of a statistic
 \item \code{df}: the numeric value of a parameter being modeled (often degrees

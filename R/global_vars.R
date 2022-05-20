@@ -3,17 +3,14 @@
 utils::globalVariables(
   names = c(
     ".",
-    "Est",
-    "ci.low",
-    "ci.up",
-    "effsize",
     "effectsize",
     "estimate",
-    "rowid",
+    ".rowid",
     "statistic",
     "std.error",
     "term",
     ".counts",
+    "nested_data",
     "df",
     "df.error",
     "k.df",
@@ -28,11 +25,14 @@ utils::globalVariables(
     "conf.level",
     ".fn",
     ".ns",
-    "n",
     "p.value",
     "where",
     "k.df.error",
-    "label"
+    "group1",
+    "group2",
+    "log_e_bf10",
+    "p_adjust_text",
+    "n.obs"
   ),
   package = "statsExpressions",
   add = FALSE

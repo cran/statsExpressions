@@ -46,8 +46,6 @@
 #'   functions from `bayestestR` package).
 #' @param k Number of digits after decimal point (should be an integer)
 #'   (Default: `k = 2L`).
-#' @param top.text Text to display on top of the Bayes Factor message. This is
-#'   mostly relevant in the context of `ggstatsplot` package functions.
 #' @param ... Currently ignored.
 #' @inheritParams oneway_anova
 #' @inheritParams long_to_wide_converter
@@ -79,13 +77,10 @@
 #'   k.df           = 3L
 #' )
 #' @export
-
-# function body
 add_expression_col <- function(data,
                                paired = FALSE,
                                statistic.text = NULL,
                                effsize.text = NULL,
-                               top.text = NULL,
                                prior.type = NULL,
                                n = NULL,
                                n.text = ifelse(
@@ -99,7 +94,7 @@ add_expression_col <- function(data,
                                k.df.error = k.df,
                                ...) {
 
-  # some cleanup before we begin
+  # initial cleanup
   data %<>%
     rename_all(.funs = recode, "bayes.factor" = "bf10") %>%
     mutate(
@@ -125,27 +120,18 @@ add_expression_col <- function(data,
     n.obs              = .prettyNum(n)
   )
 
+  # how many parameters?
+  no.parameters <- sum("df.error" %in% names(data) + "df" %in% names(data))
+
   # Bayesian analysis ------------------------------
 
   if (bayesian) {
-    if (is.null(top.text)) {
-      df_expr %<>% mutate(expression = glue("list(
+    df_expr %<>% mutate(expression = glue("list(
             log[e]*(BF['01'])=='{format_value(-log(bf10), k)}',
             {es.text}^'posterior'=='{estimate}',
             CI['{conf.level}']^{conf.method}~'['*'{conf.low}', '{conf.high}'*']',
             {prior.distribution}=='{prior.scale}')"))
-    } else {
-      df_expr %<>% mutate(expression = glue("list(
-            atop('{top.text}',
-            list(log[e]*(BF['01'])=='{format_value(-log(bf10), k)}',
-            {es.text}^'posterior'=='{estimate}',
-            CI['{conf.level}']^{conf.method}~'['*'{conf.low}', '{conf.high}'*']',
-            {prior.distribution}=='{prior.scale}')))"))
-    }
   }
-
-  # how many parameters?
-  no.parameters <- sum("df.error" %in% names(data) + "df" %in% names(data))
 
   # 0 degrees of freedom --------------------
 
@@ -177,10 +163,13 @@ add_expression_col <- function(data,
             {n.text}=='{n.obs}')"))
   }
 
-  # return dataframe with some polish and formatted expression
+  # convert `expression` to `language`
+  df_expr %<>% .glue_to_expression()
+
+  # return data frame with some polish and formatted expression
   as_tibble(data) %>%
     relocate(matches("^effectsize$"), .before = matches("^estimate$")) %>%
-    mutate(expression = list(parse(text = df_expr$expression[[1]])))
+    mutate(expression = df_expr$expression)
 }
 
 
@@ -188,7 +177,6 @@ add_expression_col <- function(data,
 
 #' Helper function to convert certain numeric columns to character type
 #' @noRd
-
 .data_to_char <- function(data, k = 2L, k.df = 0L, k.df.error = 0L) {
   data %>%
     mutate(
@@ -200,5 +188,4 @@ add_expression_col <- function(data,
 }
 
 #' @noRd
-
 .prettyNum <- function(x) prettyNum(x, big.mark = ",", scientific = FALSE)

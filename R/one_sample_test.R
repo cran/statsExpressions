@@ -71,7 +71,6 @@
 #' )
 #' }
 #' @export
-
 one_sample_test <- function(data,
                             x,
                             type = "parametric",
@@ -82,7 +81,6 @@ one_sample_test <- function(data,
                             tr = 0.2,
                             bf.prior = 0.707,
                             effsize.type = "g",
-                            top.text = NULL,
                             ...) {
   # standardize the type of statistics
   type <- stats_type_switch(type)
@@ -92,7 +90,7 @@ one_sample_test <- function(data,
 
   # parametric ---------------------------------------
 
-  # preparing expression parameters
+
   if (type == "parametric") {
     .f <- stats::t.test
     # styler: off
@@ -103,10 +101,9 @@ one_sample_test <- function(data,
 
   # non-parametric ---------------------------------------
 
-  # preparing expression parameters
+
   if (type == "nonparametric") c(.f, .f.es) %<-% c(stats::wilcox.test, effectsize::rank_biserial)
 
-  # preparing expression
   if (type %in% c("parametric", "nonparametric")) {
     # extracting test details
     stats_df <- exec(.f, x = x_vec, mu = test.value, alternative = alternative) %>%
@@ -137,7 +134,6 @@ one_sample_test <- function(data,
 
   # Bayesian ---------------------------------------
 
-  # running Bayesian one-sample t-test
   if (type == "bayes") {
     stats_df <- BayesFactor::ttestBF(x = x_vec, rscale = bf.prior, mu = test.value) %>%
       tidy_model_parameters(ci = conf.level)
@@ -145,11 +141,5 @@ one_sample_test <- function(data,
 
   # expression ---------------------------------------
 
-  # add column with expression
-  add_expression_col(
-    data     = stats_df,
-    n        = length(x_vec),
-    k        = k,
-    top.text = top.text
-  )
+  add_expression_col(stats_df, n = length(x_vec), k = k)
 }

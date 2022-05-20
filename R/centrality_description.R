@@ -5,9 +5,9 @@
 #'
 #' This function describes a distribution for `y` variable for each level of the
 #' grouping variable in `x` by a set of indices (e.g., measures of centrality,
-#' dispersion, range, skewness, kurtosis). It additionally returns an expression
-#' containing a specified centrality measure. The function internally relies on
-#' `datawizard::describe_distribution()` function.
+#' dispersion, range, skewness, kurtosis, etc.). It additionally returns an
+#' expression containing a specified centrality measure. The function internally
+#' relies on `datawizard::describe_distribution()` function.
 #'
 #' @description
 #'
@@ -17,7 +17,7 @@
 #' ```{r child="man/rmd-fragments/centrality_description.Rmd"}
 #' ```
 #'
-#' @param x The grouping (or independent) variable from the dataframe data.
+#' @param x The grouping (or independent) variable in `data`.
 #' @inheritParams oneway_anova
 #' @param ... Currently ignored.
 #'
@@ -38,7 +38,6 @@
 #' centrality_description(sleep, group, extra, type = "b")
 #'
 #' @export
-
 centrality_description <- function(data,
                                    x,
                                    y,
@@ -64,15 +63,13 @@ centrality_description <- function(data,
 
   # dataframe -------------------------------------
 
-  # creating the dataframe
   select(data, {{ x }}, {{ y }}) %>%
     tidyr::drop_na(.) %>%
-    mutate({{ x }} := droplevels(as.factor({{ x }}))) %>%
     group_by({{ x }}) %>%
     group_modify(
       .f = ~ standardize_names(
         data = datawizard::describe_distribution(
-          x          = .,
+          x          = pull(., {{ y }}),
           centrality = centrality,
           threshold  = tr,
           verbose    = FALSE,
@@ -83,9 +80,10 @@ centrality_description <- function(data,
     ) %>%
     ungroup() %>%
     mutate(
-      expression = glue("widehat(mu)[{centrality}]=='{format_value(estimate, k)}'"),
-      n_label = paste0({{ x }}, "\n(n = ", .prettyNum(n), ")")
+      expression = glue("list(widehat(mu)[{centrality}]=='{format_value(estimate, k)}')"),
+      n.expression = paste0({{ x }}, "\n(n = ", .prettyNum(n.obs), ")")
     ) %>%
     arrange({{ x }}) %>%
-    select({{ x }}, !!as.character(ensym(y)) := estimate, n_obs = n, everything())
+    select({{ x }}, !!as.character(ensym(y)) := estimate, everything()) %>%
+    .glue_to_expression()
 }

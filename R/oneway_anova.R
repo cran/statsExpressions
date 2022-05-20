@@ -125,8 +125,6 @@
 #' )
 #' }
 #' @export
-
-# function body
 oneway_anova <- function(data,
                          x,
                          y,
@@ -140,7 +138,6 @@ oneway_anova <- function(data,
                          bf.prior = 0.707,
                          tr = 0.2,
                          nboot = 100L,
-                         top.text = NULL,
                          ...) {
 
   # standardize the type of statistics
@@ -158,7 +155,7 @@ oneway_anova <- function(data,
       paired     = paired,
       spread     = FALSE
     ) %>%
-    mutate(rowid = as.factor(rowid))
+    mutate(.rowid = as.factor(.rowid))
 
   #  parametric ---------------------------------------
 
@@ -178,7 +175,7 @@ oneway_anova <- function(data,
 
       # Fisher's ANOVA
       mod <- afex::aov_ez(
-        id          = "rowid",
+        id          = ".rowid",
         dv          = as_string(y),
         data        = data,
         within      = as_string(x),
@@ -207,8 +204,8 @@ oneway_anova <- function(data,
     # Friedman test
     if (paired) {
       c(.f, .f.es) %<-% c(stats::friedman.test, effectsize::kendalls_w)
-      .f.args       <- list(formula = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
-      .f.es.args    <- list(x = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | rowid)))
+      .f.args       <- list(formula = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | .rowid)))
+      .f.es.args    <- list(x = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | .rowid)))
     }
 
     # Kruskal-Wallis test
@@ -248,7 +245,7 @@ oneway_anova <- function(data,
       mod <- WRS2::rmanova(
         y       = data[[as_name(y)]],
         groups  = data[[as_name(x)]],
-        blocks  = data[["rowid"]],
+        blocks  = data[[".rowid"]],
         tr      = tr
       )
     }
@@ -270,7 +267,7 @@ oneway_anova <- function(data,
     # for paired designs, WRS2 currently doesn't return effect size
     if (paired) {
       effsize_df <- long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
-        WRS2::wmcpAKP(select(-rowid), tr = tr, nboot = nboot) %>%
+        WRS2::wmcpAKP(select(-.rowid), tr = tr, nboot = nboot) %>%
         tidy_model_parameters(.)
 
       # combine dataframes
@@ -280,14 +277,13 @@ oneway_anova <- function(data,
 
   # Bayesian ---------------------------------------
 
-  # running Bayesian t-test
   if (type == "bayes") {
     if (!paired) .f.args <- list(formula = new_formula(y, x), rscaleFixed = bf.prior)
     if (paired) {
       .f.args <- list(
-        formula      = new_formula(enexpr(y), expr(!!enexpr(x) + rowid)),
+        formula      = new_formula(enexpr(y), expr(!!enexpr(x) + .rowid)),
         rscaleFixed  = bf.prior,
-        whichRandom  = "rowid",
+        whichRandom  = ".rowid",
         rscaleRandom = 1
       )
     }
@@ -306,11 +302,10 @@ oneway_anova <- function(data,
 
   add_expression_col(
     data       = stats_df,
-    n          = ifelse(paired, length(unique(data$rowid)), nrow(data)),
+    n          = ifelse(paired, length(unique(data$.rowid)), nrow(data)),
     paired     = paired,
     k          = k,
     k.df       = k.df,
-    k.df.error = k.df.error,
-    top.text   = top.text
+    k.df.error = k.df.error
   )
 }

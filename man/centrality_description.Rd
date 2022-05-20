@@ -7,14 +7,14 @@
 centrality_description(data, x, y, type = "parametric", tr = 0.2, k = 2L, ...)
 }
 \arguments{
-\item{data}{A dataframe (or a tibble) from which variables specified are to
+\item{data}{A data frame (or a tibble) from which variables specified are to
 be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
-be accepted.}
+be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
+ungrouped before they are entered as \code{data}.}
 
-\item{x}{The grouping (or independent) variable from the dataframe data.}
+\item{x}{The grouping (or independent) variable in \code{data}.}
 
-\item{y}{The response (or outcome or dependent) variable from the
-dataframe \code{data}.}
+\item{y}{The response (or outcome or dependent) variable from \code{data}.}
 
 \item{type}{A character specifying the type of statistical approach:
 \itemize{
@@ -52,9 +52,9 @@ The table below provides summary about:
 \details{
 This function describes a distribution for \code{y} variable for each level of the
 grouping variable in \code{x} by a set of indices (e.g., measures of centrality,
-dispersion, range, skewness, kurtosis). It additionally returns an expression
-containing a specified centrality measure. The function internally relies on
-\code{datawizard::describe_distribution()} function.
+dispersion, range, skewness, kurtosis, etc.). It additionally returns an
+expression containing a specified centrality measure. The function internally
+relies on \code{datawizard::describe_distribution()} function.
 }
 \examples{
 

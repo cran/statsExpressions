@@ -10,7 +10,6 @@ meta_analysis(
   random = "mixture",
   k = 2L,
   conf.level = 0.95,
-  top.text = NULL,
   ...
 )
 }
@@ -45,14 +44,11 @@ The type of random effects distribution. One of "normal", "t-dist", "mixture", f
 \item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
 return \verb{95\%} confidence/credible intervals (\code{0.95}).}
 
-\item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} package functions.}
-
 \item{...}{Additional arguments passed to the respective meta-analysis
 function.}
 }
 \value{
-The returned tibble dataframe can contain some or all of the following columns (the exact columns will depend on the statistical test):
+The returned tibble data frame can contain some or all of the following columns (the exact columns will depend on the statistical test):
 \itemize{
 \item \code{statistic}: the numeric value of a statistic
 \item \code{df}: the numeric value of a parameter being modeled (often degrees
@@ -93,8 +89,8 @@ The table below provides summary about:
 }
 }
 \note{
-\strong{Important}: The function assumes that you have already downloaded
-the needed package (\code{{metafor}}, \code{{metaplus}}, or \code{{metaBMA}}) for meta-analysis.
+\strong{Important}: The function assumes that you have already downloaded the
+needed package (\code{{metafor}}, \code{{metaplus}}, or \code{{metaBMA}}) for meta-analysis.
 If they are not available, you will be asked to install them.
 }
 \examples{

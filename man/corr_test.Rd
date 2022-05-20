@@ -13,14 +13,14 @@ corr_test(
   conf.level = 0.95,
   tr = 0.2,
   bf.prior = 0.707,
-  top.text = NULL,
   ...
 )
 }
 \arguments{
-\item{data}{A dataframe (or a tibble) from which variables specified are to
+\item{data}{A data frame (or a tibble) from which variables specified are to
 be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
-be accepted.}
+be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
+ungrouped before they are entered as \code{data}.}
 
 \item{x}{The column in \code{data} containing the explanatory variable to be
 plotted on the \code{x}-axis.}
@@ -55,13 +55,10 @@ addition to numeric arguments, several named values are also recognized:
 of 1/2, sqrt(2)/2, and 1, respectively. In case of an ANOVA, this value
 corresponds to scale for fixed effects.}
 
-\item{top.text}{Text to display on top of the Bayes Factor message. This is
-mostly relevant in the context of \code{ggstatsplot} package functions.}
-
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-The returned tibble dataframe can contain some or all of the following columns (the exact columns will depend on the statistical test):
+The returned tibble data frame can contain some or all of the following columns (the exact columns will depend on the statistical test):
 \itemize{
 \item \code{statistic}: the numeric value of a statistic
 \item \code{df}: the numeric value of a parameter being modeled (often degrees

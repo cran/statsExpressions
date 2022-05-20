@@ -1,9 +1,5 @@
-test_that("tidy_model_expressions works", {
-  skip_if_not_installed("survival")
-
+test_that("tidy_model_expressions works - t", {
   options(tibble.width = Inf)
-
-  ## t-statistic --------------------------------
 
   set.seed(123)
   mod_t <- lm(wt ~ mpg, data = mtcars)
@@ -14,8 +10,8 @@ test_that("tidy_model_expressions works", {
     statistic = "t"
   ))
 
-  expect_snapshot(select(df_t, -label))
-  expect_snapshot(df_t$label)
+  expect_snapshot(select(df_t, -expression))
+  expect_snapshot(df_t$expression)
 
   # with NA df.error
   set.seed(123)
@@ -24,7 +20,7 @@ test_that("tidy_model_expressions works", {
     statistic = "t"
   ))
 
-  expect_snapshot(df_t_na$label)
+  expect_snapshot(df_t_na$expression)
 
   # with infinity as error
   set.seed(123)
@@ -33,11 +29,12 @@ test_that("tidy_model_expressions works", {
     statistic = "t"
   ))
 
-  expect_snapshot(df_t_inf$label)
+  expect_snapshot(df_t_inf$expression)
+})
 
-  ## chi2-statistic --------------------------------
-
-  # setup
+test_that("tidy_model_expressions works - chi2", {
+  options(tibble.width = Inf)
+  skip_if_not_installed("survival")
   library(survival)
 
   # model
@@ -52,12 +49,12 @@ test_that("tidy_model_expressions works", {
     statistic = "chi"
   ))
 
-  expect_snapshot(select(df_chi, -label))
-  expect_snapshot(df_chi$label)
+  expect_snapshot(select(df_chi, -expression))
+  expect_snapshot(df_chi$expression)
+})
 
-  ## z-statistic --------------------------------
-
-  # having a look at the Titanic dataset
+test_that("tidy_model_expressions works - z", {
+  options(tibble.width = Inf)
   df <- as.data.frame(Titanic)
 
   # model
@@ -74,6 +71,41 @@ test_that("tidy_model_expressions works", {
     statistic = "z"
   ))
 
-  expect_snapshot(select(df_z, -label))
-  expect_snapshot(df_z$label)
+  expect_snapshot(select(df_z, -expression))
+  expect_snapshot(df_z$expression)
+})
+
+
+test_that("tidy_model_expressions works - F", {
+  options(tibble.width = Inf)
+
+  ## F-statistic --------------------------------
+
+  set.seed(123)
+  mod_f <- aov(yield ~ N * P + Error(block), npk)
+
+  set.seed(123)
+  df1 <- tidy_model_expressions(
+    tidy_model_parameters(mod_f,
+      omega_squared = "partial",
+      table_wide = TRUE
+    ),
+    statistic = "f"
+  )
+
+  expect_snapshot(select(df1, -expression))
+  expect_snapshot(df1$expression)
+
+  set.seed(123)
+  df2 <- tidy_model_expressions(
+    tidy_model_parameters(mod_f,
+      eta_squared = "partial",
+      table_wide = TRUE
+    ),
+    statistic = "f",
+    effsize.type = "eta"
+  )
+
+  expect_snapshot(select(df2, -expression))
+  expect_snapshot(df2$expression)
 })
