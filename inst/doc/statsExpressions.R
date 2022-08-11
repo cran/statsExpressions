@@ -1,4 +1,4 @@
-## ----message=FALSE, warning=FALSE, echo=FALSE---------------------------------
+## -----------------------------------------------------------------------------
 # to pretty-print all columns in the output tibble
 options(
   tibble.width = Inf,
@@ -25,25 +25,25 @@ library(ggplot2)
 # for reproducibility
 set.seed(123)
 
-## ----citation, echo=FALSE, comment = ""---------------------------------------
+## -----------------------------------------------------------------------------
 citation("statsExpressions")
 
-## ----df_p---------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 mtcars %>% oneway_anova(cyl, wt, type = "nonparametric")
 
 mtcars %>% oneway_anova(cyl, wt, type = "robust")
 
-## ----grouped_df---------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # running one-sample proportion test for all levels of `cyl`
 mtcars %>%
   group_by(cyl) %>%
   group_modify(~ contingency_table(.x, am), .keep = TRUE) %>%
   ungroup()
 
-## ----expr_template, echo=FALSE, fig.cap="The templates used in `{statsExpressions}` to display statistical details in a plot."----
+## -----------------------------------------------------------------------------
 knitr::include_graphics("../man/figures/stats_reporting_format.png")
 
-## ----anova_example, fig.width=8, fig.cap="Example illustrating how `{statsExpressions}` functions can be used to display results from a statistical test in a plot."----
+## -----------------------------------------------------------------------------
 # needed libraries
 library(statsExpressions)
 library(ggplot2)

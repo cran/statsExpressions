@@ -1,8 +1,8 @@
+withr::local_options(list(tibble.width = Inf))
+
 test_that(
   desc = "centrality description works as expected",
   code = {
-    options(tibble.width = Inf)
-
     # data without NAs
     set.seed(123)
     df <- purrr::pmap_dfr(
@@ -19,7 +19,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df, -expression))
-    expect_snapshot(df$expression)
+    expect_snapshot(df[["expression"]])
 
     # data with NAs
     set.seed(123)
@@ -37,7 +37,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df_na, -expression))
-    expect_snapshot(df_na$expression)
+    expect_snapshot(df_na[["expression"]])
   }
 )
 
@@ -45,8 +45,6 @@ test_that(
 test_that(
   desc = "centrality description works when variable is named `variable`",
   code = {
-    options(tibble.width = Inf)
-
     df_var <- dplyr::rename(mtcars, variable = cyl)
 
     set.seed(123)
@@ -54,6 +52,6 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(res, -expression))
-    expect_snapshot(res$expression)
+    expect_snapshot(res[["expression"]])
   }
 )

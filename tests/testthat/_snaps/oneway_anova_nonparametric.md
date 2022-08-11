@@ -17,7 +17,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(chi["Kruskal-Wallis"]^2 * "(" * 8 * ")" == "51.43", italic(p) == 
@@ -44,7 +44,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(chi["Kruskal-Wallis"]^2 * "(" * 3 * ")" == "5.24", italic(p) == 
@@ -55,18 +55,50 @@
 # within-subjects
 
     Code
-      df1$expression
+      select(df1, -expression)
+    Output
+      # A tibble: 1 x 14
+        parameter1 parameter2 statistic df.error  p.value method                
+        <chr>      <chr>          <dbl>    <dbl>    <dbl> <chr>                 
+      1 desire     condition       55.8        3 4.56e-12 Friedman rank sum test
+        effectsize  estimate conf.level conf.low conf.high conf.method         
+        <chr>          <dbl>      <dbl>    <dbl>     <dbl> <chr>               
+      1 Kendall's W    0.211       0.99    0.140         1 percentile bootstrap
+        conf.iterations n.obs
+                  <int> <int>
+      1             100    88
+
+---
+
+    Code
+      df1[["expression"]]
     Output
       [[1]]
       list(chi["Friedman"]^2 * "(" * 3 * ")" == "55.83", italic(p) == 
-          "4.56e-12", widehat(italic("W"))["Kendall"] == "0.17", CI["99%"] ~ 
-          "[" * "0.11", "1.00" * "]", italic("n")["pairs"] == "88")
+          "4.56e-12", widehat(italic("W"))["Kendall"] == "0.21", CI["99%"] ~ 
+          "[" * "0.14", "1.00" * "]", italic("n")["pairs"] == "88")
       
 
 ---
 
     Code
-      df2$expression
+      select(df2, -expression)
+    Output
+      # A tibble: 1 x 14
+        parameter1 parameter2 statistic df.error  p.value method                
+        <chr>      <chr>          <dbl>    <dbl>    <dbl> <chr>                 
+      1 value      condition        410        3 1.51e-88 Friedman rank sum test
+        effectsize  estimate conf.level conf.low conf.high conf.method         
+        <chr>          <dbl>      <dbl>    <dbl>     <dbl> <chr>               
+      1 Kendall's W    0.911        0.9    0.906         1 percentile bootstrap
+        conf.iterations n.obs
+                  <int> <int>
+      1             100   150
+
+---
+
+    Code
+      df2[["expression"]]
     Output
       [[1]]
       list(chi["Friedman"]^2 * "(" * 3 * ")" == "410.00", italic(p) == 

@@ -9,17 +9,17 @@
       1   120     -2.67       78 0.00910 One Sample t-test two.sided   Hedges' g 
         estimate conf.level conf.low conf.high conf.method conf.distribution n.obs
            <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>             <int>
-      1   -0.298       0.95   -0.524   -0.0743 ncp         t                    79
+      1   -0.298       0.95   -0.520   -0.0738 ncp         t                    79
 
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(italic("t")["Student"] * "(" * 78 * ")" == "-2.67496", italic(p) == 
           "0.00910", widehat(italic("g"))["Hedges"] == "-0.29805", 
-          CI["95%"] ~ "[" * "-0.52379", "-0.07429" * "]", italic("n")["obs"] == 
+          CI["95%"] ~ "[" * "-0.52046", "-0.07382" * "]", italic("n")["obs"] == 
               "79")
       
 
@@ -34,17 +34,17 @@
       1   120     -2.67       78 0.00910 One Sample t-test two.sided   Cohen's d 
         estimate conf.level conf.low conf.high conf.method conf.distribution n.obs
            <dbl>      <dbl>    <dbl>     <dbl> <chr>       <chr>             <int>
-      1   -0.301        0.9   -0.492    -0.111 ncp         t                    79
+      1   -0.301        0.9   -0.489    -0.111 ncp         t                    79
 
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(italic("t")["Student"] * "(" * 78 * ")" == "-2.6750", italic(p) == 
           "0.0091", widehat(italic("d"))["Cohen"] == "-0.3010", CI["90%"] ~ 
-          "[" * "-0.4924", "-0.1115" * "]", italic("n")["obs"] == "79")
+          "[" * "-0.4893", "-0.1108" * "]", italic("n")["obs"] == "79")
       
 
 # one_sample_test non-parametric works
@@ -63,7 +63,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(italic("V")["Wilcoxon"] == "753.5000", italic(p) == "0.3227", 
@@ -88,7 +88,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(italic("V")["Wilcoxon"] == "262.0000", italic(p) == "1.2527e-05", 
@@ -113,7 +113,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(italic("t")["bootstrapped"] == "0.7866", italic(p) == "0.4550", 
@@ -137,7 +137,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(italic("t")["bootstrapped"] == "-3.8075", italic(p) == "0.0400", 
@@ -154,28 +154,28 @@
        [4] "conf.level"         "conf.low"           "conf.high"         
        [7] "pd"                 "rope.percentage"    "prior.distribution"
       [10] "prior.location"     "prior.scale"        "bf10"              
-      [13] "method"             "log_e_bf10"         "n.obs"             
-      [16] "expression"        
+      [13] "method"             "conf.method"        "log_e_bf10"        
+      [16] "n.obs"              "expression"        
 
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(log[e] * (BF["01"]) == "-47.84", widehat(delta)["difference"]^"posterior" == 
-          "-1.76", CI["90%"]^HDI ~ "[" * "-1.99", "-1.51" * "]", italic("r")["Cauchy"]^"JZS" == 
+          "-1.76", CI["90%"]^ETI ~ "[" * "-1.99", "-1.51" * "]", italic("r")["Cauchy"]^"JZS" == 
           "0.99")
       
 
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(log[e] * (BF["01"]) == "2.125", widehat(delta)["difference"]^"posterior" == 
-          "0.018", CI["95%"]^HDI ~ "[" * "-0.234", "0.274" * "]", italic("r")["Cauchy"]^"JZS" == 
+          "0.018", CI["95%"]^ETI ~ "[" * "-0.234", "0.274" * "]", italic("r")["Cauchy"]^"JZS" == 
           "0.900")
       
 

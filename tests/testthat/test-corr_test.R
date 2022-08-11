@@ -1,5 +1,4 @@
-# to print all tibble columns in the snapshot; don't remove
-options(tibble.width = Inf)
+withr::local_options(list(tibble.width = Inf))
 
 # parametric --------------------------------------------------------------
 
@@ -19,7 +18,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
 
     # without NA
     set.seed(123)
@@ -33,7 +32,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression)
+    expect_snapshot(df2[["expression"]])
   }
 )
 
@@ -55,7 +54,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
 
     # without NA
     set.seed(123)
@@ -68,7 +67,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression)
+    expect_snapshot(df2[["expression"]])
   }
 )
 
@@ -77,7 +76,6 @@ test_that(
 test_that(
   desc = "corr_test works - nonparametric",
   code = {
-
     # with NA
     set.seed(123)
     df1 <- corr_test(
@@ -91,7 +89,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
 
     # without NA
     set.seed(123)
@@ -105,7 +103,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression)
+    expect_snapshot(df2[["expression"]])
   }
 )
 
@@ -128,7 +126,7 @@ test_that(
     )
 
     expect_equal(df1$bf10, 0.614, tolerance = 0.001)
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
 
     # without NA
     set.seed(123)
@@ -139,6 +137,6 @@ test_that(
       type = "bayes"
     )
 
-    expect_snapshot(df2$expression)
+    expect_snapshot(df2[["expression"]])
   }
 )

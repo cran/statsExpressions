@@ -14,7 +14,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(chi["Pearson"]^2 * "(" * 2 * ")" == "8.74073", italic(p) == 
@@ -38,7 +38,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(chi["Pearson"]^2 * "(" * 1 * ")" == "456.87", italic(p) == 
@@ -62,7 +62,7 @@
 ---
 
     Code
-      df3$expression
+      df3[["expression"]]
     Output
       [[1]]
       list(chi["Pearson"]^2 * "(" * 15 * ")" == "15.75", italic(p) == 
@@ -86,7 +86,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(chi["McNemar"]^2 * "(" * 1 * ")" == "13.33333", italic(p) == 
@@ -111,7 +111,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(chi["McNemar"]^2 * "(" * 1 * ")" == "13.333", italic(p) == 
@@ -135,7 +135,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(chi["gof"]^2 * "(" * 1 * ")" == "1.12500", italic(p) == 
@@ -160,7 +160,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(chi["gof"]^2 * "(" * 1 * ")" == "722.45", italic(p) == "3.92e-159", 
@@ -187,7 +187,7 @@
 ---
 
     Code
-      df3$expression
+      df3[["expression"]]
     Output
       [[1]]
       list(chi["gof"]^2 * "(" * 3 * ")" == "33.76", italic(p) == "2.23e-07", 
@@ -208,7 +208,7 @@
 ---
 
     Code
-      df1$expression
+      df1[["expression"]]
     Output
       [[1]]
       list(log[e] * (BF["01"]) == "1.40", italic("a")["Gunel-Dickey"] == 
@@ -228,7 +228,7 @@
 ---
 
     Code
-      df2$expression
+      df2[["expression"]]
     Output
       [[1]]
       list(log[e] * (BF["01"]) == "0.55", italic("a")["Gunel-Dickey"] == 
@@ -238,26 +238,27 @@
 # bayesian (contingency tab)
 
     Code
-      list(expr_text1$expression, expr_text2$expression, expr_text3$expression)
+      list(expr_text1[["expression"]], expr_text2[["expression"]], expr_text3[[
+        "expression"]])
     Output
       [[1]]
       [[1]][[1]]
       list(log[e] * (BF["01"]) == "-3.335", widehat(italic("V"))["Cramer"]^"posterior" == 
-          "0.479", CI["89%"]^HDI ~ "[" * "0.253", "0.668" * "]", italic("a")["Gunel-Dickey"] == 
+          "0.479", CI["89%"]^ETI ~ "[" * "0.253", "0.668" * "]", italic("a")["Gunel-Dickey"] == 
           "1.000")
       
       
       [[2]]
       [[2]][[1]]
       list(log[e] * (BF["01"]) == "-214.255", widehat(italic("V"))["Cramer"]^"posterior" == 
-          "0.455", CI["99%"]^HDI ~ "[" * "0.401", "0.507" * "]", italic("a")["Gunel-Dickey"] == 
+          "0.455", CI["99%"]^ETI ~ "[" * "0.401", "0.507" * "]", italic("a")["Gunel-Dickey"] == 
           "1.000")
       
       
       [[3]]
       [[3]][[1]]
       list(log[e] * (BF["01"]) == "-213.873", widehat(italic("V"))["Cramer"]^"posterior" == 
-          "0.454", CI["95%"]^HDI ~ "[" * "0.415", "0.493" * "]", italic("a")["Gunel-Dickey"] == 
+          "0.454", CI["95%"]^ETI ~ "[" * "0.415", "0.493" * "]", italic("a")["Gunel-Dickey"] == 
           "1.500")
       
       

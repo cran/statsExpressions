@@ -1,8 +1,8 @@
+withr::local_options(list(tibble.width = Inf))
+
 test_that(
   desc = "expr_anova_robust works - between-subjects",
   code = {
-    options(tibble.width = Inf)
-
     # between-subjects -------------------------------------------------------
 
 
@@ -34,20 +34,18 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
 
 
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression)
+    expect_snapshot(df2[["expression"]])
   }
 )
 
 test_that(
   desc = "expr_anova_robust works - within-subjects",
   code = {
-    options(tibble.width = Inf)
-
     # within-subjects -------------------------------------------------------
 
 
@@ -64,6 +62,6 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
   }
 )

@@ -1,8 +1,8 @@
+withr::local_options(list(tibble.width = Inf))
 
 test_that(
   desc = "meta_analysis works - robust",
   code = {
-    options(tibble.width = Inf)
     skip_if(getRversion() < "4.0")
     skip_if_not_installed("metaplus")
 
@@ -25,6 +25,6 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df, -expression))
-    expect_snapshot(df$expression)
+    expect_snapshot(df[["expression"]])
   }
 )

@@ -1,5 +1,4 @@
-# to print all tibble columns in the snapshot; don't remove
-options(tibble.width = Inf)
+withr::local_options(list(tibble.width = Inf))
 
 # between-subjects ----------------------------------------------
 
@@ -19,7 +18,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df1, -expression))
-    expect_snapshot(df1$expression)
+    expect_snapshot(df1[["expression"]])
 
     # with NA
     set.seed(123)
@@ -35,7 +34,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df2, -expression))
-    expect_snapshot(df2$expression)
+    expect_snapshot(df2[["expression"]])
   }
 )
 
@@ -56,9 +55,9 @@ test_that(
         conf.level = 0.99
       )
 
-
     set.seed(123)
-    expect_snapshot(df1$expression)
+    expect_snapshot(select(df1, -expression))
+    expect_snapshot(df1[["expression"]])
 
     # without NAs
     set.seed(123)
@@ -72,9 +71,9 @@ test_that(
         conf.level = 0.90
       )
 
-
     set.seed(123)
-    expect_snapshot(df2$expression)
+    expect_snapshot(select(df2, -expression))
+    expect_snapshot(df2[["expression"]])
   }
 )
 

@@ -1,8 +1,8 @@
+withr::local_options(list(tibble.width = Inf))
 
 test_that(
   desc = "meta_analysis works - parametric",
   code = {
-    options(tibble.width = Inf)
     skip_if(getRversion() < "4.0")
     skip_if_not_installed("metafor")
 
@@ -23,7 +23,7 @@ test_that(
 
     set.seed(123)
     expect_snapshot(select(df, -expression))
-    expect_snapshot(df$expression)
+    expect_snapshot(df[["expression"]])
 
     # error
     expect_error(suppressWarnings(meta_analysis(mtcars)))
