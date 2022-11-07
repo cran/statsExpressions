@@ -14,6 +14,9 @@
 #' @inheritParams stats::t.test
 #'
 #' @description
+#' Parametric, non-parametric, robust, and Bayesian one-sample tests.
+#'
+#' @section One-sample tests:
 #'
 #' ```{r child="man/rmd-fragments/table_intro.Rmd"}
 #' ```
@@ -26,11 +29,12 @@
 #' ```{r child="man/rmd-fragments/return.Rmd"}
 #' ```
 #'
-#' @examples
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
+#' library(ggplot2) # for data
 #' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
 #' # ----------------------- parametric ---------------------------------------
@@ -106,7 +110,7 @@ one_sample_test <- function(data,
   if (type %in% c("parametric", "nonparametric")) {
     # extracting test details
     stats_df <- exec(.f, x = x_vec, mu = test.value, alternative = alternative) %>%
-      tidy_model_parameters(.) %>%
+      tidy_model_parameters() %>%
       select(-matches("^est|^conf|^diff|^term|^ci"))
 
     # extracting effect size details
@@ -117,7 +121,7 @@ one_sample_test <- function(data,
       verbose = FALSE,
       ci      = conf.level
     ) %>%
-      tidy_model_effectsize(.)
+      tidy_model_effectsize()
 
     # dataframe
     stats_df <- bind_cols(stats_df, effsize_df)
@@ -126,9 +130,8 @@ one_sample_test <- function(data,
   # robust ---------------------------------------
 
   if (type == "robust") {
-    # bootstrap-t method for one-sample test
     stats_df <- exec(WRS2::trimcibt, x = x_vec, nv = test.value, tr = tr, alpha = 1 - conf.level) %>%
-      tidy_model_parameters(.)
+      tidy_model_parameters()
   }
 
   # Bayesian ---------------------------------------

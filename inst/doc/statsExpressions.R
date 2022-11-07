@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 # needed libraries
 library(dplyr)
 library(statsExpressions)
-library(ggplot2)
 
 # for reproducibility
 set.seed(123)

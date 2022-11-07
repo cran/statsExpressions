@@ -8,7 +8,7 @@ test_that(
     # with NA
     set.seed(123)
     df1 <- corr_test(
-      data = ggplot2::msleep,
+      data = msleep,
       x = brainwt,
       y = sleep_rem,
       type = "parametric",
@@ -44,7 +44,7 @@ test_that(
     # with NA
     set.seed(123)
     df1 <- corr_test(
-      data = ggplot2::msleep,
+      data = msleep,
       x = brainwt,
       y = sleep_total,
       type = "r",
@@ -79,7 +79,7 @@ test_that(
     # with NA
     set.seed(123)
     df1 <- corr_test(
-      data = ggplot2::msleep,
+      data = msleep,
       x = brainwt,
       y = sleep_total,
       type = "np",
@@ -112,13 +112,11 @@ test_that(
 test_that(
   desc = "corr_test works - Bayesian",
   code = {
-    skip_if(getRversion() < "4.0")
-
     # with NA
     set.seed(123)
     df1 <- corr_test(
       type = "bayes",
-      data = ggplot2::msleep,
+      data = msleep,
       y = brainwt,
       x = sleep_rem,
       bf.prior = 0.8,

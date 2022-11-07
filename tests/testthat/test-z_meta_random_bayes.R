@@ -8,12 +8,9 @@ test_that(
   desc = "meta_analysis works - bayesian",
   code = {
     skip_if_not_installed("metaBMA")
-    skip_if(getRversion() < "4.0")
 
     # setup
     set.seed(123)
-
-    # creating a dataframe
     df1 <- structure(
       .Data = list(
         term = c("1", "2", "3", "4", "5"),

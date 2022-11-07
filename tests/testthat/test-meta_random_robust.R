@@ -3,7 +3,6 @@ withr::local_options(list(tibble.width = Inf))
 test_that(
   desc = "meta_analysis works - robust",
   code = {
-    skip_if(getRversion() < "4.0")
     skip_if_not_installed("metaplus")
 
     # renaming to what `{statsExpressions}` expects
@@ -21,7 +20,6 @@ test_that(
       type = "robust",
       random = "normal",
     )
-
 
     set.seed(123)
     expect_snapshot(select(df, -expression))

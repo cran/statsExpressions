@@ -112,6 +112,9 @@ Note that all examples are preceded by \code{set.seed()} calls for reproducibili
 \description{
 Calculate parametric, non-parametric, robust, and Bayes Factor pairwise
 comparisons between group levels with corrections for multiple testing.
+}
+\section{Pairwise comparison tests}{
+
 
 The table below provides summary about:
 \itemize{
@@ -152,7 +155,9 @@ Not supported.
 Not supported.
 }
 }
+
 \examples{
+\dontshow{if (requireNamespace("PMCMRplus", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 # for reproducibility
 set.seed(123)
@@ -262,6 +267,7 @@ pairwise_comparisons(
   paired     = TRUE
 )
 }
+\dontshow{\}) # examplesIf}
 }
 \references{
 For more, see:

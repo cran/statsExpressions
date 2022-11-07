@@ -47,8 +47,9 @@ You can specify just the initial letter.}
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
-return \verb{95\%} confidence/credible intervals (\code{0.95}).}
+\item{conf.level}{Scalar between \code{0} and \code{1} (default: \verb{95\%}
+confidence/credible intervals, \code{0.95}). If \code{NULL}, no confidence intervals
+will be computed.}
 
 \item{tr}{Trim level for the mean when carrying out \code{robust} tests. In case
 of an error, try reducing the value of \code{tr}, which is by default set to
@@ -92,6 +93,11 @@ For examples of dataframe outputs, see examples and \href{https://indrajeetpatil
 Note that all examples are preceded by \code{set.seed()} calls for reproducibility.
 }
 \description{
+Parametric, non-parametric, robust, and Bayesian one-sample tests.
+}
+\section{One-sample tests}{
+
+
 The table below provides summary about:
 \itemize{
 \item statistical test carried out for inferential statistics
@@ -101,10 +107,10 @@ The table below provides summary about:
 
 \strong{Hypothesis testing}\tabular{lll}{
    Type \tab Test \tab Function used \cr
-   Parametric \tab One-sample Student's \emph{t}-test \tab \code{stats::t.test} \cr
-   Non-parametric \tab One-sample Wilcoxon test \tab \code{stats::wilcox.test} \cr
-   Robust \tab Bootstrap-\emph{t} method for one-sample test \tab \code{WRS2::trimcibt} \cr
-   Bayesian \tab One-sample Student's \emph{t}-test \tab \code{BayesFactor::ttestBF} \cr
+   Parametric \tab One-sample Student's \emph{t}-test \tab \code{stats::t.test()} \cr
+   Non-parametric \tab One-sample Wilcoxon test \tab \code{stats::wilcox.test()} \cr
+   Robust \tab Bootstrap-\emph{t} method for one-sample test \tab \code{WRS2::trimcibt()} \cr
+   Bayesian \tab One-sample Student's \emph{t}-test \tab \code{BayesFactor::ttestBF()} \cr
 }
 
 
@@ -116,11 +122,14 @@ The table below provides summary about:
    Bayes Factor \tab difference \tab Yes \tab \code{bayestestR::describe_posterior()} \cr
 }
 }
+
 \examples{
+\dontshow{if (requireNamespace("ggplot2", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 # for reproducibility
 set.seed(123)
 library(statsExpressions)
+library(ggplot2) # for data
 options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 
 # ----------------------- parametric ---------------------------------------
@@ -160,4 +169,5 @@ one_sample_test(
   bf.prior   = 0.8
 )
 }
+\dontshow{\}) # examplesIf}
 }

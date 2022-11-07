@@ -1,4 +1,4 @@
-#' @title Dataframe and expression for distribution properties
+#' @title Data frame and expression for distribution properties
 #' @name centrality_description
 #'
 #' @details
@@ -10,6 +10,9 @@
 #' relies on `datawizard::describe_distribution()` function.
 #'
 #' @description
+#' Parametric, non-parametric, robust, and Bayesian measures of centrality.
+#'
+#' @section Centrality measures:
 #'
 #' ```{r child="man/rmd-fragments/table_intro.Rmd"}
 #' ```
@@ -42,6 +45,7 @@ centrality_description <- function(data,
                                    x,
                                    y,
                                    type = "parametric",
+                                   conf.level = NULL,
                                    tr = 0.2,
                                    k = 2L,
                                    ...) {
@@ -63,7 +67,7 @@ centrality_description <- function(data,
   # dataframe -------------------------------------
 
   select(data, {{ x }}, {{ y }}) %>%
-    tidyr::drop_na(.) %>%
+    tidyr::drop_na() %>%
     group_by({{ x }}) %>%
     group_modify(
       .f = ~ standardize_names(
@@ -72,7 +76,7 @@ centrality_description <- function(data,
           centrality = centrality,
           threshold  = tr,
           verbose    = FALSE,
-          ci         = 0.95 # TODO: https://github.com/easystats/bayestestR/issues/429
+          ci         = conf.level
         ),
         style = "broom"
       )

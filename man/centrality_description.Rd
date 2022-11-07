@@ -2,9 +2,18 @@
 % Please edit documentation in R/centrality_description.R
 \name{centrality_description}
 \alias{centrality_description}
-\title{Dataframe and expression for distribution properties}
+\title{Data frame and expression for distribution properties}
 \usage{
-centrality_description(data, x, y, type = "parametric", tr = 0.2, k = 2L, ...)
+centrality_description(
+  data,
+  x,
+  y,
+  type = "parametric",
+  conf.level = NULL,
+  tr = 0.2,
+  k = 2L,
+  ...
+)
 }
 \arguments{
 \item{data}{A data frame (or a tibble) from which variables specified are to
@@ -26,6 +35,10 @@ ungrouped before they are entered as \code{data}.}
 
 You can specify just the initial letter.}
 
+\item{conf.level}{Scalar between \code{0} and \code{1} (default: \verb{95\%}
+confidence/credible intervals, \code{0.95}). If \code{NULL}, no confidence intervals
+will be computed.}
+
 \item{tr}{Trim level for the mean when carrying out \code{robust} tests. In case
 of an error, try reducing the value of \code{tr}, which is by default set to
 \code{0.2}. Lowering the value might help.}
@@ -36,6 +49,18 @@ of an error, try reducing the value of \code{tr}, which is by default set to
 \item{...}{Currently ignored.}
 }
 \description{
+Parametric, non-parametric, robust, and Bayesian measures of centrality.
+}
+\details{
+This function describes a distribution for \code{y} variable for each level of the
+grouping variable in \code{x} by a set of indices (e.g., measures of centrality,
+dispersion, range, skewness, kurtosis, etc.). It additionally returns an
+expression containing a specified centrality measure. The function internally
+relies on \code{datawizard::describe_distribution()} function.
+}
+\section{Centrality measures}{
+
+
 The table below provides summary about:
 \itemize{
 \item statistical test carried out for inferential statistics
@@ -49,13 +74,7 @@ The table below provides summary about:
    Bayesian \tab MAP (maximum \emph{a posteriori} probability) estimate \tab \code{parameters::describe_distribution()} \cr
 }
 }
-\details{
-This function describes a distribution for \code{y} variable for each level of the
-grouping variable in \code{x} by a set of indices (e.g., measures of centrality,
-dispersion, range, skewness, kurtosis, etc.). It additionally returns an
-expression containing a specified centrality measure. The function internally
-relies on \code{datawizard::describe_distribution()} function.
-}
+
 \examples{
 
 set.seed(123)

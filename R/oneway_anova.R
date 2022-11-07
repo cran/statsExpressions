@@ -2,6 +2,9 @@
 #' @name oneway_anova
 #'
 #' @description
+#' Parametric, non-parametric, robust, and Bayesian one-way ANOVA.
+#'
+#' @section One-way ANOVA:
 #'
 #' ```{r child="man/rmd-fragments/table_intro.Rmd"}
 #' ```
@@ -16,8 +19,9 @@
 #'
 #' @inheritParams long_to_wide_converter
 #' @inheritParams stats_type_switch
-#' @param conf.level Scalar between `0` and `1`. If unspecified, the defaults
-#'   return `95%` confidence/credible intervals (`0.95`).
+#' @param conf.level Scalar between `0` and `1` (default: `95%`
+#' confidence/credible intervals, `0.95`). If `NULL`, no confidence intervals
+#' will be computed.
 #' @param effsize.type Type of effect size needed for *parametric* tests. The
 #'   argument can be `"eta"` (partial eta-squared) or `"omega"` (partial
 #'   omega-squared).
@@ -37,40 +41,39 @@
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams stats::oneway.test
 #'
-#' @examples
+#' @examplesIf requireNamespace("afex", quietly = TRUE)
 #' \donttest{
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
+#' library(afex) # for within-subjects parametric ANOVA
 #' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
 #' # ----------------------- parametric -------------------------------------
 #'
 #' # between-subjects
 #' oneway_anova(
-#'   data = ggplot2::msleep,
-#'   x    = vore,
-#'   y    = sleep_rem
+#'   data = mtcars,
+#'   x    = cyl,
+#'   y    = wt
 #' )
 #'
-#' if (require("afex", quietly = TRUE)) {
-#'   # within-subjects design
-#'   oneway_anova(
-#'     data       = iris_long,
-#'     x          = condition,
-#'     y          = value,
-#'     subject.id = id,
-#'     paired     = TRUE
-#'   )
-#' }
+#' # within-subjects design
+#' oneway_anova(
+#'   data       = iris_long,
+#'   x          = condition,
+#'   y          = value,
+#'   subject.id = id,
+#'   paired     = TRUE
+#' )
 #'
 #' # ----------------------- non-parametric ----------------------------------
 #'
 #' # between-subjects
 #' oneway_anova(
-#'   data = ggplot2::msleep,
-#'   x    = vore,
-#'   y    = sleep_rem,
+#'   data = mtcars,
+#'   x    = cyl,
+#'   y    = wt,
 #'   type = "np"
 #' )
 #'
@@ -88,9 +91,9 @@
 #'
 #' # between-subjects
 #' oneway_anova(
-#'   data = ggplot2::msleep,
-#'   x    = vore,
-#'   y    = sleep_rem,
+#'   data = mtcars,
+#'   x    = cyl,
+#'   y    = wt,
 #'   type = "r"
 #' )
 #'
@@ -108,9 +111,9 @@
 #'
 #' # between-subjects
 #' oneway_anova(
-#'   data = ggplot2::msleep,
-#'   x    = vore,
-#'   y    = sleep_rem,
+#'   data = mtcars,
+#'   x    = cyl,
+#'   y    = wt,
 #'   type = "bayes"
 #' )
 #'
@@ -159,7 +162,6 @@ oneway_anova <- function(data,
   #  parametric ---------------------------------------
 
   if (type == "parametric") {
-    # expression details
     c(k.df, k.df.error) %<-% c(ifelse(!paired, 0L, k), ifelse(!paired && var.equal, 0L, k))
 
     # which effect size?
@@ -172,7 +174,6 @@ oneway_anova <- function(data,
       # check if `afex` is installed
       check_if_installed("afex", minimum_version = "1.0-0")
 
-      # Fisher's ANOVA
       mod <- afex::aov_ez(
         id          = ".rowid",
         dv          = as_string(y),
@@ -189,14 +190,13 @@ oneway_anova <- function(data,
     stats_df <- bind_cols(
       tidy_model_parameters(mod),
       exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
-        tidy_model_effectsize(.)
+        tidy_model_effectsize()
     )
   }
 
   # non-parametric ------------------------------------
 
   if (type == "nonparametric") {
-    # expression details
     c(k.df, k.df.error) %<-% c(0L, 0L)
 
     # styler: off
@@ -227,7 +227,7 @@ oneway_anova <- function(data,
       verbose    = FALSE,
       !!!.f.es.args
     ) %>%
-      tidy_model_effectsize(.)
+      tidy_model_effectsize()
 
     # dataframe
     stats_df <- bind_cols(stats_df, effsize_df)
@@ -236,7 +236,6 @@ oneway_anova <- function(data,
   # robust ---------------------------------------
 
   if (type == "robust") {
-    # expression details
     c(k.df, k.df.error) %<-% c(ifelse(paired, k, 0L), k)
 
     # heteroscedastic one-way repeated measures ANOVA for trimmed means
@@ -267,7 +266,7 @@ oneway_anova <- function(data,
     if (paired) {
       effsize_df <- long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
         WRS2::wmcpAKP(select(-.rowid), tr = tr, nboot = nboot) %>%
-        tidy_model_parameters(.)
+        tidy_model_parameters()
 
       # combine dataframes
       stats_df <- bind_cols(stats_df, effsize_df)

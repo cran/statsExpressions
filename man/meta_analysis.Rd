@@ -2,7 +2,7 @@
 % Please edit documentation in R/meta_analysis.R
 \name{meta_analysis}
 \alias{meta_analysis}
-\title{Random-effects meta-analyses}
+\title{Random-effects meta-analysis}
 \usage{
 meta_analysis(
   data,
@@ -41,8 +41,9 @@ The type of random effects distribution. One of "normal", "t-dist", "mixture", f
 \item{k}{Number of digits after decimal point (should be an integer)
 (Default: \code{k = 2L}).}
 
-\item{conf.level}{Scalar between \code{0} and \code{1}. If unspecified, the defaults
-return \verb{95\%} confidence/credible intervals (\code{0.95}).}
+\item{conf.level}{Scalar between \code{0} and \code{1} (default: \verb{95\%}
+confidence/credible intervals, \code{0.95}). If \code{NULL}, no confidence intervals
+will be computed.}
 
 \item{...}{Additional arguments passed to the respective meta-analysis
 function.}
@@ -73,6 +74,16 @@ For examples of dataframe outputs, see examples and \href{https://indrajeetpatil
 Note that all examples are preceded by \code{set.seed()} calls for reproducibility.
 }
 \description{
+Parametric, non-parametric, robust, and Bayesian random-effects meta-analysis.
+}
+\note{
+\strong{Important}: The function assumes that you have already downloaded the
+needed package (\code{{metafor}}, \code{{metaplus}}, or \code{{metaBMA}}) for meta-analysis.
+If they are not available, you will be asked to install them.
+}
+\section{Random-effects meta-analysis}{
+
+
 The table below provides summary about:
 \itemize{
 \item statistical test carried out for inferential statistics
@@ -88,14 +99,16 @@ The table below provides summary about:
    Bayesian \tab Bayesian Pearson's correlation coefficient \tab Yes \tab \code{correlation::correlation()} \cr
 }
 }
-\note{
-\strong{Important}: The function assumes that you have already downloaded the
-needed package (\code{{metafor}}, \code{{metaplus}}, or \code{{metaBMA}}) for meta-analysis.
-If they are not available, you will be asked to install them.
-}
+
 \examples{
+\dontshow{if (requireNamespace("metafor", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
-# a dataframe with estimates and standard errors (`mag` dataset from `{metaplus}`)
+# setup
+set.seed(123)
+library(statsExpressions)
+options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
+
+# a data frame with estimates and standard errors (`mag` dataset from `{metaplus}`)
 df <- structure(list(
   study = structure(c(
     8L, 10L, 15L, 1L, 4L, 11L, 3L, 2L, 14L, 9L, 12L, 5L, 16L, 7L, 13L, 6L
@@ -118,13 +131,9 @@ df <- structure(list(
   )
 ), row.names = c(NA, -16L), class = "data.frame")
 
-# setup
-set.seed(123)
-library(statsExpressions)
-options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
-
 meta_analysis(df) # parametric
 # meta_analysis(df, type = "random", random = "normal") # robust
 # meta_analysis(df, type = "bayes") # Bayesian
 }
+\dontshow{\}) # examplesIf}
 }

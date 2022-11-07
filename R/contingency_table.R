@@ -2,6 +2,9 @@
 #' @name contingency_table
 #'
 #' @description
+#' Parametric and Bayesian one-way and two-way contingency table analyses.
+#'
+#' @section Contingency table analyses:
 #'
 #' ```{r child="man/rmd-fragments/table_intro.Rmd"}
 #' ```
@@ -103,7 +106,7 @@ contingency_table <- function(data,
                               fixed.margin = "rows",
                               prior.concentration = 1,
                               ...) {
-  # check the data contains needed column
+  # standardize the type of statistics
   type <- stats_type_switch(type)
 
   # one-way or two-way table analysis?
@@ -112,7 +115,7 @@ contingency_table <- function(data,
   # creating a data frame
   data %<>%
     select({{ x }}, {{ y }}, .counts = {{ counts }}) %>%
-    tidyr::drop_na(.)
+    tidyr::drop_na()
 
   # untable the data frame based on the counts for each observation (if present)
   if (".counts" %in% names(data)) data %<>% tidyr::uncount(weights = .counts)

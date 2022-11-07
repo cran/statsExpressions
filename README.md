@@ -85,20 +85,20 @@ A BibTeX entry for LaTeX users is
 
 **Summary of available analyses**
 
-| Test                       | Function                 | Lifecycle                                                                                                                       |
-|----------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| one-sample *t*-test        | `one_sample_test()`      | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
-| two-sample *t*-test        | `two_sample_test()`      | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
-| one-way ANOVA              | `oneway_anova()`         | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
-| correlation analysis       | `corr_test()`            | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
-| contingency table analysis | `contingency_table()`    | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
-| meta-analysis              | `meta_analysis()`        | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
-| pairwise comparisons       | `pairwise_comparisons()` | [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) |
+| Test                       | Function                 |
+|:---------------------------|:-------------------------|
+| one-sample *t*-test        | `one_sample_test()`      |
+| two-sample *t*-test        | `two_sample_test()`      |
+| one-way ANOVA              | `oneway_anova()`         |
+| correlation analysis       | `corr_test()`            |
+| contingency table analysis | `contingency_table()`    |
+| meta-analysis              | `meta_analysis()`        |
+| pairwise comparisons       | `pairwise_comparisons()` |
 
 **Summary of details available for analyses**
 
 | Analysis                        | Hypothesis testing | Effect size estimation |
-|---------------------------------|--------------------|------------------------|
+|:--------------------------------|:-------------------|:-----------------------|
 | (one/two-sample) *t*-test       | ✅                 | ✅                     |
 | one-way ANOVA                   | ✅                 | ✅                     |
 | correlation                     | ✅                 | ✅                     |
@@ -108,7 +108,7 @@ A BibTeX entry for LaTeX users is
 **Summary of supported statistical approaches**
 
 | Description                                       | Parametric | Non-parametric | Robust | Bayesian |
-|---------------------------------------------------|------------|----------------|--------|----------|
+|:--------------------------------------------------|:-----------|:---------------|:-------|:---------|
 | Between group/condition comparisons               | ✅         | ✅             | ✅     | ✅       |
 | Within group/condition comparisons                | ✅         | ✅             | ✅     | ✅       |
 | Distribution of a numeric variable                | ✅         | ✅             | ✅     | ✅       |
@@ -125,8 +125,6 @@ run a robust ANOVA instead, the syntax remains the same and the
 statistical approach can be modified by changing a single argument:
 
 ``` r
-library(statsExpressions)
-
 mtcars %>% oneway_anova(cyl, wt, type = "nonparametric")
 #> # A tibble: 1 × 15
 #>   parameter1 parameter2 statistic df.error   p.value
@@ -163,7 +161,7 @@ generate a table:
 
 ``` r
 # setup
-library(statsExpressions)
+
 set.seed(123)
 
 # one-sample robust t-test
@@ -227,14 +225,18 @@ For example, here are results from Welch’s *t*-test:
 
 <img src="man/figures/stats_reporting_format.png" align="center" />
 
+Let’s load the needed library for visualization:
+
+``` r
+library(ggplot2)
+```
+
 ## Expressions for centrality measure
 
 **Note that when used in a geometric layer, the expression need to be
 parsed.**
 
 ``` r
-library(ggplot2)
-
 # displaying mean for each level of `cyl`
 centrality_description(mtcars, cyl, wt) |>
   ggplot(aes(cyl, wt)) +
@@ -266,8 +268,8 @@ If you want to display more than one expression in a plot, you will
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
-library(statsExpressions)
+
+
 library(ggridges)
 
 results_data <- oneway_anova(iris, Species, Sepal.Length, type = "robust")
@@ -292,10 +294,10 @@ ggplot(iris, aes(x = Sepal.Length, y = Species)) +
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 library(WRS2)
 library(ggbeeswarm)
-library(statsExpressions)
+
 
 results_data <- oneway_anova(
   WineTasting,
@@ -323,15 +325,12 @@ ggplot2::ggplot(WineTasting, aes(Wine, Taste, color = Wine)) +
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
 library(gghalves)
-library(ggbeeswarm)
 
 results_data <- two_sample_test(ToothGrowth, supp, len)
 
 ggplot(ToothGrowth, aes(supp, len)) +
-  geom_half_boxplot() +
-  geom_beeswarm() +
+  geom_half_dotplot() +
   labs(
     title = "Two-Sample Welch's t-test",
     subtitle = parse(text = results_data$expression)
@@ -345,7 +344,7 @@ ggplot(ToothGrowth, aes(supp, len)) +
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 library(tidyr)
 library(PairedData)
 data(PrisonStress)
@@ -377,7 +376,7 @@ paired.plotProfiles(PrisonStress, "PSSbefore", "PSSafter", subjects = "Subject")
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 
 # dataframe with results
 results_data <- one_sample_test(mtcars, wt, test.value = 3, type = "bayes")
@@ -398,7 +397,7 @@ Let’s look at another example where we want to run correlation analysis:
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 
 # dataframe with results
 results_data <- corr_test(mtcars, mpg, wt, type = "nonparametric")
@@ -422,7 +421,7 @@ For categorical/nominal data - one-sample:
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 
 # dataframe with results
 results_data <- contingency_table(
@@ -455,7 +454,7 @@ having to display them in plots:
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 
 # Pearson's chi-squared test of independence
 contingency_table(mtcars, am, cyl)$expression[[1]]
@@ -470,7 +469,7 @@ contingency_table(mtcars, am, cyl)$expression[[1]]
 # setup
 set.seed(123)
 library(metaviz)
-library(ggplot2)
+
 library(metaplus)
 
 # dataframe with results
@@ -503,7 +502,7 @@ included:
 ``` r
 # setup
 set.seed(123)
-library(ggplot2)
+
 
 # extracting detailed expression
 (res_expr <- oneway_anova(iris, Species, Sepal.Length, var.equal = TRUE)$expression[[1]])
@@ -630,12 +629,12 @@ console.
 
 **Hypothesis testing**
 
-| Type           | Test                                     | Function used          |
-|:---------------|:-----------------------------------------|:-----------------------|
-| Parametric     | One-sample Student’s *t*-test            | `stats::t.test`        |
-| Non-parametric | One-sample Wilcoxon test                 | `stats::wilcox.test`   |
-| Robust         | Bootstrap-*t* method for one-sample test | `WRS2::trimcibt`       |
-| Bayesian       | One-sample Student’s *t*-test            | `BayesFactor::ttestBF` |
+| Type           | Test                                     | Function used            |
+|:---------------|:-----------------------------------------|:-------------------------|
+| Parametric     | One-sample Student’s *t*-test            | `stats::t.test()`        |
+| Non-parametric | One-sample Wilcoxon test                 | `stats::wilcox.test()`   |
+| Robust         | Bootstrap-*t* method for one-sample test | `WRS2::trimcibt()`       |
+| Bayesian       | One-sample Student’s *t*-test            | `BayesFactor::ttestBF()` |
 
 **Effect size estimation**
 
