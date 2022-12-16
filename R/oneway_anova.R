@@ -41,8 +41,7 @@
 #' @param ... Additional arguments (currently ignored).
 #' @inheritParams stats::oneway.test
 #'
-#' @examplesIf requireNamespace("afex", quietly = TRUE)
-#' \donttest{
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("afex", quietly = TRUE)
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
@@ -126,7 +125,6 @@
 #'   paired     = TRUE,
 #'   type       = "bayes"
 #' )
-#' }
 #' @export
 oneway_anova <- function(data,
                          x,
@@ -142,21 +140,17 @@ oneway_anova <- function(data,
                          tr = 0.2,
                          nboot = 100L,
                          ...) {
-  # standardize the type of statistics
   type <- stats_type_switch(type)
 
-  # make sure both quoted and unquoted arguments are supported
   c(x, y) %<-% c(ensym(x), ensym(y))
 
-  # data cleanup
-  data %<>%
-    long_to_wide_converter(
-      x          = {{ x }},
-      y          = {{ y }},
-      subject.id = {{ subject.id }},
-      paired     = paired,
-      spread     = FALSE
-    ) %>%
+  data %<>% long_to_wide_converter(
+    x          = {{ x }},
+    y          = {{ y }},
+    subject.id = {{ subject.id }},
+    paired     = paired,
+    spread     = FALSE
+  ) %>%
     mutate(.rowid = as.factor(.rowid))
 
   #  parametric ---------------------------------------
@@ -164,14 +158,12 @@ oneway_anova <- function(data,
   if (type == "parametric") {
     c(k.df, k.df.error) %<-% c(ifelse(!paired, 0L, k), ifelse(!paired && var.equal, 0L, k))
 
-    # which effect size?
     # styler: off
     if (effsize.type %in% c("unbiased", "omega")) .f.es <- effectsize::omega_squared
     if (effsize.type %in% c("biased", "eta")) .f.es     <- effectsize::eta_squared
     # styler: on
 
     if (paired) {
-      # check if `afex` is installed
       check_if_installed("afex", minimum_version = "1.0-0")
 
       mod <- afex::aov_ez(
@@ -183,14 +175,11 @@ oneway_anova <- function(data,
       )
     }
 
-    # Welch's ANOVA
     if (!paired) mod <- stats::oneway.test(new_formula(y, x), data, var.equal = var.equal)
 
-    # tidying up outputs and combining dataframes
     stats_df <- bind_cols(
       tidy_model_parameters(mod),
-      exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>%
-        tidy_model_effectsize()
+      exec(.f.es, model = mod, ci = conf.level, verbose = FALSE) %>% tidy_model_effectsize()
     )
   }
 
@@ -200,14 +189,12 @@ oneway_anova <- function(data,
     c(k.df, k.df.error) %<-% c(0L, 0L)
 
     # styler: off
-    # Friedman test
     if (paired) {
       c(.f, .f.es) %<-% c(stats::friedman.test, effectsize::kendalls_w)
       .f.args       <- list(formula = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | .rowid)))
       .f.es.args    <- list(x = new_formula({{ enexpr(y) }}, expr(!!enexpr(x) | .rowid)))
     }
 
-    # Kruskal-Wallis test
     if (!paired) {
       c(.f, .f.es) %<-% c(stats::kruskal.test, effectsize::rank_epsilon_squared)
       .f.args       <- list(formula = new_formula(y, x))
@@ -215,10 +202,8 @@ oneway_anova <- function(data,
     }
     # styler: on
 
-    # extracting test details
     stats_df <- tidy_model_parameters(exec(.f, !!!.f.args, data = data))
 
-    # computing respective effect sizes
     effsize_df <- exec(
       .fn        = .f.es,
       data       = data,
@@ -229,7 +214,6 @@ oneway_anova <- function(data,
     ) %>%
       tidy_model_effectsize()
 
-    # dataframe
     stats_df <- bind_cols(stats_df, effsize_df)
   }
 
@@ -238,7 +222,6 @@ oneway_anova <- function(data,
   if (type == "robust") {
     c(k.df, k.df.error) %<-% c(ifelse(paired, k, 0L), k)
 
-    # heteroscedastic one-way repeated measures ANOVA for trimmed means
     if (paired) {
       mod <- WRS2::rmanova(
         y       = data[[as_name(y)]],
@@ -248,7 +231,6 @@ oneway_anova <- function(data,
       )
     }
 
-    # heteroscedastic one-way ANOVA for trimmed means
     if (!paired) {
       mod <- WRS2::t1way(
         formula = new_formula(y, x),
@@ -259,16 +241,13 @@ oneway_anova <- function(data,
       )
     }
 
-    # parameter extraction
     stats_df <- tidy_model_parameters(mod)
 
-    # for paired designs, WRS2 currently doesn't return effect size
     if (paired) {
       effsize_df <- long_to_wide_converter(data, {{ x }}, {{ y }}) %>%
         WRS2::wmcpAKP(select(-.rowid), tr = tr, nboot = nboot) %>%
         tidy_model_parameters()
 
-      # combine dataframes
       stats_df <- bind_cols(stats_df, effsize_df)
     }
   }
@@ -286,7 +265,6 @@ oneway_anova <- function(data,
       )
     }
 
-    # extract a dataframe
     stats_df <- exec(
       BayesFactor::anovaBF,
       data     = as.data.frame(data),

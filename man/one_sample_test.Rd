@@ -24,7 +24,7 @@ be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
 be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
 ungrouped before they are entered as \code{data}.}
 
-\item{x}{A numeric variable from the dataframe \code{data}.}
+\item{x}{A numeric variable from the data frame \code{data}.}
 
 \item{type}{A character specifying the type of statistical approach:
 \itemize{
@@ -124,50 +124,25 @@ The table below provides summary about:
 }
 
 \examples{
-\dontshow{if (requireNamespace("ggplot2", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-\donttest{
 # for reproducibility
 set.seed(123)
-library(statsExpressions)
-library(ggplot2) # for data
+
+# for pretty-printing tibble
 options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 
-# ----------------------- parametric ---------------------------------------
+# ----------------------- parametric -----------------------
 
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "parametric"
-)
+one_sample_test(mtcars, wt, test.value = 3)
 
-# ----------------------- non-parametric -----------------------------------
+# ----------------------- non-parametric -------------------
 
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "nonparametric"
-)
+one_sample_test(mtcars, wt, test.value = 3, type = "n")
 
-# ----------------------- robust --------------------------------------------
+# ----------------------- robust ---------------------------
 
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "robust"
-)
+one_sample_test(mtcars, wt, test.value = 3, type = "r")
 
-# ---------------------------- Bayesian -----------------------------------
+# ----------------------- Bayesian -------------------------
 
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "bayes",
-  bf.prior   = 0.8
-)
-}
-\dontshow{\}) # examplesIf}
+one_sample_test(mtcars, wt, test.value = 3, type = "b")
 }

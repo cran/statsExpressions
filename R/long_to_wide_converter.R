@@ -39,7 +39,7 @@
 #'   `paired = TRUE`.
 #' @param ... Currently ignored.
 #'
-#' @return A dataframe with `NA`s removed while respecting the
+#' @return A data frame with `NA`s removed while respecting the
 #'   between-or-within-subjects nature of the dataset.
 #'
 #' @examples
@@ -71,7 +71,6 @@ long_to_wide_converter <- function(data,
                                    paired = TRUE,
                                    spread = TRUE,
                                    ...) {
-  # initial cleanup
   data %<>%
     select({{ x }}, {{ y }}, .rowid = {{ subject.id }}) %>%
     mutate({{ x }} := droplevels(as.factor({{ x }}))) %>%
@@ -96,6 +95,5 @@ long_to_wide_converter <- function(data,
   # convert to wide?
   if (spread && paired) data %<>% tidyr::pivot_wider(names_from = {{ x }}, values_from = {{ y }})
 
-  # final clean-up
   as_tibble(relocate(data, .rowid) %>% arrange(.rowid))
 }

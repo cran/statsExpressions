@@ -32,8 +32,7 @@
 #' @references For more, see:
 #' <https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/pairwise.html>
 #'
-#' @examplesIf requireNamespace("PMCMRplus", quietly = TRUE)
-#' \donttest{
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("PMCMRplus", quietly = TRUE)
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
@@ -141,7 +140,6 @@
 #'   type       = "bayes",
 #'   paired     = TRUE
 #' )
-#' }
 #' @export
 pairwise_comparisons <- function(data,
                                  x,
@@ -161,20 +159,17 @@ pairwise_comparisons <- function(data,
   # fail early if the needed package is not available
   if (type != "robust") check_if_installed("PMCMRplus", reason = "for pairwise comparisons")
 
-  # ensure the arguments work quoted or unquoted
   c(x, y) %<-% c(ensym(x), ensym(y))
 
-  # dataframe -------------------------------
+  # data frame -------------------------------
 
-  # cleaning up dataframe
-  data %<>%
-    long_to_wide_converter(
-      x          = {{ x }},
-      y          = {{ y }},
-      subject.id = {{ subject.id }},
-      paired     = paired,
-      spread     = FALSE
-    )
+  data %<>% long_to_wide_converter(
+    x          = {{ x }},
+    y          = {{ y }},
+    subject.id = {{ subject.id }},
+    paired     = paired,
+    spread     = FALSE
+  )
 
   # a few functions expect these as vectors
   x_vec <- pull(data, {{ x }})
@@ -245,7 +240,7 @@ pairwise_comparisons <- function(data,
 
   if (type == "bayes") {
     df_tidy <- purrr::map_dfr(
-      # creating a list of dataframes with subsections of data
+      # creating a list of data frames with subsections of data
       .x = purrr::map2(
         .x = as.character(df$group1),
         .y = as.character(df$group2),
@@ -275,7 +270,6 @@ pairwise_comparisons <- function(data,
     arrange(group1, group2) %>%
     select(group1, group2, everything())
 
-  # relevant only for non-Bayesian tests
   if (type != "bayes") {
     df %<>%
       mutate(
@@ -291,7 +285,6 @@ pairwise_comparisons <- function(data,
       )
   }
 
-  # remove unnecessary columns and convert expression to language
   select(df, everything(), -matches("p.adjustment|^method$")) %>%
     .glue_to_expression() %>%
     as_tibble()
@@ -316,8 +309,8 @@ pairwise_comparisons <- function(data,
 p_adjust_text <- function(p.adjust.method) {
   case_when(
     grepl("^n|^bo|^h", p.adjust.method) ~ paste0(
-      toupper(substr(p.adjust.method, 1, 1)),
-      substr(p.adjust.method, 2, nchar(p.adjust.method))
+      toupper(substr(p.adjust.method, 1L, 1L)),
+      substr(p.adjust.method, 2L, nchar(p.adjust.method))
     ),
     grepl("^BH|^f", p.adjust.method) ~ "FDR",
     grepl("^BY", p.adjust.method) ~ "BY",

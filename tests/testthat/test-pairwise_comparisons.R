@@ -91,7 +91,6 @@ test_that(
       y = brainwt
     )
 
-
     expect_snapshot(df6)
     expect_snapshot(df6[["expression"]])
   }
@@ -164,7 +163,7 @@ test_that(
       x = condition,
       y = desire,
       type = "p",
-      k = 3,
+      k = 3L,
       paired = TRUE,
       p.adjust.method = "bonferroni"
     )
@@ -179,7 +178,7 @@ test_that(
       x = condition,
       y = desire,
       type = "np",
-      k = 3,
+      k = 3L,
       paired = TRUE,
       p.adjust.method = "BY"
     )
@@ -194,7 +193,7 @@ test_that(
       x = condition,
       y = desire,
       type = "r",
-      k = 3,
+      k = 3L,
       paired = TRUE,
       p.adjust.method = "hommel"
     )
@@ -232,7 +231,7 @@ test_that(
       x = Wine,
       y = Taste,
       type = "p",
-      k = 3,
+      k = 3L,
       paired = TRUE,
       p.adjust.method = "none"
     )
@@ -247,7 +246,7 @@ test_that(
       x = Wine,
       y = Taste,
       type = "np",
-      k = 3,
+      k = 3L,
       paired = TRUE,
       p.adjust.method = "none"
     )
@@ -262,7 +261,7 @@ test_that(
       x = Wine,
       y = Taste,
       type = "r",
-      k = 3,
+      k = 3L,
       paired = TRUE,
       p.adjust.method = "none"
     )
@@ -270,7 +269,6 @@ test_that(
     expect_snapshot(df3)
     expect_snapshot(df3[["expression"]])
 
-    # Bayesian
     set.seed(123)
     df4 <- pairwise_comparisons(
       data = WRS2::WineTasting,
@@ -286,12 +284,9 @@ test_that(
   }
 )
 
-# works with subject id ------------------------------------------------------
-
 test_that(
   desc = "works with subject id",
   code = {
-    # with subject id
     set.seed(123)
     df1 <- purrr::pmap_dfr(
       .f = pairwise_comparisons,
@@ -300,13 +295,12 @@ test_that(
         x = list("Wine"),
         y = list("Taste"),
         type = list("p", "np", "r", "bf"),
-        k = 3,
+        k = 3L,
         subject.id = list("Taster"),
         paired = TRUE
       )
     )
 
-    # without subject id but sorted by it
     set.seed(123)
     df2 <- purrr::pmap_dfr(
       .f = pairwise_comparisons,
@@ -315,7 +309,7 @@ test_that(
         x = list("Wine"),
         y = list("Taste"),
         type = list("p", "np", "r", "bf"),
-        k = 3,
+        k = 3L,
         paired = TRUE
       )
     )
@@ -331,7 +325,6 @@ test_that(
 test_that(
   desc = "additional arguments are passed to underlying methods",
   code = {
-    # student's t test
     set.seed(123)
     df1 <- pairwise_comparisons(
       data = bugs_long,

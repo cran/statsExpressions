@@ -161,7 +161,6 @@ generate a table:
 
 ``` r
 # setup
-
 set.seed(123)
 
 # one-sample robust t-test
@@ -268,8 +267,6 @@ If you want to display more than one expression in a plot, you will
 ``` r
 # setup
 set.seed(123)
-
-
 library(ggridges)
 
 results_data <- oneway_anova(iris, Species, Sepal.Length, type = "robust")
@@ -294,10 +291,8 @@ ggplot(iris, aes(x = Sepal.Length, y = Species)) +
 ``` r
 # setup
 set.seed(123)
-
 library(WRS2)
 library(ggbeeswarm)
-
 
 results_data <- oneway_anova(
   WineTasting,
@@ -344,7 +339,6 @@ ggplot(ToothGrowth, aes(supp, len)) +
 ``` r
 # setup
 set.seed(123)
-
 library(tidyr)
 library(PairedData)
 data(PrisonStress)
@@ -377,7 +371,6 @@ paired.plotProfiles(PrisonStress, "PSSbefore", "PSSafter", subjects = "Subject")
 # setup
 set.seed(123)
 
-
 # dataframe with results
 results_data <- one_sample_test(mtcars, wt, test.value = 3, type = "bayes")
 
@@ -397,7 +390,6 @@ Let’s look at another example where we want to run correlation analysis:
 ``` r
 # setup
 set.seed(123)
-
 
 # dataframe with results
 results_data <- corr_test(mtcars, mpg, wt, type = "nonparametric")
@@ -421,7 +413,6 @@ For categorical/nominal data - one-sample:
 ``` r
 # setup
 set.seed(123)
-
 
 # dataframe with results
 results_data <- contingency_table(
@@ -469,7 +460,6 @@ contingency_table(mtcars, am, cyl)$expression[[1]]
 # setup
 set.seed(123)
 library(metaviz)
-
 library(metaplus)
 
 # dataframe with results
@@ -503,7 +493,6 @@ included:
 # setup
 set.seed(123)
 
-
 # extracting detailed expression
 (res_expr <- oneway_anova(iris, Species, Sepal.Length, var.equal = TRUE)$expression[[1]])
 #> list(italic("F")["Fisher"](2, 147) == "119.26", italic(p) == 
@@ -514,8 +503,7 @@ set.seed(123)
 ggplot(iris, aes(x = Species, y = Sepal.Length)) +
   geom_boxplot() +
   labs(subtitle = ggplot2::expr(paste(
-    NULL, italic("F"), "(", "2",
-    ",", "147", ") = ", "119.26", ", ",
+    NULL, italic("F"), "(", "2", ",", "147", ") = ", "119.26", ", ",
     italic("p"), " = ", "1.67e-31"
   )))
 ```
@@ -534,12 +522,12 @@ console.
 
 ## `centrality_description`
 
-| Type           | Measure                                           | Function used                         |
-|----------------|---------------------------------------------------|---------------------------------------|
-| Parametric     | mean                                              | `parameters::describe_distribution()` |
-| Non-parametric | median                                            | `parameters::describe_distribution()` |
-| Robust         | trimmed mean                                      | `parameters::describe_distribution()` |
-| Bayesian       | MAP (maximum *a posteriori* probability) estimate | `parameters::describe_distribution()` |
+| Type           | Measure      | Function used                         |
+|:---------------|:-------------|:--------------------------------------|
+| Parametric     | mean         | `datawizard::describe_distribution()` |
+| Non-parametric | median       | `datawizard::describe_distribution()` |
+| Robust         | trimmed mean | `datawizard::describe_distribution()` |
+| Bayesian       | MAP          | `datawizard::describe_distribution()` |
 
 ## `oneway_anova`
 
@@ -649,12 +637,12 @@ console.
 
 **Hypothesis testing** and **Effect size estimation**
 
-| Type           | Test                                       | CI available? | Function used                |
-|:---------------|:-------------------------------------------|:--------------|:-----------------------------|
-| Parametric     | Pearson’s correlation coefficient          | Yes           | `correlation::correlation()` |
-| Non-parametric | Spearman’s rank correlation coefficient    | Yes           | `correlation::correlation()` |
-| Robust         | Winsorized Pearson correlation coefficient | Yes           | `correlation::correlation()` |
-| Bayesian       | Bayesian Pearson’s correlation coefficient | Yes           | `correlation::correlation()` |
+| Type           | Test                                         | CI available? | Function used                |
+|:---------------|:---------------------------------------------|:--------------|:-----------------------------|
+| Parametric     | Pearson’s correlation coefficient            | Yes           | `correlation::correlation()` |
+| Non-parametric | Spearman’s rank correlation coefficient      | Yes           | `correlation::correlation()` |
+| Robust         | Winsorized Pearson’s correlation coefficient | Yes           | `correlation::correlation()` |
+| Bayesian       | Bayesian Pearson’s correlation coefficient   | Yes           | `correlation::correlation()` |
 
 ## `contingency_table`
 

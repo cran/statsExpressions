@@ -1,10 +1,5 @@
-## ----setup, include = FALSE---------------------------------------------------
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  warning = FALSE,
-  message = FALSE
-)
+## -----------------------------------------------------------------------------
+source("setup.R")
 
 ## ----citation, echo=FALSE, comment = ""---------------------------------------
 citation("statsExpressions")

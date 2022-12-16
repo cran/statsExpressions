@@ -1,28 +1,5 @@
 ## -----------------------------------------------------------------------------
-# to pretty-print all columns in the output tibble
-options(
-  tibble.width = Inf,
-  pillar.bold = TRUE,
-  pillar.neg = TRUE,
-  pillar.subtle_num = TRUE,
-  pillar.min_chars = Inf
-)
-
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  dpi = 300,
-  warning = FALSE,
-  message = FALSE,
-  out.width = "100%",
-  comment = "#>"
-)
-
-# needed libraries
-library(dplyr)
-library(statsExpressions)
-
-# for reproducibility
-set.seed(123)
+source("setup.R")
 
 ## -----------------------------------------------------------------------------
 citation("statsExpressions")
@@ -44,7 +21,6 @@ knitr::include_graphics("../man/figures/stats_reporting_format.png")
 
 ## -----------------------------------------------------------------------------
 # needed libraries
-library(statsExpressions)
 library(ggplot2)
 
 # creating a dataframe
