@@ -1,4 +1,3 @@
-withr::local_options(list(tibble.width = Inf))
 skip_if_not_installed("PMCMRplus")
 
 # between-subjects design --------------------------------------------------
@@ -125,7 +124,6 @@ test_that(
     ) %>%
       dplyr::filter(group2 == "omni", group1 == "carni")
 
-
     expect_equal(df1$statistic, df2$statistic, tolerance = 0.01)
   }
 )
@@ -211,7 +209,6 @@ test_that(
       paired = TRUE
     )
 
-
     expect_snapshot(df4)
     expect_snapshot(df4[["expression"]])
   }
@@ -277,7 +274,6 @@ test_that(
       type = "bf",
       paired = TRUE
     )
-
 
     expect_snapshot(df4)
     expect_snapshot(df4[["expression"]])

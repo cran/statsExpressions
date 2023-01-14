@@ -22,9 +22,8 @@
 #' # setup
 #' set.seed(123)
 #' library(statsExpressions)
-#' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
-#' # tidy data frame
+#' # extract a tidy data frame
 #' df <- tidy_model_parameters(lm(wt ~ am * cyl, mtcars))
 #'
 #' # create a column containing expression; the expression will depend on `statistic`
@@ -60,7 +59,7 @@ tidy_model_expressions <- function(data,
   if (statistic == "t") {
     df %<>% mutate(
       expression = case_when(
-        df.error %in% c("", "Inf") ~ glue("list({es.text}=='{estimate}', italic(t)=='{statistic}', italic(p)=='{p.value}')"),
+        df.error %in% c("NA", "Inf") ~ glue("list({es.text}=='{estimate}', italic(t)=='{statistic}', italic(p)=='{p.value}')"),
         TRUE ~ glue("list({es.text}=='{estimate}', italic(t)('{df.error}')=='{statistic}', italic(p)=='{p.value}')")
       )
     )
@@ -109,5 +108,14 @@ tidy_model_expressions <- function(data,
     mutate(expression = case_when(
       is.na(unlist(expression)) ~ list(NULL),
       TRUE ~ unlist(expression)
-    ))
+    )) %>%
+    .add_package_class()
+}
+
+#' @keywords internal
+#' @noRd
+.add_package_class <- function(data) {
+  data <- as_tibble(data)
+  class(data) <- c("statsExpressions", class(data))
+  data
 }

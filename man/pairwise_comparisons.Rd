@@ -105,9 +105,7 @@ two degrees of freedom (e.g. anova)
 \item \code{expression}: pre-formatted expression containing statistical details
 }
 
-For examples of dataframe outputs, see examples and \href{https://indrajeetpatil.github.io/statsExpressions/articles/web_only/dataframe_outputs.html}{this vignette}.
-
-Note that all examples are preceded by \code{set.seed()} calls for reproducibility.
+For examples, see \href{https://indrajeetpatil.github.io/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}.
 }
 \description{
 Calculate parametric, non-parametric, robust, and Bayes Factor pairwise
@@ -162,10 +160,6 @@ Not supported.
 set.seed(123)
 library(statsExpressions)
 library(PMCMRplus)
-
-# show all columns and make the column titles bold
-# as a user, you don't need to do this; this is just for the package website
-options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE, pillar.subtle_num = TRUE)
 
 #------------------- between-subjects design ----------------------------
 

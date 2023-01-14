@@ -18,9 +18,9 @@ meta_analysis(
 sizes or outcomes)  and \code{std.error} (corresponding standard errors). These
 two columns will be used:
 \itemize{
-\item as \code{yi}  and \code{sei} arguments in \code{metafor::rma} (for \strong{parametric} test)
-or \code{metaplus::metaplus} (for \strong{robust} test)
-\item as \code{y} and \code{SE} arguments in \code{metaBMA::meta_random} (for \strong{Bayesian}
+\item as \code{yi}  and \code{sei} arguments in \code{metafor::rma()} (for \strong{parametric} test)
+or \code{metaplus::metaplus()} (for \strong{robust} test)
+\item as \code{y} and \code{SE} arguments in \code{metaBMA::meta_random()} (for \strong{Bayesian}
 test).
 }}
 
@@ -69,9 +69,7 @@ two degrees of freedom (e.g. anova)
 \item \code{expression}: pre-formatted expression containing statistical details
 }
 
-For examples of dataframe outputs, see examples and \href{https://indrajeetpatil.github.io/statsExpressions/articles/web_only/dataframe_outputs.html}{this vignette}.
-
-Note that all examples are preceded by \code{set.seed()} calls for reproducibility.
+For examples, see \href{https://indrajeetpatil.github.io/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}.
 }
 \description{
 Parametric, non-parametric, robust, and Bayesian random-effects meta-analysis.
@@ -105,9 +103,9 @@ The table below provides summary about:
 # setup
 set.seed(123)
 library(statsExpressions)
-options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 
-# a data frame with estimates and standard errors (`mag` dataset from `{metaplus}`)
+# a data frame with estimates and standard errors
+# (`mag` dataset from `{metaplus}`)
 df <- tibble::tribble(
   ~study, ~estimate, ~std.error,
   "Abraham", -0.83, 1.247,
@@ -137,6 +135,6 @@ meta_analysis(df, type = "random", random = "normal")
 \dontshow{\}) # examplesIf}
 \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("metaBMA", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Bayesian
-meta_analysis(df, type = "bayes") # Bayesian
+meta_analysis(df, type = "bayes")
 \dontshow{\}) # examplesIf}
 }

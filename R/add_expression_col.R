@@ -152,9 +152,10 @@ add_expression_col <- function(data,
   # convert `expression` to `language`
   df_expr %<>% .glue_to_expression()
 
-  as_tibble(data) %>%
+  data %>%
     relocate(matches("^effectsize$"), .before = matches("^estimate$")) %>%
-    mutate(expression = df_expr$expression)
+    mutate(expression = df_expr$expression) %>%
+    .add_package_class()
 }
 
 
@@ -165,12 +166,15 @@ add_expression_col <- function(data,
 .data_to_char <- function(data, k = 2L, k.df = 0L, k.df.error = 0L) {
   data %>%
     mutate(
-      across(.fns = ~ format_value(.x, k), .cols = matches("^est|^sta|p.value|.scale$|.low$|.high$|^log")),
-      across(.fns = ~ format_value(.x, k.df), .cols = matches("^df$")),
-      across(.fns = ~ format_value(.x, k.df.error), .cols = matches("^df.error$")),
+      across(.fns = ~ .to_char(.x, k), .cols = matches("^est|^sta|p.value|.scale$|.low$|.high$|^log")),
+      across(.fns = ~ .to_char(.x, k.df), .cols = matches("^df$")),
+      across(.fns = ~ .to_char(.x, k.df.error), .cols = matches("^df.error$")),
       across(.fns = ~ paste0(.x * 100, "%"), .cols = matches("^conf.level$"))
     )
 }
 
 #' @noRd
 .prettyNum <- function(x) prettyNum(x, big.mark = ",", scientific = FALSE)
+
+#' @noRd
+.to_char <- function(x, digits = 2L) format_value(x, digits, missing = "NA")

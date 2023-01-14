@@ -10,10 +10,10 @@ mtcars %>% oneway_anova(cyl, wt, type = "nonparametric")
 mtcars %>% oneway_anova(cyl, wt, type = "robust")
 
 ## -----------------------------------------------------------------------------
-# running one-sample proportion test for all levels of `cyl`
+# running one-sample proportion test for `vs` at all levels of `am`
 mtcars %>%
-  group_by(cyl) %>%
-  group_modify(~ contingency_table(.x, am), .keep = TRUE) %>%
+  group_by(am) %>%
+  group_modify(~ contingency_table(.x, vs), .keep = TRUE) %>%
   ungroup()
 
 ## -----------------------------------------------------------------------------

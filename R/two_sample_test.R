@@ -24,11 +24,10 @@
 #' ```{r child="man/rmd-fragments/return.Rmd"}
 #' ```
 #'
-#' @examples identical(Sys.getenv("NOT_CRAN"), "true")
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true")
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
-#' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
 #' # parametric -------------------------------------
 #'
@@ -141,7 +140,6 @@ two_sample_test <- function(data,
 
   if (type == "parametric") {
     # styler: off
-
     k.df <- ifelse(paired || var.equal, 0L, k)
     .f   <- stats::t.test
     if (effsize.type %in% c("unbiased", "g")) .f.es <- effectsize::hedges_g
@@ -185,12 +183,9 @@ two_sample_test <- function(data,
     # styler: off
     if (!paired) c(.f, .f.es) %<-% c(WRS2::yuen, WRS2::akp.effect)
     if (paired) c(.f, .f.es)  %<-% c(WRS2::yuend, WRS2::dep.effect)
-    # styler: on
 
-    # common arguments
-    # styler: off
-    .f.args    <- list(formula = new_formula(y, x), data = data, x = data[[2]], y = data[[3]])
-    .f.es.args <- list(EQVAR = FALSE, nboot = nboot, alpha = 1 - conf.level, tr = tr)
+    .f.args    <- list(formula = new_formula(y, x), data = data, x = data[[2L]], y = data[[3L]])
+    .f.es.args <- list(EQVAR = FALSE, nboot = nboot, alpha = 1.0 - conf.level, tr = tr)
 
     effsize_df <- tidy_model_parameters(exec(.f.es, !!!.f.args, !!!.f.es.args), keep = "AKP")
     stats_df   <- tidy_model_parameters(exec(.f,    !!!.f.args, !!!.f.es.args))
@@ -203,14 +198,12 @@ two_sample_test <- function(data,
 
   # Bayesian ---------------------------------------
 
-  # running Bayesian t-test
   if (type == "bayes") {
     # styler: off
     if (!paired) .f.args <- list(formula = new_formula(y, x), paired = paired)
-    if (paired) .f.args  <- list(x = data[[2]], y = data[[3]], paired = paired)
+    if (paired) .f.args  <- list(x = data[[2L]], y = data[[3L]], paired = paired)
     # styler: on
 
-    # creating a `BayesFactor` object
     stats_df <- exec(BayesFactor::ttestBF, data = as.data.frame(data), rscale = bf.prior, !!!.f.args) %>%
       tidy_model_parameters(ci = conf.level)
   }

@@ -1,5 +1,5 @@
 #' @name tidy_model_parameters
-#' @title Convert `parameters` package output to `tidyverse` conventions
+#' @title Convert `{parameters}` package output to `{tidyverse}` conventions
 #'
 #' @inheritParams parameters::model_parameters
 #'
@@ -10,7 +10,7 @@
 tidy_model_parameters <- function(model, ...) {
   stats_df <- model_parameters(model, verbose = FALSE, ...) %>%
     mutate(conf.method = . %@% "ci_method") %>%
-    select(where(~ !all(is.na(.x))), -matches("Difference")) %>% # remove columns where all rows are NAs
+    select(-matches("Difference")) %>%
     standardize_names(style = "broom") %>%
     rename_all(~ gsub("cramers.", "", .x)) %>%
     rename_all(.funs = recode, "bayes.factor" = "bf10") %>%
@@ -43,7 +43,7 @@ tidy_model_parameters <- function(model, ...) {
 #' @name tidy_model_effectsize
 #' @title Convert `effectsize` package output to `tidyverse` conventions
 #'
-#' @param data Dataframe returned by `effectsize` functions.
+#' @param data A data frame returned by `{effectsize}` functions.
 #' @param ... Currently ignored.
 #'
 #' @examples

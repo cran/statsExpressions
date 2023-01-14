@@ -51,15 +51,14 @@
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
-#' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE)
 #'
-#' # ------------------------ non-Bayesian -----------------------------
+#' # ------------------------ Frequentist -----------------------------
 #'
 #' # association test
 #' contingency_table(
 #'   data   = mtcars,
 #'   x      = am,
-#'   y      = cyl,
+#'   y      = vs,
 #'   paired = FALSE
 #' )
 #'
@@ -77,7 +76,7 @@
 #' contingency_table(
 #'   data   = mtcars,
 #'   x      = am,
-#'   y      = cyl,
+#'   y      = vs,
 #'   paired = FALSE,
 #'   type   = "bayes"
 #' )
@@ -105,8 +104,6 @@ contingency_table <- function(data,
                               prior.concentration = 1,
                               ...) {
   type <- stats_type_switch(type)
-
-  # one-way or two-way table analysis?
   test <- ifelse(quo_is_null(enquo(y)), "1way", "2way")
 
   data %<>%
@@ -116,26 +113,22 @@ contingency_table <- function(data,
   # untable the data frame based on the counts for each observation (if present)
   if (".counts" %in% names(data)) data %<>% tidyr::uncount(weights = .counts)
 
-  # variables needed for both one-way and two-way analysis
   xtab <- table(data)
   ratio <- ratio %||% rep(1 / length(xtab), length(xtab))
 
   # non-Bayesian ---------------------------------------
 
-  # two-way table
   if (type != "bayes" && test == "2way") {
     if (paired) c(.f, .f.es) %<-% c(stats::mcnemar.test, effectsize::cohens_g)
     if (!paired) c(.f, .f.es) %<-% c(stats::chisq.test, effectsize::cramers_v)
     .f.args <- list(x = xtab, correct = FALSE)
   }
 
-  # one-way table
   if (type != "bayes" && test == "1way") {
     c(.f, .f.es) %<-% c(stats::chisq.test, effectsize::pearsons_c)
     .f.args <- list(x = xtab, p = ratio, correct = FALSE)
   }
 
-  # executing tests and combining data frames: inferential stats + effect sizes
   if (type != "bayes") {
     stats_df <- bind_cols(
       tidy_model_parameters(exec(.f, !!!.f.args)),
@@ -156,39 +149,34 @@ contingency_table <- function(data,
   }
 
   if (type == "bayes" && test == "1way") {
-    # probability can't be exactly 0 or 1
-    if ((1 / length(as.vector(xtab)) == 0) || (1 / length(as.vector(xtab)) == 1)) {
-      return(NULL)
-    }
-
-    p1s <- rdirichlet(n = 100000L, alpha = prior.concentration * ratio)
-
-    pr_h1 <- sapply(
-      X = 1:100000,
-      FUN = function(i) stats::dmultinom(as.matrix(xtab), prob = p1s[i, ], log = TRUE)
-    )
-
-    # BF = (log) prob of data under alternative - (log) prob of data under null
-    # computing Bayes Factor and formatting the results
-    stats_df <- tibble(
-      bf10        = exp(BayesFactor::logMeanExpLogs(pr_h1) - stats::dmultinom(as.matrix(xtab), NULL, ratio, TRUE)),
-      prior.scale = prior.concentration,
-      method      = "Bayesian one-way contingency table analysis"
-    )
-
-    stats_df %<>% mutate(expression = glue("list(
-            log[e]*(BF['01'])=='{format_value(-log(bf10), k)}',
-            {prior_switch(method)}=='{format_value(prior.scale, k)}')")) %>%
-      .glue_to_expression()
-
-    return(stats_df)
+    return(.one_way_bayesian_table(xtab, prior.concentration, ratio, k))
   }
-
-  # expression ---------------------------------------
 
   add_expression_col(stats_df, paired = paired, n = nrow(data), k = k)
 }
 
+
+.one_way_bayesian_table <- function(xtab, prior.concentration, ratio, k) {
+  # probability can't be exactly 0 or 1
+  if ((1 / length(as.vector(xtab)) == 0) || (1 / length(as.vector(xtab)) == 1)) {
+    return(NULL)
+  }
+
+  p1s <- rdirichlet(n = 100000L, alpha = prior.concentration * ratio)
+  pr_h1 <- map_dbl(1:100000, ~ stats::dmultinom(as.matrix(xtab), prob = p1s[.x, ], log = TRUE))
+
+  # BF = (log) prob of data under alternative - (log) prob of data under null
+  # computing Bayes Factor and formatting the results
+  tibble(
+    bf10        = exp(BayesFactor::logMeanExpLogs(pr_h1) - stats::dmultinom(as.matrix(xtab), NULL, ratio, TRUE)),
+    prior.scale = prior.concentration,
+    method      = "Bayesian one-way contingency table analysis"
+  ) %>%
+    mutate(expression = glue("list(
+            log[e]*(BF['01'])=='{format_value(-log(bf10), k)}',
+            {prior_switch(method)}=='{format_value(prior.scale, k)}')")) %>%
+    .glue_to_expression()
+}
 
 #' @title estimate log prob of data under null with Monte Carlo
 #' @note `rdirichlet()` function from `{MCMCpack}`

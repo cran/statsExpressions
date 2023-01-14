@@ -38,10 +38,6 @@
 #' library(statsExpressions)
 #' library(PMCMRplus)
 #'
-#' # show all columns and make the column titles bold
-#' # as a user, you don't need to do this; this is just for the package website
-#' options(tibble.width = Inf, pillar.bold = TRUE, pillar.neg = TRUE, pillar.subtle_num = TRUE)
-#'
 #' #------------------- between-subjects design ----------------------------
 #'
 #' # parametric
@@ -153,12 +149,8 @@ pairwise_comparisons <- function(data,
                                  p.adjust.method = "holm",
                                  k = 2L,
                                  ...) {
-  # standardize stats type
-  type <- stats_type_switch(type)
-
-  # fail early if the needed package is not available
   if (type != "robust") check_if_installed("PMCMRplus", reason = "for pairwise comparisons")
-
+  type <- stats_type_switch(type)
   c(x, y) %<-% c(ensym(x), ensym(y))
 
   # data frame -------------------------------
@@ -175,7 +167,7 @@ pairwise_comparisons <- function(data,
   x_vec <- pull(data, {{ x }})
   y_vec <- pull(data, {{ y }})
   g_vec <- pull(data, .rowid)
-  .f.args <- list(...)
+  .f.args <- list(paired = paired, p.adjust.method = "none", exact = FALSE, ...)
 
   # parametric ---------------------------------
 
@@ -191,24 +183,19 @@ pairwise_comparisons <- function(data,
     if (paired) c(.f, test) %<-% c(PMCMRplus::durbinAllPairsTest, "Durbin-Conover")
 
     # `exec` fails otherwise for `pairwise.t.test` because `y` is passed to `t.test`
-    .f.args <- list(y = y_vec, ...)
+    .f.args <- utils::modifyList(.f.args, list(y = y_vec))
   }
 
-  # running the appropriate test
   if (type != "robust") {
     df <- suppressWarnings(exec(
-      .fn             = .f,
+      .f,
       # Dunn, Games-Howell, Student's t-test
-      x               = y_vec,
-      g               = x_vec,
+      x      = y_vec,
+      g      = x_vec,
       # Durbin-Conover test
-      groups          = x_vec,
-      blocks          = g_vec,
-      # Student
-      paired          = paired,
+      groups = x_vec,
+      blocks = g_vec,
       # common
-      p.adjust.method = "none",
-      # problematic for other methods
       !!!.f.args
     )) %>%
       tidy_model_parameters() %>%
@@ -228,20 +215,17 @@ pairwise_comparisons <- function(data,
       .f.args <- list(y = quote(y_vec), groups = quote(x_vec), blocks = quote(g_vec))
     }
 
-    # cleaning the raw object and getting it in the right format
-    df <- eval(call2(.ns = .ns, .fn = .fn, tr = tr, !!!.f.args)) %>%
-      tidy_model_parameters()
+    df <- eval(call2(.ns = .ns, .fn = .fn, tr = tr, !!!.f.args)) %>% tidy_model_parameters()
 
-    # test details
     test <- "Yuen's trimmed means"
   }
 
   # Bayesian --------------------------------
 
   if (type == "bayes") {
-    df_tidy <- purrr::map_dfr(
+    df_tidy <- map_dfr(
       # creating a list of data frames with subsections of data
-      .x = purrr::map2(
+      .x = map2(
         .x = as.character(df$group1),
         .y = as.character(df$group2),
         .f = function(a, b) droplevels(filter(data, {{ x }} %in% c(a, b)))
@@ -259,14 +243,13 @@ pairwise_comparisons <- function(data,
       mutate(expression = glue("list(log[e]*(BF['01'])=='{format_value(-log(bf10), k)}')")) %>%
       mutate(test = "Student's t")
 
-    # combine it with the other details
     df <- bind_cols(select(df, group1, group2), df_tidy)
   }
 
   # expression formatting ----------------------------------
 
   df %<>%
-    mutate_if(.predicate = is.factor, .funs = ~ as.character()) %>%
+    mutate(across(where(is.factor), ~ as.character())) %>%
     arrange(group1, group2) %>%
     select(group1, group2, everything())
 
@@ -286,15 +269,13 @@ pairwise_comparisons <- function(data,
   }
 
   select(df, everything(), -matches("p.adjustment|^method$")) %>%
-    .glue_to_expression() %>%
-    as_tibble()
+    .glue_to_expression()
 }
 
 #' @title *p*-value adjustment method text
 #' @name p_adjust_text
 #'
 #' @description
-#'
 #' Preparing text to describe which *p*-value adjustment method was used
 #'
 #' @return Standardized text description for what method was used.
