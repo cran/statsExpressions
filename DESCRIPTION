@@ -1,7 +1,7 @@
 Type: Package
 Package: statsExpressions
 Title: Tidy Dataframes and Expressions with Statistical Details
-Version: 1.4.0
+Version: 1.5.0
 Authors@R: 
     person(given = "Indrajeet",
            family = "Patil",
@@ -22,10 +22,10 @@ License: GPL-3 | file LICENSE
 URL: https://indrajeetpatil.github.io/statsExpressions/,
         https://github.com/IndrajeetPatil/statsExpressions
 BugReports: https://github.com/IndrajeetPatil/statsExpressions/issues
-Depends: R (>= 4.0.0)
+Depends: R (>= 4.1.0)
 Imports: BayesFactor (>= 0.9.12-4.4), correlation (>= 0.8.3),
-        datawizard (>= 0.6.5), dplyr, effectsize (>= 0.8.2), glue,
-        insight (>= 0.18.8), magrittr, parameters (>= 0.20.1),
+        datawizard (>= 0.6.5), dplyr (>= 1.1.0), effectsize (>= 0.8.3),
+        glue, insight (>= 0.19.0), magrittr, parameters (>= 0.20.2),
         performance (>= 0.10.2), purrr (>= 1.0.1), rlang, stats,
         tibble, tidyr, withr, WRS2 (>= 1.1-4), zeallot
 Suggests: afex (>= 1.2-0), ggplot2, knitr, metaBMA, metafor, metaplus,
@@ -37,8 +37,8 @@ LazyData: true
 RoxygenNote: 7.2.3.9000
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-01-14 19:29:45 UTC; indrajeetpatil
+Packaged: 2023-02-19 13:45:45 UTC; indrajeetpatil
 Author: Indrajeet Patil [cre, aut, cph]
     (<https://orcid.org/0000-0003-1995-6531>, @patilindrajeets)
 Repository: CRAN
-Date/Publication: 2023-01-14 20:20:02 UTC
+Date/Publication: 2023-02-19 14:30:02 UTC

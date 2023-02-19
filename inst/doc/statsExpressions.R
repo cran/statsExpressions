@@ -23,10 +23,9 @@ knitr::include_graphics("../man/figures/stats_reporting_format.png")
 # needed libraries
 library(ggplot2)
 
-# creating a dataframe
+# creating a data frame
 res <- oneway_anova(iris, Species, Sepal.Length, type = "nonparametric")
 
-# create a ridgeplot using `ggridges` package
 ggplot(iris, aes(x = Sepal.Length, y = Species)) +
   geom_boxplot() + # use 'expression' column to display results in the subtitle
   labs(

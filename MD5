@@ -1,7 +1,7 @@
-26e5b7c126463b4bc50285c8d0dc51ae *DESCRIPTION
+6b6a46ca4ba570c482204a8e7d7f17b8 *DESCRIPTION
 13126da2bad169ecfe01da3858042b62 *LICENSE
 62d1c33cf7a99c3a78fb6dc2bfea1e33 *NAMESPACE
-266a15ed232a2662b4d9942f4f51a2c8 *NEWS.md
+4de2e87a31cfc95185b61ccc008c773b *NEWS.md
 aa6c6394e86ca252f77f9d4bfa5e55af *R/add_expression_col.R
 8851f6ddeb75c58ae8417fa136017acc *R/centrality_description.R
 287545916cd07dbc18996b962c9a83cc *R/contingency_table.R
@@ -20,7 +20,7 @@ b70f67f28c4ec7d766fc974e2b2f7db1 *R/pairwise_comparisons.R
 d3fbd7d8dacacc29d012b5917300d338 *R/switch_functions.R
 c837123c2f799b97dc170a7938749d11 *R/tidy_model_expressions.R
 6dd74ca2c72e498363b50ab310c21b7e *R/two_sample_test.R
-94012465bce5c4f28e80a02c2ffecd19 *README.md
+3e6309c834d288283f68a81661f124cd *README.md
 742a456eb41c222955a9437872e657de *build/vignette.rds
 60e0e78acc2c42531f52352f480329c2 *data/bugs_long.rdata
 c5ee4fa2f5ea32bdf87e02ea71a415f8 *data/iris_long.rdata
@@ -28,12 +28,12 @@ c5ee4fa2f5ea32bdf87e02ea71a415f8 *data/iris_long.rdata
 54a342a94ac6e4232913e999a95d4e94 *data/movies_wide.rdata
 ca4abb13c088e8ac25d1147832c4737c *inst/CITATION
 d0f64e7402be460ce01e959a2ffcc549 *inst/WORDLIST
-ee9f6aa935f43f76277a07d4179ceafa *inst/doc/statsExpressions.R
-86884c9bcd75e306b45d3c3c1d1067a8 *inst/doc/statsExpressions.Rmd
-825346a3f53e0aef7ff144d0aedad0b5 *inst/doc/statsExpressions.html
+78e137a1bc5a4ab877b4d917600be042 *inst/doc/statsExpressions.R
+caaf868b8341b3a03166952eb258d123 *inst/doc/statsExpressions.Rmd
+c1f85ea66a4856769cbedb31427a1cf2 *inst/doc/statsExpressions.html
 816c55626e11e77ecebcea62aa098706 *inst/doc/stats_details.R
 a3246f77c340dd0e0d74d1dfb4a19123 *inst/doc/stats_details.Rmd
-8fd408081f46c857b483c29aa2234fc6 *inst/doc/stats_details.html
+3dfa0c98f6ab314854dcafc4041826d2 *inst/doc/stats_details.html
 a3de9233ded6bebd0412f3ce31552bd0 *man/add_expression_col.Rd
 802fc4c2df4afaaf8de39a8b423f5a7b *man/bugs_long.Rd
 18207f93cc59794cffafb9e99c90ba23 *man/centrality_description.Rd
@@ -43,7 +43,7 @@ d413b836e0e72a985b06940cfea9358d *man/examples/examples-centrality_description.R
 af42911935e2fceea8b1536762794f8d *man/examples/examples-corr_test.R
 6b49a12f3a06d63d4155be1975f28faa *man/examples/examples-one_sample_test.R
 90e1431bb47c11ffd8cc12e3cd6816ae *man/figures/README-anova_parametric2-1.png
-d36137f158f505379d7f6dcc0eba4359 *man/figures/README-anova_rob1-1.png
+4642c24685cde451776d071906954110 *man/figures/README-anova_rob1-1.png
 80336a838f4220657acd92f6706fe208 *man/figures/README-centrality-1.png
 14ed2116757fca6abb272b94be0287a8 *man/figures/README-corr-1.png
 c79d06fcc8890401a5fbc8c93a33cd60 *man/figures/README-custom_expr-1.png
@@ -111,8 +111,8 @@ f60d51c5f8b68aaa6f470cca7210377b *tests/testthat/test-long_to_wide_converter.R
 1a8febc02d8bca79c29d1cab556e0e78 *tests/testthat/test-meta_random_bayes.R
 dcaeccbdbcc48b855d783cc2c712ecaf *tests/testthat/test-meta_random_parametric.R
 7867facdab2df79a25c56b58e13e7a17 *tests/testthat/test-meta_random_robust.R
-9aad36fbd2e717d3107aa8d594acea09 *tests/testthat/test-one_sample.R
-ed57f01646cc877fe103b38784b76637 *tests/testthat/test-one_two_sample_dataframes.R
+6cfbcb245fa9522846864dfe097a55c9 *tests/testthat/test-one_sample.R
+e02b27f4a9d836acbeeb89b79d6749a6 *tests/testthat/test-one_two_sample_dataframes.R
 96254539f4af0f2de80952de99e84ac4 *tests/testthat/test-oneway_anova_bayes.R
 e0913e993f7b752dd35b2b2de8cbe087 *tests/testthat/test-oneway_anova_nonparametric.R
 e5f097d558b9cd9104676217f4ae6a28 *tests/testthat/test-oneway_anova_parametric.R
@@ -120,7 +120,7 @@ e5f097d558b9cd9104676217f4ae6a28 *tests/testthat/test-oneway_anova_parametric.R
 e1f8b57efcf85b61d4b0b85c31072c5c *tests/testthat/test-pairwise_comparisons.R
 5274baa9fee9e406bf0f00c9a36d5c22 *tests/testthat/test-print.R
 815418233eb44b752e25bf0e9077bc1b *tests/testthat/test-stats_type_switch.R
-9e8c91a570471f2b89f7c2f72525525b *tests/testthat/test-tidy_model_expressions.R
+0b1e29e63628eb14426f75f25bcc3d54 *tests/testthat/test-tidy_model_expressions.R
 0cf15d48c8333741a84cc2a8650d76b8 *tests/testthat/test-two_sample_bayes.R
 25e70e9d80c06c87cd946d060f82157d *tests/testthat/test-two_sample_nonparametric.R
 08aa70b01f4e0ab158aa57e08051cd70 *tests/testthat/test-two_sample_parametric.R
@@ -128,6 +128,6 @@ e1f8b57efcf85b61d4b0b85c31072c5c *tests/testthat/test-pairwise_comparisons.R
 c3345a51a6e49e921b514a878f92cdda *vignettes/apa.csl
 0be999236646e0e48ea7ef9f83839b0b *vignettes/paper.bib
 b870125257bd05c2a4fd65b933f3c40b *vignettes/setup.R
-86884c9bcd75e306b45d3c3c1d1067a8 *vignettes/statsExpressions.Rmd
+caaf868b8341b3a03166952eb258d123 *vignettes/statsExpressions.Rmd
 a3246f77c340dd0e0d74d1dfb4a19123 *vignettes/stats_details.Rmd
 939371ba50230f4c51c52b0b765abd11 *vignettes/web_only/dataframe_outputs.Rmd
