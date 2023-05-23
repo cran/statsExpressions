@@ -1,6 +1,17 @@
 ## -----------------------------------------------------------------------------
 source("setup.R")
 
+pkgs <- "ggplot2"
+
+successfully_loaded <- purrr::map_lgl(pkgs, requireNamespace, quietly = TRUE)
+can_evaluate <- all(successfully_loaded)
+
+if (can_evaluate) {
+  purrr::walk(pkgs, library, character.only = TRUE)
+} else {
+  knitr::opts_chunk$set(eval = FALSE)
+}
+
 ## -----------------------------------------------------------------------------
 citation("statsExpressions")
 
