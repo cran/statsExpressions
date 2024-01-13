@@ -1,7 +1,5 @@
 ---
 title: "Data frame outputs"
-author: "Indrajeet Patil"
-date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -48,48 +46,7 @@ citation("statsExpressions")
 
 ```{r}
 #| label = "onesample",
-#| file = "../../man/examples/examples-one_sample_test.R"
-
-# ----------------------- parametric ---------------------------------------
-
-set.seed(123)
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "parametric"
-)
-
-# ----------------------- non-parametric -----------------------------------
-
-set.seed(123)
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "nonparametric"
-)
-
-# ----------------------- robust --------------------------------------------
-
-set.seed(123)
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "robust"
-)
-
-# ----------------------- Bayesian ---------------------------------------
-
-set.seed(123)
-one_sample_test(
-  data       = ggplot2::msleep,
-  x          = brainwt,
-  test.value = 0.275,
-  type       = "bayes",
-  bf.prior   = 0.8
-)
+#| file = "../../man/examples/examples-one-sample-test.R"
 ```
 
 ## Two-sample tests
@@ -97,115 +54,15 @@ one_sample_test(
 ### within-subjects design
 
 ```{r}
-#| label = "twosample_w"
-
-# data
-df <- dplyr::filter(bugs_long, condition %in% c("LDLF", "LDHF"))
-
-# ----------------------- parametric ---------------------------------------
-
-set.seed(123)
-two_sample_test(
-  data       = df,
-  x          = condition,
-  y          = desire,
-  paired     = TRUE,
-  subject.id = subject,
-  type       = "p"
-)
-
-# ----------------------- non-parametric -----------------------------------
-
-set.seed(123)
-two_sample_test(
-  data       = df,
-  x          = condition,
-  y          = desire,
-  paired     = TRUE,
-  subject.id = subject,
-  type       = "np"
-)
-
-# ----------------------- robust --------------------------------------------
-
-set.seed(123)
-two_sample_test(
-  data       = df,
-  x          = condition,
-  y          = desire,
-  paired     = TRUE,
-  subject.id = subject,
-  type       = "r"
-)
-
-# ----------------------- Bayesian ---------------------------------------
-
-set.seed(123)
-two_sample_test(
-  data       = df,
-  x          = condition,
-  y          = desire,
-  paired     = TRUE,
-  subject.id = subject,
-  type       = "bayes"
-)
+#| label = "twosample_w",
+#| file = "../../man/examples/examples-two-sample-test-within.R"
 ```
 
 ### between-subjects design
 
 ```{r}
-#| label = "twosample_b"
-
-# ----------------------- parametric ---------------------------------------
-
-# unequal variance
-set.seed(123)
-two_sample_test(
-  data      = ToothGrowth,
-  x         = supp,
-  y         = len,
-  type      = "p"
-)
-
-# equal variance
-set.seed(123)
-two_sample_test(
-  data      = ToothGrowth,
-  x         = supp,
-  y         = len,
-  var.equal = TRUE,
-  type      = "p"
-)
-
-# ----------------------- non-parametric -----------------------------------
-
-set.seed(123)
-two_sample_test(
-  data      = ToothGrowth,
-  x         = supp,
-  y         = len,
-  type      = "np"
-)
-
-# ----------------------- robust --------------------------------------------
-
-set.seed(123)
-two_sample_test(
-  data      = ToothGrowth,
-  x         = supp,
-  y         = len,
-  type      = "r"
-)
-
-# ----------------------- Bayesian ---------------------------------------
-
-set.seed(123)
-two_sample_test(
-  data      = ToothGrowth,
-  x         = supp,
-  y         = len,
-  type      = "bayes"
-)
+#| label = "twosample_b",
+#| file = "../../man/examples/examples-two-sample-test-between.R"
 ```
 
 ## One-way ANOVAs
@@ -400,7 +257,7 @@ contingency_table(
 
 ```{r}
 #| label = "corr",
-#| file = "../../man/examples/examples-corr_test.R"
+#| file = "../../man/examples/examples-corr-test.R"
 ```
 
 ## Meta-analysis
@@ -433,7 +290,7 @@ suppressWarnings(meta_analysis(df, type = "bayes"))
 
 ```{r}
 #| label = "centrality",
-#| file = "../../man/examples/examples-centrality_description.R"
+#| file = "../../man/examples/examples-centrality-description.R"
 ```
 
 ## Pairwise comparisons for one-way design

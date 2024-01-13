@@ -10,9 +10,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="Indrajeet Patil" />
 
-<meta name="date" content="2023-09-12" />
 
 <title>statsExpressions: R Package for Tidy Dataframes and Expressions with Statistical Details</title>
 
@@ -150,6 +148,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
+margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -362,8 +361,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">statsExpressions: R Package for Tidy
 Dataframes and Expressions with Statistical Details</h1>
-<h4 class="author">Indrajeet Patil</h4>
-<h4 class="date">2023-09-12</h4>
 
 
 <div id="TOC">
@@ -543,7 +540,7 @@ and their confidence/credible intervals.</p>
 a one-way ANOVA. If we first run a non-parametric ANOVA and then decide
 to run a robust ANOVA instead, the syntax remains the same and the
 statistical approach can be modified by changing a single argument:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span> <span class="fu">oneway_anova</span>(cyl, wt, <span class="at">type =</span> <span class="st">&quot;nonparametric&quot;</span>)</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">oneway_anova</span>(mtcars, cyl, wt, <span class="at">type =</span> <span class="st">&quot;nonparametric&quot;</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 15</span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;   parameter1 parameter2 statistic df.error   p.value</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;</span></span>
@@ -555,7 +552,7 @@ statistical approach can be modified by changing a single argument:</p>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;       &lt;dbl&gt; &lt;chr&gt;                          &lt;int&gt; &lt;int&gt; &lt;list&gt;    </span></span>
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 1         1 percentile bootstrap             100    32 &lt;language&gt;</span></span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span> <span class="fu">oneway_anova</span>(cyl, wt, <span class="at">type =</span> <span class="st">&quot;robust&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">oneway_anova</span>(mtcars, cyl, wt, <span class="at">type =</span> <span class="st">&quot;robust&quot;</span>)</span>
 <span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 12</span></span>
 <span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;   statistic    df df.error p.value</span></span>
 <span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;       &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;</span></span>
@@ -652,7 +649,7 @@ easystats</a> as well as the users.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-american2019publication" class="csl-entry">
 American Psychological Association and others. (2019). <em><span class="nocase">Publication Manual of the American Psychological
 Association</span></em> (7th Edition.). <span>American Psychological

@@ -16,9 +16,9 @@ if (can_evaluate) {
 citation("statsExpressions")
 
 ## -----------------------------------------------------------------------------
-mtcars %>% oneway_anova(cyl, wt, type = "nonparametric")
+oneway_anova(mtcars, cyl, wt, type = "nonparametric")
 
-mtcars %>% oneway_anova(cyl, wt, type = "robust")
+oneway_anova(mtcars, cyl, wt, type = "robust")
 
 ## -----------------------------------------------------------------------------
 # running one-sample proportion test for `vs` at all levels of `am`
