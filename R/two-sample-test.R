@@ -5,7 +5,7 @@
 #' Parametric, non-parametric, robust, and Bayesian two-sample tests.
 #'
 #' @inheritParams long_to_wide_converter
-#' @inheritParams stats_type_switch
+#' @inheritParams extract_stats_type
 #' @inheritParams one_sample_test
 #' @inheritParams oneway_anova
 #' @inheritParams stats::t.test
@@ -30,6 +30,8 @@
 #' @example man/examples/examples-two-sample-test-within.R
 #' @example man/examples/examples-two-sample-test-between.R
 #'
+#' @template citation
+#'
 #' @export
 two_sample_test <- function(
     data,
@@ -49,7 +51,7 @@ two_sample_test <- function(
     ...) {
   # data -------------------------------------------
 
-  type <- stats_type_switch(type)
+  type <- extract_stats_type(type)
   c(x, y) %<-% c(ensym(x), ensym(y))
 
   data %<>% long_to_wide_converter(

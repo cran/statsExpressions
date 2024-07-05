@@ -66,7 +66,7 @@ contingency_table <- function(
     ...) {
   # data -------------------------------------------
 
-  type <- stats_type_switch(type)
+  type <- extract_stats_type(type)
   test <- ifelse(quo_is_null(enquo(y)), "1way", "2way")
 
   data %<>%
@@ -108,7 +108,7 @@ contingency_table <- function(
       fixedMargin        = fixed.margin,
       priorConcentration = prior.concentration
     ) %>%
-      tidy_model_parameters(ci = conf.level, effectsize_type = "cramers_v", alternative = alternative)
+      tidy_model_parameters(ci = conf.level, es_type = "cramers_v", alternative = alternative)
   }
 
   if (type == "bayes" && test == "1way") {

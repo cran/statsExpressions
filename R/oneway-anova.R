@@ -18,7 +18,7 @@
 #' ```
 #'
 #' @inheritParams long_to_wide_converter
-#' @inheritParams stats_type_switch
+#' @inheritParams extract_stats_type
 #' @param conf.level Scalar between `0` and `1` (default: `95%`
 #' confidence/credible intervals, `0.95`). If `NULL`, no confidence intervals
 #' will be computed.
@@ -43,7 +43,7 @@
 #'
 #' @autoglobal
 #'
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true")
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && getRversion() >= "4.4.0"
 #' # for reproducibility
 #' set.seed(123)
 #' library(statsExpressions)
@@ -106,7 +106,7 @@
 #'   type       = "r"
 #' )
 #'
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("rstantools", quietly = TRUE)
+#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("rstantools") && getRversion() >= "4.4.0"
 #'
 #' # ----------------------- Bayesian -------------------------------------
 #'
@@ -127,6 +127,9 @@
 #'   paired     = TRUE,
 #'   type       = "bayes"
 #' )
+#'
+#' @template citation
+#'
 #' @export
 oneway_anova <- function(
     data,
@@ -145,7 +148,7 @@ oneway_anova <- function(
     ...) {
   # data -------------------------------------------
 
-  type <- stats_type_switch(type)
+  type <- extract_stats_type(type)
   c(x, y) %<-% c(ensym(x), ensym(y))
 
   data %<>% long_to_wide_converter(

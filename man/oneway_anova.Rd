@@ -175,8 +175,12 @@ The table below provides summary about:
 }
 }
 
+\section{Citation}{
+Patil, I., (2021). statsExpressions: R Package for Tidy Dataframes and Expressions with Statistical Details. Journal of Open Source Software, 6(61), 3236, https://doi.org/10.21105/joss.03236
+}
+
 \examples{
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && getRversion() >= "4.4.0") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # for reproducibility
 set.seed(123)
 library(statsExpressions)
@@ -239,7 +243,7 @@ oneway_anova(
   type       = "r"
 )
 \dontshow{\}) # examplesIf}
-\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("rstantools", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("rstantools") && getRversion() >= "4.4.0") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 
 # ----------------------- Bayesian -------------------------------------
 

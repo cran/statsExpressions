@@ -27,6 +27,9 @@
 #' @autoglobal
 #'
 #' @example man/examples/examples-centrality-description.R
+#'
+#' @template citation
+#'
 #' @export
 centrality_description <- function(
     data,
@@ -40,7 +43,7 @@ centrality_description <- function(
 
   # styler: off
   centrality <- case_match(
-    stats_type_switch(type),
+    extract_stats_type(type),
     "parametric"    ~ "mean",
     "nonparametric" ~ "median",
     "robust"        ~ "trimmed",

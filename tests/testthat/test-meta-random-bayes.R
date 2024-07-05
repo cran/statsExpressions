@@ -2,15 +2,16 @@ test_that(
   desc = "meta_analysis works - bayesian",
   code = {
     skip_if_not_installed("metaBMA")
+    skip_if_not(getRversion() >= "4.4.0")
 
     set.seed(123)
-    df <- suppressWarnings(meta_analysis(
+    df <- meta_analysis(
       type = "bayes",
       data = data_meta,
       digits = 3L,
       iter = 1000L,
       summarize = "integrate"
-    ))
+    )
 
     expect_type(df, "list")
 
