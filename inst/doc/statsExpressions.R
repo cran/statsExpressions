@@ -28,7 +28,7 @@ mtcars %>%
   ungroup()
 
 ## -----------------------------------------------------------------------------
-knitr::include_graphics("../man/figures/stats_reporting_format.png")
+knitr::include_graphics("stats_reporting_format.png")
 
 ## -----------------------------------------------------------------------------
 # needed libraries
