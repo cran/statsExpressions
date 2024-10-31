@@ -1,3 +1,8 @@
+# statsExpressions 1.6.1
+
+- Upgrade `{easystats}` package versions to avoid user-facing warnings due to 
+  API changes upstream.
+
 # statsExpressions 1.6.0
 
 ## MAJOR CHANGES
