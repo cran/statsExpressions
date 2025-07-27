@@ -1,3 +1,7 @@
+# statsExpressions 1.7.1
+
+- Fixes *p*-values in expressions when they are exactly 0.
+
 # statsExpressions 1.7.0
 
 - Fixes `centrality_description()` to adjust to new API in easystats.
