@@ -1,3 +1,7 @@
+# statsExpressions 1.7.2
+
+- Maintenance release to adapt to changes in easystats packages.
+
 # statsExpressions 1.7.1
 
 - Fixes *p*-values in expressions when they are exactly 0.

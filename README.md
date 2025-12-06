@@ -317,12 +317,11 @@ ggplot2::ggplot(WineTasting, aes(Wine, Taste, color = Wine)) +
 
 ``` r
 set.seed(123)
-library(gghalves)
 
 results_data <- two_sample_test(ToothGrowth, supp, len)
 
 ggplot(ToothGrowth, aes(supp, len)) +
-  geom_half_dotplot() +
+  geom_boxplot() +
   labs(
     title = "Two-Sample Welch's t-test",
     subtitle = parse(text = results_data$expression)
@@ -352,7 +351,10 @@ results_data <- two_sample_test(
 )
 
 # plot
-paired.plotProfiles(PrisonStress, "PSSbefore", "PSSafter", subjects = "Subject") +
+suppressWarnings(paired.plotProfiles(
+  PrisonStress, "PSSbefore", "PSSafter",
+  subjects = "Subject"
+)) +
   labs(
     title = "Two-sample Wilcoxon paired test",
     subtitle = parse(text = results_data$expression)
@@ -455,13 +457,13 @@ library(metaviz)
 results_data <- meta_analysis(dplyr::rename(mozart, estimate = d, std.error = se))
 
 # meta-analysis forest plot with results random-effects meta-analysis
-viz_forest(
+suppressWarnings(viz_forest(
   x = mozart[, c("d", "se")],
   study_labels = mozart[, "study_name"],
   xlab = "Cohen's d",
   variant = "thick",
   type = "cumulative"
-) +
+)) +
   labs(
     title = "Meta-analysis of Pietschnig, Voracek, and Formann (2010) on the Mozart effect",
     subtitle = parse(text = results_data$expression)
@@ -706,5 +708,5 @@ Bug reports, suggestions, questions, and (most of all) contributions are
 welcome.
 
 Please note that this project is released with a [Contributor Code of
-Conduct](https://github.com/IndrajeetPatil/statsExpressions/blob/main/.github/CODE_OF_CONDUCT.md).
+Conduct](https://www.contributor-covenant.org/version/3/0/code_of_conduct/).
 By participating in this project you agree to abide by its terms.
