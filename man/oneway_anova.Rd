@@ -118,7 +118,7 @@ two degrees of freedom (e.g. anova)
 \item \code{expression}: pre-formatted expression containing statistical details
 }
 
-For examples, see \href{https://indrajeetpatil.github.io/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}.
+For examples, see \href{https://www.indrapatil.com/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}.
 }
 \description{
 Parametric, non-parametric, robust, and Bayesian one-way ANOVA.
@@ -192,6 +192,14 @@ oneway_anova(
   data = mtcars,
   x    = cyl,
   y    = wt
+)
+
+# biased (partial eta-squared) effect size
+oneway_anova(
+  data         = mtcars,
+  x            = cyl,
+  y            = wt,
+  effsize.type = "eta"
 )
 
 # within-subjects design

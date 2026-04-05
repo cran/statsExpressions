@@ -1,3 +1,7 @@
+# statsExpressions 1.7.4
+
+- No user-facing changes (internal maintenance: dependency updates, CI/CD improvements).
+
 # statsExpressions 1.7.3
 
 - Maintenance release to adapt to API changes in `{dplyr}` (v1.2.0) and `{purrr}` (v1.2.1).
@@ -30,7 +34,7 @@
 ## MAJOR CHANGES
 
 - _Test and effect size details_ vignette is now available only on the package
-  website (https://indrajeetpatil.github.io/statsExpressions/articles/).
+  website (https://www.indrapatil.com/statsExpressions/articles/).
 
 - Unused dataset has been removed: `movies_wide`.
 
@@ -485,7 +489,7 @@ BUG FIXES
 # statsExpressions 0.3.1
 
 ## NEW FEATURES
- 
+
   - Adds a new function `corr_objects` to reduce dependency load of
     `ggstatsplot`. This is an experimental function and should be avoided until
     it stabilizes.
