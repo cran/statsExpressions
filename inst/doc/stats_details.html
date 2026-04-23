@@ -241,6 +241,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="TOC">
 <ul>
 <li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#data-requirements" id="toc-data-requirements">Data
+requirements</a></li>
 <li><a href="#summary-of-functionality" id="toc-summary-of-functionality">Summary of functionality</a></li>
 <li><a href="#summary-of-tests-and-effect-sizes" id="toc-summary-of-tests-and-effect-sizes">Summary of tests and effect
 sizes</a>
@@ -304,6 +306,32 @@ source code. So, for example, if you want to know more about how one-way
 in your R console.</p>
 <p>Abbreviations used: CI = Confidence Interval</p>
 </div>
+<div id="data-requirements" class="section level2">
+<h2>Data requirements</h2>
+<p>All functions expect data in <strong>long (tidy) format</strong> —
+one row per observation. A few additional requirements are worth
+noting:</p>
+<ul>
+<li><p><strong>Within-subjects (repeated measures) designs</strong>: The
+data must contain exactly <em>one</em> observation per subject per
+condition (a complete, balanced block design). If you have multiple
+trials per subject-condition cell, aggregate them first (e.g., by taking
+the mean) before passing the data. You can verify this with
+<code>table(data$subject, data$condition)</code> — every cell should
+equal <code>1</code>.</p></li>
+<li><p><strong><code>subject.id</code> argument</strong>: For
+within-subjects designs, always specify <code>subject.id</code>
+explicitly. If omitted, the function pairs observations by row order
+within each condition, so any data that is not already sorted
+identically within every condition level can produce silently incorrect
+paired tests — even with exactly two conditions and no missing
+values.</p></li>
+<li><p><strong>Missing data</strong>: Missing values are handled
+internally by removing any subject who has <code>NA</code> in
+<em>any</em> condition, ensuring a balanced design is
+maintained.</p></li>
+</ul>
+</div>
 <div id="summary-of-functionality" class="section level2">
 <h2>Summary of functionality</h2>
 <p><strong>Summary of available analyses</strong></p>
@@ -342,6 +370,10 @@ in your R console.</p>
 <tr class="odd">
 <td align="left">pairwise comparisons</td>
 <td align="left"><code>pairwise_comparisons()</code></td>
+</tr>
+<tr class="even">
+<td align="left">pairwise contingency table</td>
+<td align="left"><code>pairwise_contingency_table()</code></td>
 </tr>
 </tbody>
 </table>
@@ -546,7 +578,7 @@ in your R console.</p>
 <td align="left"><code>WRS2::t1way()</code></td>
 </tr>
 <tr class="even">
-<td align="left">Bayes Factor</td>
+<td align="left">Bayesian</td>
 <td align="left">&gt; 2</td>
 <td align="left">Fisher’s ANOVA</td>
 <td align="left"><code>BayesFactor::anovaBF()</code></td>
@@ -595,7 +627,7 @@ in your R console.</p>
 <td align="left"><code>WRS2::t1way()</code></td>
 </tr>
 <tr class="even">
-<td align="left">Bayes Factor</td>
+<td align="left">Bayesian</td>
 <td align="left">&gt; 2</td>
 <td align="left">Bayesian R-squared</td>
 <td align="left">Yes</td>
@@ -606,6 +638,12 @@ in your R console.</p>
 </div>
 <div id="within-subjects" class="section level4">
 <h4>within-subjects</h4>
+<p><strong>Data requirement</strong>: Repeated measures tests assume a
+<em>complete</em> design with exactly <strong>one observation per
+subject per condition</strong>. If your data has multiple trials per
+cell, aggregate first (e.g., take the mean). Verify with
+<code>table(data$subject, data$condition)</code> — every cell should
+equal <code>1</code>.</p>
 <p><strong>Hypothesis testing</strong></p>
 <table>
 <colgroup>
@@ -643,7 +681,7 @@ trimmed means</td>
 <td align="left"><code>WRS2::rmanova()</code></td>
 </tr>
 <tr class="even">
-<td align="left">Bayes Factor</td>
+<td align="left">Bayesian</td>
 <td align="left">&gt; 2</td>
 <td align="left">One-way repeated measures ANOVA</td>
 <td align="left"><code>BayesFactor::anovaBF()</code></td>
@@ -693,7 +731,7 @@ average</td>
 <td align="left"><code>WRS2::wmcpAKP()</code></td>
 </tr>
 <tr class="even">
-<td align="left">Bayes Factor</td>
+<td align="left">Bayesian</td>
 <td align="left">&gt; 2</td>
 <td align="left">Bayesian R-squared</td>
 <td align="left">Yes</td>
@@ -804,6 +842,9 @@ difference</td>
 </div>
 <div id="within-subjects-1" class="section level4">
 <h4>within-subjects</h4>
+<p><strong>Data requirement</strong>: Paired tests assume exactly
+<strong>one observation per subject per condition</strong>. If your data
+has multiple trials per cell, aggregate first (e.g., take the mean).</p>
 <p><strong>Hypothesis testing</strong></p>
 <table>
 <colgroup>
@@ -976,7 +1017,7 @@ difference</td>
 <td align="left"><code>WRS2::trimcibt()</code></td>
 </tr>
 <tr class="even">
-<td align="left">Bayes Factor</td>
+<td align="left">Bayesian</td>
 <td align="left">difference</td>
 <td align="left">Yes</td>
 <td align="left"><code>bayestestR::describe_posterior()</code></td>
@@ -1217,7 +1258,7 @@ estimation</strong></p>
 <td align="left">Meta-analysis via random-effects models</td>
 <td align="left"><em>beta</em></td>
 <td align="left">Yes</td>
-<td align="left"><code>metafor::metafor()</code></td>
+<td align="left"><code>metafor::rma()</code></td>
 </tr>
 <tr class="even">
 <td align="left">Robust</td>
@@ -1227,7 +1268,7 @@ estimation</strong></p>
 <td align="left"><code>metaplus::metaplus()</code></td>
 </tr>
 <tr class="odd">
-<td align="left">Bayes</td>
+<td align="left">Bayesian</td>
 <td align="left">Meta-analysis via Bayesian random-effects models</td>
 <td align="left"><em>beta</em></td>
 <td align="left">Yes</td>
