@@ -48,6 +48,10 @@ test_that(desc = "long_to_wide_converter works - spread true", code = {
   # checking datasets
   set.seed(123)
   expect_snapshot(purrr::walk(list(df1, df2, df3, df4), dplyr::glimpse))
+  skip_if(
+    getRversion() < "4.6.0",
+    "Skipping on R < 4.6.0: summary() changed NA label from 'NA\\'s' to 'NAs' in 4.6.0"
+  )
   expect_snapshot(purrr::map(list(df1, df2, df3, df4), summary))
 })
 
@@ -109,7 +113,7 @@ test_that(desc = "with .rowid - without NA", code = {
       score = c(90, 90, 72.5, 45),
       condition = structure(
         c(1L, 2L, 2L, 1L),
-        .Label = c("4", "5"),
+        levels = c("4", "5"),
         class = "factor"
       ),
       id = c(1L, 2L, 1L, 2L)
@@ -189,5 +193,5 @@ test_that("NA in subject.id does not drop rows with complete measurements", {
     spread = FALSE
   )
 
-  expect_identical(nrow(result), 4L)
+  expect_shape(result, nrow = 4L)
 })

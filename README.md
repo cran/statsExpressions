@@ -6,7 +6,10 @@
 | Status | Usage | Miscellaneous |
 |----|----|----|
 | [![R build status](https://github.com/IndrajeetPatil/statsExpressions/workflows/R-CMD-check/badge.svg)](https://github.com/IndrajeetPatil/statsExpressions/actions) | [![Total downloads](https://cranlogs.r-pkg.org/badges/grand-total/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![Codecov](https://codecov.io/gh/IndrajeetPatil/statsExpressions/branch/main/graph/badge.svg)](https://app.codecov.io/gh/IndrajeetPatil/statsExpressions?branch=main) |
-| [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html) | [![Daily downloads](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![DOI](https://joss.theoj.org/papers/10.21105/joss.03236/status.svg)](https://doi.org/10.21105/joss.03236) |
+| [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) | [![Daily downloads](https://cranlogs.r-pkg.org/badges/last-day/statsExpressions?color=blue)](https://CRAN.R-project.org/package=statsExpressions) | [![DOI](https://joss.theoj.org/papers/10.21105/joss.03236/status.svg)](https://doi.org/10.21105/joss.03236) |
+
+> [!NOTE]
+> This package supports R-devel, the current R release, and the previous R release.
 
 # Introduction <img src="man/figures/logo.png" alt="statsExpressions package logo" align="right" width="240" />
 
@@ -726,12 +729,3 @@ the expressions are displayed in the subtitle-
 The hexsticker and the schematic illustration of general workflow were
 generously designed by Sarah Otterstetter (Max Planck Institute for
 Human Development, Berlin).
-
-# Contributing
-
-Bug reports, suggestions, questions, and (most of all) contributions are
-welcome.
-
-Please note that this project is released with a [Contributor Code of
-Conduct](https://www.contributor-covenant.org/version/3/0/code_of_conduct/).
-By participating in this project you agree to abide by its terms.
