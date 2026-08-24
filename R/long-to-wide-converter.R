@@ -74,15 +74,14 @@ long_to_wide_converter <- function(
     arrange({{ x }})
 
   if (!".rowid" %in% names(data)) {
-    if (paired) {
-      data <- group_by(data, {{ x }})
+    data <- if (paired) {
+      mutate(data, .rowid = row_number(), .by = {{ x }})
+    } else {
+      mutate(data, .rowid = row_number())
     }
-    data <- mutate(data, .rowid = row_number())
   }
 
-  data <- data |>
-    ungroup() |>
-    filter(!anyNA(pick({{ x }}, {{ y }})), .by = .rowid)
+  data <- filter_out(data, anyNA(pick({{ x }}, {{ y }})), .by = .rowid)
 
   # convert to wide?
   if (spread) {
@@ -94,4 +93,14 @@ long_to_wide_converter <- function(
   }
 
   as_tibble(relocate(data, .rowid) |> arrange(.rowid))
+}
+
+#' @title Paired-aware observation count for the expression's `n`
+#' @description Returns the number of unique subjects for repeated-measures
+#'   designs (`paired = TRUE`) and the number of rows otherwise, operating on
+#'   the `.rowid`-tagged data frame produced by [long_to_wide_converter()].
+#'   Shared by [two_sample_test()] and [oneway_anova()].
+#' @noRd
+.n_obs <- function(data, paired) {
+  ifelse(paired, length(unique(data$.rowid)), nrow(data))
 }

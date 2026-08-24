@@ -59,10 +59,7 @@ tidy_model_expressions <- function(
   # expression corresponding to that row; convert the necessary columns to
   # character type for expression
   df_expr <- data |>
-    filter(if_all(
-      .cols = matches("estimate|statistic|std.error|p.value"),
-      .fns = Negate(is.na)
-    )) |>
+    tidyr::drop_na(matches("estimate|statistic|std.error|p.value")) |>
     .data_to_char(digits)
 
   stat_type <- statistic
@@ -116,14 +113,8 @@ tidy_model_expressions <- function(
 #' @noRd
 .glue_to_expression <- function(data) {
   data |>
-    rowwise() |>
-    mutate(expression = list(parse_expr(expression))) |>
-    ungroup() |> # convert from `expression` to `language`
     mutate(
-      expression = case_when(
-        is.na(unlist(expression)) ~ list(NULL),
-        .default = unlist(expression)
-      )
+      expression = parse_exprs(replace(expression, is.na(expression), "NULL"))
     ) |>
     .add_package_class()
 }

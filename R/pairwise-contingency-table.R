@@ -74,13 +74,7 @@ pairwise_contingency_table <- function(
   x <- ensym(x)
   y <- ensym(y)
 
-  data <- data |>
-    select({{ x }}, {{ y }}, .counts = {{ counts }}) |>
-    filter(!if_any(everything(), is.na))
-
-  if (".counts" %in% names(data)) {
-    data <- tidyr::uncount(data, weights = .counts)
-  }
+  data <- .untable_by_counts(data, {{ x }}, {{ y }}, {{ counts }})
 
   data <- mutate(data, {{ x }} := droplevels(as.factor({{ x }})))
 
@@ -89,7 +83,7 @@ pairwise_contingency_table <- function(
   x_levels <- levels(pull(data, {{ x }}))
   pair_list <- utils::combn(x_levels, 2L, simplify = FALSE)
 
-  df_pair <- map(pair_list, function(pair) {
+  df_pair <- map_vec(pair_list, function(pair) {
     data_sub <- filter(data, {{ x }} %in% pair) |>
       mutate(across(where(is.factor), droplevels))
 
@@ -110,8 +104,7 @@ pairwise_contingency_table <- function(
       ),
       tidy_model_effectsize(es_result)
     )
-  }) |>
-    list_rbind()
+  })
 
   # p-value adjustment and expression -------------------------------------------
 

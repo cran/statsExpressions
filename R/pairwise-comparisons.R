@@ -255,7 +255,7 @@ pairwise_comparisons <- function(
   # Bayesian --------------------------------
 
   if (type == "bayes") {
-    df_tidy <- map2(
+    df_tidy <- map2_vec(
       .x = as.character(df_pair$group1),
       .y = as.character(df_pair$group2),
       .f = function(a, b) {
@@ -269,7 +269,6 @@ pairwise_comparisons <- function(
         )
       }
     ) |>
-      list_rbind() |>
       filter(term == "Difference") |>
       mutate(
         expression = glue(
@@ -301,10 +300,17 @@ pairwise_comparisons <- function(
 
 #' @noRd
 .pairwise_p_adjust_expr <- function(data, p.adjust.method, digits, test) {
+  method_label <- insight::format_capitalize(p.adjust.method)
+  method_label <- recode_values(
+    method_label,
+    c("BH", "Fdr") ~ "FDR",
+    default = method_label
+  )
+
   data |>
     mutate(
       p.value.adj = stats::p.adjust(p = p.value, method = p.adjust.method),
-      p.adjust.method = p_adjust_text(p.adjust.method),
+      p.adjust.method = method_label,
       test = test,
       expression = case_when(
         p.adjust.method == "None" ~ glue(
@@ -315,17 +321,4 @@ pairwise_comparisons <- function(
         )
       )
     )
-}
-
-#' @noRd
-p_adjust_text <- function(p.adjust.method) {
-  case_when(
-    grepl("^n|^bo|^h", p.adjust.method) ~ paste0(
-      toupper(substr(p.adjust.method, 1L, 1L)),
-      substr(p.adjust.method, 2L, nchar(p.adjust.method))
-    ),
-    grepl("^BH|^f", p.adjust.method) ~ "FDR",
-    grepl("^BY", p.adjust.method) ~ "BY",
-    .default = "Holm"
-  )
 }
