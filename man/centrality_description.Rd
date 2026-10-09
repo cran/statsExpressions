@@ -17,7 +17,7 @@ centrality_description(
 }
 \arguments{
 \item{data}{A data frame (or a tibble) from which variables specified are to
-be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
+be taken. Other data types (e.g., matrix, table, array, etc.) will \strong{not}
 be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
 ungrouped before they are entered as \code{data}.}
 
@@ -33,11 +33,13 @@ ungrouped before they are entered as \code{data}.}
 \item \code{"bayes"}
 }
 
-You can specify just the initial letter.}
+You can specify just the initial letter (e.g. \code{"np"} or \code{"bf"}). Matching is
+on the initial lowercase letter only, so any other value (including
+capitalized values such as \code{"Bayes"}) falls back to \code{"parametric"} without a
+warning.}
 
 \item{conf.level}{Scalar between \code{0} and \code{1} (default: \verb{95\%}
-confidence/credible intervals, \code{0.95}). If \code{NULL}, no confidence intervals
-will be computed.}
+confidence/credible intervals, \code{0.95}).}
 
 \item{tr}{Trim level for the mean when carrying out \code{robust} tests. In case
 of an error, try reducing the value of \code{tr}, which is by default set to
@@ -51,6 +53,41 @@ notation with 4 decimal places, or \code{digits = "signif5"} for 5
 significant figures (see also \code{\link[=signif]{signif()}}).}
 
 \item{...}{Currently ignored.}
+}
+\value{
+The returned object is a tibble data frame with the additional class
+\code{"statsExpressions"}. Unlike the hypothesis-testing functions, this one returns
+one row \strong{per level} of the grouping variable \code{x}, describing the distribution
+of \code{y} within that level. The columns are:
+\itemize{
+\item the grouping variable (named after \code{x}, e.g. \code{Species})
+\item the requested centrality estimate (named after \code{y}, e.g. \code{Sepal.Length}):
+the mean (\code{type = "parametric"}), median (\code{"nonparametric"}), trimmed mean
+(\code{"robust"}), or MAP estimate (\code{"bayes"})
+\item \code{std.dev}: standard deviation (for \code{"parametric"} and \code{"robust"})
+\item \code{mad}: median absolute deviation (for \code{"nonparametric"})
+\item \code{iqr}: interquartile range
+\item \code{conf.low}, \code{conf.high}: bounds of the confidence/credible interval for the
+centrality estimate
+\item \code{min}, \code{max}: minimum and maximum values
+\item \code{skewness}, \code{kurtosis}: shape statistics of the distribution
+\item \code{n.obs}: number of non-missing observations
+\item \code{missing.obs}: number of missing observations
+\item \code{expression}: a list-column of pre-formatted
+\href{https://rdrr.io/r/grDevices/plotmath.html}{plotmath} expressions (each
+element is a \code{language} object, not a character string) containing the
+centrality estimate, ready to be used in \code{{ggplot2}}
+\item \code{n.expression}: a label combining the group name and its sample size (e.g.
+\code{"setosa\\n(n = 50)"}), useful as an axis or facet label
+}
+
+The exact dispersion column depends on the \code{type} of analysis (\code{std.dev} vs
+\code{mad}; neither is returned for \code{"bayes"}), and \code{datawizard::describe_distribution()} is used internally to compute
+these indices.
+
+For more examples, see the \href{https://www.indrapatil.com/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}
+and the \href{https://www.indrapatil.com/statsExpressions/articles/web_only/return_value_schema.html}{Return value schema}
+article.
 }
 \description{
 Parametric, non-parametric, robust, and Bayesian measures of centrality.

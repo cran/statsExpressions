@@ -23,29 +23,23 @@ oneway_anova(
 }
 \arguments{
 \item{data}{A data frame (or a tibble) from which variables specified are to
-be taken. Other data types (e.g., matrix,table, array, etc.) will \strong{not}
+be taken. Other data types (e.g., matrix, table, array, etc.) will \strong{not}
 be accepted. Additionally, grouped data frames from \code{{dplyr}} should be
 ungrouped before they are entered as \code{data}.}
 
-\item{x}{The grouping (or independent) variable from \code{data}. In case of a
-repeated measures or within-subjects design, if \code{subject.id} argument is
-not available or not explicitly specified, the function assumes that the
-data has already been sorted by such an id by the user and creates an
-internal identifier. So if your data is \strong{not} sorted, the results \emph{can}
-be inaccurate when there are more than two levels in \code{x} and there are
-\code{NA}s present. The data is expected to be sorted by user in
-subject-1, subject-2, ..., pattern.}
+\item{x}{The grouping (or independent) variable from \code{data}. For repeated
+measures designs, see the note on ordering in \code{subject.id}.}
 
 \item{y}{The response (or outcome or dependent) variable from \code{data}.}
 
 \item{subject.id}{Relevant in case of a repeated measures or within-subjects
-design (\code{paired = TRUE}, i.e.), it specifies the subject or repeated
-measures identifier. \strong{Important}: Note that if this argument is \code{NULL}
-(which is the default), the function assumes that the data has already been
-sorted by such an id by the user and creates an internal identifier. So if
-your data is \strong{not} sorted and you leave this argument unspecified, the
-results \emph{can} be inaccurate when there are more than two levels in \code{x} and
-there are \code{NA}s present.}
+design (i.e., \code{paired = TRUE}), it specifies the subject or repeated
+measures identifier. \strong{Important}: If this argument is \code{NULL} (which is
+the default), observations are paired by their row order within each level
+of \code{x} (i.e., the data is assumed to be sorted in a subject-1, subject-2,
+... pattern within every level). If the data is \strong{not} sorted this way,
+the paired results will be silently incorrect, so it is safest to always
+specify \code{subject.id}.}
 
 \item{type}{A character specifying the type of statistical approach:
 \itemize{
@@ -55,7 +49,10 @@ there are \code{NA}s present.}
 \item \code{"bayes"}
 }
 
-You can specify just the initial letter.}
+You can specify just the initial letter (e.g. \code{"np"} or \code{"bf"}). Matching is
+on the initial lowercase letter only, so any other value (including
+capitalized values such as \code{"Bayes"}) falls back to \code{"parametric"} without a
+warning.}
 
 \item{paired}{Logical that decides whether the experimental design is
 repeated measures/within-subjects or between-subjects. The default is
@@ -69,8 +66,7 @@ notation with 4 decimal places, or \code{digits = "signif5"} for 5
 significant figures (see also \code{\link[=signif]{signif()}}).}
 
 \item{conf.level}{Scalar between \code{0} and \code{1} (default: \verb{95\%}
-confidence/credible intervals, \code{0.95}). If \code{NULL}, no confidence intervals
-will be computed.}
+confidence/credible intervals, \code{0.95}).}
 
 \item{effsize.type}{Type of effect size needed for \emph{parametric} tests. The
 argument can be \code{"eta"} (partial eta-squared) or \code{"omega"} (partial
@@ -98,27 +94,70 @@ for the effect size (Default: \code{100L}).}
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-The returned tibble data frame can contain some or all of the following columns (the exact columns will depend on the statistical test):
+The returned object is a tibble data frame with the additional class
+\code{"statsExpressions"}. The exact set of columns depends on the test and, for
+functions that accept a \code{type} argument, on the chosen analysis (parametric,
+non-parametric, robust, or Bayesian). Any given call therefore returns \emph{some}
+(not all) of the columns below.
+
+\strong{Hypothesis testing}
 \itemize{
 \item \code{statistic}: the numeric value of a statistic
 \item \code{df}: the numeric value of a parameter being modeled (often degrees
 of freedom for the test)
 \item \code{df.error} and \code{df}: relevant only if the statistic in question has
 two degrees of freedom (e.g. anova)
-\item \code{p.value}: the two-sided \emph{p}-value associated with the observed statistic
+\item \code{p.value}: the \emph{p}-value associated with the observed statistic (two-sided
+unless a one-sided \code{alternative} is requested, where supported)
 \item \code{method}: the name of the inferential statistical test
-\item \code{estimate}: estimated value of the effect size
-\item \code{conf.low}: lower bound for the effect size estimate
-\item \code{conf.high}: upper bound for the effect size estimate
-\item \code{conf.level}: width of the confidence interval
-\item \code{conf.method}: method used to compute confidence interval
-\item \code{conf.distribution}: statistical distribution for the effect
-\item \code{effectsize}: the name of the effect size
-\item \code{n.obs}: number of observations
-\item \code{expression}: pre-formatted expression containing statistical details
 }
 
-For examples, see \href{https://www.indrapatil.com/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}.
+\strong{Effect size estimation}
+\itemize{
+\item \code{effectsize}: the name of the effect size
+\item \code{estimate}: estimated value of the effect size
+\item \code{conf.level}: the coverage level of the confidence/credible interval
+(e.g. \code{0.95}); the interval itself spans \code{conf.low} to \code{conf.high}
+\item \code{conf.low}: lower bound for the effect size estimate
+\item \code{conf.high}: upper bound for the effect size estimate
+\item \code{conf.method}: method used to compute the confidence/credible interval
+\item \code{conf.distribution}: statistical distribution for the effect
+}
+
+\strong{Bayesian analysis} (only when \code{type = "bayes"})
+\itemize{
+\item \code{bf10}: Bayes factor for the alternative hypothesis relative to the null
+\item \code{log_e_bf10}: natural logarithm of the Bayes factor (present for most, but
+not all, Bayesian analyses)
+\item \code{prior.distribution}, \code{prior.scale}, \code{prior.location}: prior specification
+used to compute the Bayes factor and posterior estimates
+}
+
+\strong{Pairwise comparisons} (for \code{pairwise_comparisons()} and
+\code{pairwise_contingency_table()})
+\itemize{
+\item \code{group1}, \code{group2}: the two levels being compared
+\item \code{p.adjust.method}: the adjustment method used for multiple comparisons
+\item \code{p.value.adj}: the adjusted \emph{p}-value; returned by
+\code{pairwise_contingency_table()}. Note that \code{pairwise_comparisons()} instead
+folds the adjusted value into \code{p.value} (and does not return a separate
+\code{p.value.adj} column)
+}
+
+\strong{Common columns}
+\itemize{
+\item \code{n.obs}: number of observations
+\item \code{expression}: a list-column of pre-formatted
+\href{https://rdrr.io/r/grDevices/plotmath.html}{plotmath} expressions; each
+element is a \code{language} object (not a character string) containing the
+statistical details, ready to be used in \code{{ggplot2}} (e.g. in \code{labs()} or
+\code{annotate()})
+}
+
+For a per-function, column-by-column breakdown of the output (and an explanation
+of the internal \code{add_expression_col()} engine that builds the \code{expression}
+column), see the \href{https://www.indrapatil.com/statsExpressions/articles/web_only/return_value_schema.html}{Return value schema}
+article. For more examples, see the \href{https://www.indrapatil.com/statsExpressions/articles/web_only/dataframe_outputs.html}{data frame output vignette}.
 }
 \description{
 Parametric, non-parametric, robust, and Bayesian one-way ANOVA.

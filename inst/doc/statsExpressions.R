@@ -96,8 +96,8 @@ res_anova <- oneway_anova(iris, Species, Sepal.Length, type = "nonparametric")
 ggplot(iris, aes(x = Sepal.Length, y = Species)) +
   geom_boxplot() + # use 'expression' column to display results in the subtitle
   labs(
-    x = "Penguin Species",
-    y = "Body mass (in grams)",
+    x = "Sepal length (in cm)",
+    y = "Species",
     title = "Kruskal-Wallis Rank Sum Test",
     subtitle = res_anova$expression[[1]]
   )

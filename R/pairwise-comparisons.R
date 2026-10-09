@@ -13,7 +13,13 @@
 #' @param p.adjust.method Adjustment method for *p*-values for multiple
 #'   comparisons. Possible methods are: `"holm"` (default), `"hochberg"`,
 #'   `"hommel"`, `"bonferroni"`, `"BH"`, `"BY"`, `"fdr"`, `"none"`.
-#' @param ... Additional arguments passed to other methods.
+#' @param ... Additional arguments passed to the underlying pairwise test
+#'   function for the parametric and non-parametric tests (see the table
+#'   below). Ignored for robust tests. For Bayesian tests, they are passed to
+#'   the frequentist test (`stats::pairwise.t.test()` or
+#'   `PMCMRplus::gamesHowellTest()`) that is run first to enumerate the pairs,
+#'   so they do not change the Bayes factors, but unsupported arguments can
+#'   still cause an error.
 #' @inheritParams stats::t.test
 #' @inheritParams WRS2::rmmcp
 #'
@@ -231,24 +237,13 @@ pairwise_comparisons <- function(
   # robust ----------------------------------
 
   if (type == "robust") {
-    if (!paired) {
-      .ns <- "WRS2"
-      .fn <- "lincon"
-      .f.args <- list(formula = new_formula(y, x), data = data, method = "none")
+    df_pair <- if (paired) {
+      WRS2::rmmcp(y = y_vec, groups = x_vec, blocks = g_vec, tr = tr)
+    } else {
+      WRS2::lincon(new_formula(y, x), data, tr = tr, method = "none")
     }
 
-    if (paired) {
-      .ns <- "WRS2"
-      .fn <- "rmmcp"
-      .f.args <- list(
-        y = quote(y_vec),
-        groups = quote(x_vec),
-        blocks = quote(g_vec)
-      )
-    }
-
-    df_pair <- eval(call2(.ns = .ns, .fn = .fn, tr = tr, !!!.f.args)) |>
-      tidy_model_parameters()
+    df_pair <- tidy_model_parameters(df_pair)
     test <- "Yuen's trimmed means"
   }
 
@@ -300,12 +295,8 @@ pairwise_comparisons <- function(
 
 #' @noRd
 .pairwise_p_adjust_expr <- function(data, p.adjust.method, digits, test) {
-  method_label <- insight::format_capitalize(p.adjust.method)
-  method_label <- recode_values(
-    method_label,
-    c("BH", "Fdr") ~ "FDR",
-    default = method_label
-  )
+  method_label <- insight::format_capitalize(p.adjust.method) |>
+    replace_values(c("BH", "Fdr") ~ "FDR")
 
   data |>
     mutate(

@@ -26,86 +26,11 @@
 #'
 #' @autoglobal
 #'
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true")
-#' # ----------------------- within-subjects -------------------------------------
-#'
-#' # data
-#' df <- dplyr::filter(bugs_long, condition %in% c("LDLF", "LDHF"))
-#'
-#' # for reproducibility
-#' set.seed(123)
-#'
-#' # ----------------------- parametric ---------------------------------------
-#'
-#' two_sample_test(
-#'   df,
-#'   condition,
-#'   desire,
-#'   subject.id = subject,
-#'   paired = TRUE,
-#'   type = "parametric"
-#' )
-#'
-#' # ----------------------- non-parametric -----------------------------------
-#'
-#' two_sample_test(
-#'   df,
-#'   condition,
-#'   desire,
-#'   subject.id = subject,
-#'   paired = TRUE,
-#'   type = "nonparametric"
-#' )
-#'
-#' # ----------------------- robust --------------------------------------------
-#'
-#' two_sample_test(
-#'   df,
-#'   condition,
-#'   desire,
-#'   subject.id = subject,
-#'   paired = TRUE,
-#'   type = "robust"
-#' )
-#'
-#' # ----------------------- Bayesian ---------------------------------------
-#'
-#' two_sample_test(
-#'   df,
-#'   condition,
-#'   desire,
-#'   subject.id = subject,
-#'   paired = TRUE,
-#'   type = "bayes"
-#' )
-#'
-#' # ----------------------- between-subjects -------------------------------------
-#'
-#' # for reproducibility
-#' set.seed(123)
-#'
-#' # ----------------------- parametric ---------------------------------------
-#'
-#' # unequal variance
-#' two_sample_test(ToothGrowth, supp, len, type = "parametric")
-#'
-#' # equal variance
-#' two_sample_test(ToothGrowth, supp, len, type = "parametric", var.equal = TRUE)
-#'
-#' # biased (Cohen's d) effect size
-#' two_sample_test(ToothGrowth, supp, len, type = "parametric", effsize.type = "d")
-#'
-#' # ----------------------- non-parametric -----------------------------------
-#'
-#' two_sample_test(ToothGrowth, supp, len, type = "nonparametric")
-#'
-#' # ----------------------- robust --------------------------------------------
-#'
-#' two_sample_test(ToothGrowth, supp, len, type = "robust")
-#'
-#' # ----------------------- Bayesian ---------------------------------------
-#'
-#' two_sample_test(ToothGrowth, supp, len, type = "bayes")
+#' @examples
+#' \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true")) withAutoprint(\{ # examplesIf}
+#' @example man/examples/examples-two-sample-test.R
+#' @examples
+#' \dontshow{\}) # examplesIf}
 #'
 #' @template citation
 #'
@@ -177,35 +102,28 @@ two_sample_test <- function(
   if (type == "robust") {
     digits.df <- ifelse(paired, 0L, digits)
 
-    # styler: off
-    if (!paired) {
-      .f <- WRS2::yuen
-      .f.es <- WRS2::akp.effect
-    }
     if (paired) {
-      .f <- WRS2::yuend
-      .f.es <- WRS2::dep.effect
+      effect_model <- WRS2::dep.effect(
+        x = data[[2L]],
+        y = data[[3L]],
+        tr = tr,
+        nboot = nboot
+      )
+      test_model <- WRS2::yuend(x = data[[2L]], y = data[[3L]], tr = tr)
+    } else {
+      effect_model <- WRS2::akp.effect(
+        formula = new_formula(y, x),
+        data = data,
+        EQVAR = FALSE,
+        tr = tr,
+        nboot = nboot,
+        alpha = 1.0 - conf.level
+      )
+      test_model <- WRS2::yuen(new_formula(y, x), data, tr = tr)
     }
 
-    .f.args <- list(
-      formula = new_formula(y, x),
-      data = data,
-      x = data[[2L]],
-      y = data[[3L]]
-    )
-    .f.es.args <- list(
-      EQVAR = FALSE,
-      nboot = nboot,
-      alpha = 1.0 - conf.level,
-      tr = tr
-    )
-
-    ez_df <- tidy_model_parameters(
-      exec(.f.es, !!!.f.args, !!!.f.es.args),
-      keep = "AKP"
-    )
-    stats_df <- tidy_model_parameters(exec(.f, !!!.f.args, !!!.f.es.args))
-    # styler: on
+    ez_df <- tidy_model_parameters(effect_model, keep = "AKP")
+    stats_df <- tidy_model_parameters(test_model)
   }
 
   if (type != "bayes") {

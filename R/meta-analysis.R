@@ -2,16 +2,22 @@
 #' @name meta_analysis
 #'
 #' @description
-#' Parametric, non-parametric, robust, and Bayesian random-effects meta-analysis.
+#' Parametric, robust, and Bayesian random-effects meta-analysis.
+#'
+#' A non-parametric meta-analysis is not available, so `type = "nonparametric"`
+#' is not supported.
 #'
 #' @param data A data frame. It **must** contain columns named `estimate` (effect
-#'   sizes or outcomes)  and `std.error` (corresponding standard errors). These
+#'   sizes or outcomes) and `std.error` (corresponding standard errors). These
 #'   two columns will be used:
-#'   - as `yi`  and `sei` arguments in [`metafor::rma()`] (for **parametric** test)
-#'   - as `yi`  and `sei` arguments in [`metaplus::metaplus()`] (for **robust** test)
+#'   - as `yi` and `sei` arguments in [`metafor::rma()`] (for **parametric** test)
+#'   - as `yi` and `sei` arguments in [`metaplus::metaplus()`] (for **robust** test)
 #'   - as `y` and `SE` arguments in [`metaBMA::meta_random()`] (for **Bayesian** test)
+#' @param random The type of random-effects distribution for the robust
+#'   meta-analysis: `"mixture"` (default; mixture of normals), `"normal"`, or
+#'   `"t-dist"` (*t*-distribution). Passed to [`metaplus::metaplus()`] and only
+#'   used when `type = "robust"`.
 #' @inheritParams one_sample_test
-#' @inheritParams metaplus::metaplus
 #' @inheritParams oneway_anova
 #' @param ... Additional arguments passed to the respective meta-analysis
 #'   function.
@@ -21,7 +27,7 @@
 #' ```{r child="man/rmd-fragments/table_intro.Rmd"}
 #' ```
 #'
-#' ```{r child="man/rmd-fragments/corr_test.Rmd"}
+#' ```{r child="man/rmd-fragments/meta_analysis.Rmd"}
 #' ```
 #'
 #' @returns
@@ -55,7 +61,7 @@
 #'
 #' # ----------------------- robust --------------------------------------------
 #'
-#' meta_analysis(dat, type = "random", random = "normal")
+#' meta_analysis(dat, type = "robust", random = "normal")
 #'
 #' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("metaplus") && requireNamespace("metaBMA")
 #'
@@ -76,38 +82,35 @@ meta_analysis <- function(
 ) {
   type <- extract_stats_type(type)
 
-  # nolint start: line_length_linter.
-  .meta_args <- switch(
+  check_if_installed(switch(
     type,
-    parametric = list(
-      .ns = "metafor",
-      .fn = "rma",
-      .f.args = list(yi = quote(estimate), sei = quote(std.error), ...)
-    ),
-    robust = list(
-      .ns = "metaplus",
-      .fn = "metaplus",
-      .f.args = list(
-        yi = quote(estimate),
-        sei = quote(std.error),
-        random = random,
-        ...
-      )
-    ),
-    bayes = list(
-      .ns = "metaBMA",
-      .fn = "meta_random",
-      .f.args = list(y = quote(estimate), SE = quote(std.error), ...)
-    )
-  )
-  .ns <- .meta_args$.ns
-  .fn <- .meta_args$.fn
-  .f.args <- .meta_args$.f.args
-  # nolint end
+    parametric = "metafor",
+    robust = "metaplus",
+    bayes = "metaBMA"
+  ))
 
-  check_if_installed(.ns)
-
-  stats_df <- eval(call2(.fn = .fn, .ns = .ns, data = data, !!!.f.args)) |>
+  stats_df <- switch(
+    type,
+    parametric = inject(metafor::rma(
+      yi = !!sym("estimate"),
+      sei = !!sym("std.error"),
+      data = !!data,
+      ...
+    )),
+    robust = inject(metaplus::metaplus(
+      yi = !!sym("estimate"),
+      sei = !!sym("std.error"),
+      random = random,
+      data = !!data,
+      ...
+    )),
+    bayes = inject(metaBMA::meta_random(
+      y = !!sym("estimate"),
+      SE = !!sym("std.error"),
+      data = !!data,
+      ...
+    ))
+  ) |>
     tidy_model_parameters(include_studies = FALSE, ci = conf.level)
 
   if (type != "bayes") {
