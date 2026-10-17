@@ -41,109 +41,11 @@
 #'
 #' @autoglobal
 #'
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true")
-#' # for reproducibility
-#' set.seed(123)
-#' library(statsExpressions)
-#'
-#' #------------------- between-subjects design ----------------------------
-#'
-#' # parametric
-#' # if `var.equal = TRUE`, then Student's t-test will be run
-#' pairwise_comparisons(
-#'   data            = mtcars,
-#'   x               = cyl,
-#'   y               = wt,
-#'   type            = "parametric",
-#'   var.equal       = TRUE,
-#'   paired          = FALSE,
-#'   p.adjust.method = "none"
-#' )
-#'
-#' # if `var.equal = FALSE`, then Games-Howell test will be run
-#' pairwise_comparisons(
-#'   data            = mtcars,
-#'   x               = cyl,
-#'   y               = wt,
-#'   type            = "parametric",
-#'   var.equal       = FALSE,
-#'   paired          = FALSE,
-#'   p.adjust.method = "bonferroni"
-#' )
-#'
-#' # non-parametric (Dunn test)
-#' pairwise_comparisons(
-#'   data            = mtcars,
-#'   x               = cyl,
-#'   y               = wt,
-#'   type            = "nonparametric",
-#'   paired          = FALSE,
-#'   p.adjust.method = "none"
-#' )
-#'
-#' # robust (Yuen's trimmed means *t*-test)
-#' pairwise_comparisons(
-#'   data            = mtcars,
-#'   x               = cyl,
-#'   y               = wt,
-#'   type            = "robust",
-#'   paired          = FALSE,
-#'   p.adjust.method = "fdr"
-#' )
-#'
-#' # Bayes Factor (Student's *t*-test)
-#' pairwise_comparisons(
-#'   data   = mtcars,
-#'   x      = cyl,
-#'   y      = wt,
-#'   type   = "bayes",
-#'   paired = FALSE
-#' )
-#'
-#' #------------------- within-subjects design ----------------------------
-#'
-#' # parametric (Student's *t*-test)
-#' pairwise_comparisons(
-#'   data            = bugs_long,
-#'   x               = condition,
-#'   y               = desire,
-#'   subject.id      = subject,
-#'   type            = "parametric",
-#'   paired          = TRUE,
-#'   p.adjust.method = "BH"
-#' )
-#'
-#' # non-parametric (Durbin-Conover test)
-#' pairwise_comparisons(
-#'   data            = bugs_long,
-#'   x               = condition,
-#'   y               = desire,
-#'   subject.id      = subject,
-#'   type            = "nonparametric",
-#'   paired          = TRUE,
-#'   p.adjust.method = "BY"
-#' )
-#'
-#' # robust (Yuen's trimmed means t-test)
-#' pairwise_comparisons(
-#'   data            = bugs_long,
-#'   x               = condition,
-#'   y               = desire,
-#'   subject.id      = subject,
-#'   type            = "robust",
-#'   paired          = TRUE,
-#'   p.adjust.method = "hommel"
-#' )
-#'
-#' # Bayes Factor (Student's *t*-test)
-#' pairwise_comparisons(
-#'   data       = bugs_long,
-#'   x          = condition,
-#'   y          = desire,
-#'   subject.id = subject,
-#'   type       = "bayes",
-#'   paired     = TRUE
-#' )
+#' @examples
+#' \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true")) withAutoprint(\{ # examplesIf}
+#' @example man/examples/examples-pairwise-comparisons.R
+#' @examples
+#' \dontshow{\}) # examplesIf}
 #'
 #' @template citation
 #'
@@ -184,40 +86,38 @@ pairwise_comparisons <- function(
   g_vec <- pull(data, .rowid)
   .f.args <- list(paired = paired, p.adjust.method = "none", exact = exact, ...)
 
-  # parametric ---------------------------------
+  # frequentist tests (Bayesian ones reuse them to enumerate pairs) ----------
 
-  if (type %in% c("parametric", "bayes")) {
-    # styler: off
-    if (var.equal || paired) {
+  if (type == "robust") {
+    df_pair <- if (paired) {
+      WRS2::rmmcp(y = y_vec, groups = x_vec, blocks = g_vec, tr = tr)
+    } else {
+      WRS2::lincon(new_formula(y, x), data, tr = tr, method = "none")
+    }
+
+    df_pair <- tidy_model_parameters(df_pair)
+    test <- "Yuen's trimmed means"
+  } else {
+    if (type == "nonparametric") {
+      if (paired) {
+        .f <- PMCMRplus::durbinAllPairsTest
+        test <- "Durbin-Conover"
+      } else {
+        .f <- PMCMRplus::kwAllPairsDunnTest
+        test <- "Dunn"
+      }
+
+      # Durbin-Conover needs `y`, but it can't be a common argument because
+      # `pairwise.t.test()` would pass it on to `t.test()`
+      .f.args$y <- y_vec
+    } else if (var.equal || paired) {
       .f <- stats::pairwise.t.test
       test <- "Student's t"
-    }
-    if (!(var.equal || paired)) {
+    } else {
       .f <- PMCMRplus::gamesHowellTest
       test <- "Games-Howell"
     }
-    # styler: on
-  }
 
-  # nonparametric ----------------------------
-
-  if (type == "nonparametric") {
-    # styler: off
-    if (!paired) {
-      .f <- PMCMRplus::kwAllPairsDunnTest
-      test <- "Dunn"
-    }
-    if (paired) {
-      .f <- PMCMRplus::durbinAllPairsTest
-      test <- "Durbin-Conover"
-    }
-    # styler: on
-
-    # `exec` fails otherwise for `pairwise.t.test` because `y` is passed to `t.test`
-    .f.args <- utils::modifyList(.f.args, list(y = y_vec))
-  }
-
-  if (type != "robust") {
     df_pair <- suppressWarnings(exec(
       .f,
       # Dunn, Games-Howell, Student's t-test
@@ -230,21 +130,8 @@ pairwise_comparisons <- function(
       !!!.f.args
     )) |>
       tidy_model_parameters() |>
-      select(-matches("^parameter1$|^parameter2$")) |>
+      select(-matches("^parameter[12]$")) |>
       rename(group2 = group1, group1 = group2)
-  }
-
-  # robust ----------------------------------
-
-  if (type == "robust") {
-    df_pair <- if (paired) {
-      WRS2::rmmcp(y = y_vec, groups = x_vec, blocks = g_vec, tr = tr)
-    } else {
-      WRS2::lincon(new_formula(y, x), data, tr = tr, method = "none")
-    }
-
-    df_pair <- tidy_model_parameters(df_pair)
-    test <- "Yuen's trimmed means"
   }
 
   # Bayesian --------------------------------
@@ -255,7 +142,7 @@ pairwise_comparisons <- function(
       .y = as.character(df_pair$group2),
       .f = function(a, b) {
         two_sample_test(
-          data = droplevels(filter(data, {{ x }} %in% c(a, b))),
+          data = droplevels(filter(data, {{ x }} %in% c(.env$a, .env$b))),
           x = {{ x }},
           y = {{ y }},
           paired = paired,
@@ -267,7 +154,7 @@ pairwise_comparisons <- function(
       filter(term == "Difference") |>
       mutate(
         expression = glue(
-          "list(log[e]*(BF['01'])=='{format_value(-log(bf10), digits)}')"
+          "list(log[e]*(BF['01'])=='{format_value(-log(bf10), .env$digits)}')"
         ),
         test = "Student's t"
       )
@@ -278,18 +165,17 @@ pairwise_comparisons <- function(
   # expression formatting ----------------------------------
 
   df_pair <- df_pair |>
-    mutate(across(where(is.factor), \(x) as.character(x))) |>
+    mutate(across(where(is.factor), as.character)) |>
     arrange(group1, group2) |>
     select(group1, group2, everything())
 
   if (type != "bayes") {
     df_pair <- df_pair |>
       .pairwise_p_adjust_expr(p.adjust.method, digits, test) |>
-      mutate(p.value = p.value.adj) |>
-      select(-p.value.adj)
+      mutate(p.value = p.value.adj, p.value.adj = NULL)
   }
 
-  select(df_pair, everything(), -matches("p.adjustment|^method$")) |>
+  select(df_pair, -matches("p.adjustment|^method$")) |>
     .glue_to_expression()
 }
 
@@ -298,18 +184,19 @@ pairwise_comparisons <- function(
   method_label <- insight::format_capitalize(p.adjust.method) |>
     replace_values(c("BH", "Fdr") ~ "FDR")
 
-  data |>
-    mutate(
-      p.value.adj = stats::p.adjust(p = p.value, method = p.adjust.method),
-      p.adjust.method = method_label,
-      test = test,
-      expression = case_when(
-        p.adjust.method == "None" ~ glue(
-          "list(italic(p)[unadj.]=='{format_value(p.value.adj, digits)}')"
-        ),
-        .default = glue(
-          "list(italic(p)['{p.adjust.method}'-adj.]=='{format_value(p.value.adj, digits)}')"
-        )
-      )
+  p_subscript <- if (method_label == "None") {
+    "unadj."
+  } else {
+    glue("'{method_label}'-adj.")
+  }
+
+  mutate(
+    data,
+    p.value.adj = stats::p.adjust(p = p.value, method = p.adjust.method),
+    p.adjust.method = method_label,
+    test = .env$test,
+    expression = glue(
+      "list(italic(p)[{.env$p_subscript}]=='{format_value(p.value.adj, .env$digits)}')"
     )
+  )
 }

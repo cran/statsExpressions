@@ -83,48 +83,18 @@ contingency_table <- function(
   # data -------------------------------------------
 
   type <- extract_stats_type(type)
-  test <- ifelse(quo_is_null(enquo(y)), "1way", "2way")
+  one_way <- quo_is_null(enquo(y))
 
   data <- .untable_by_counts(data, {{ x }}, {{ y }}, {{ counts }})
 
   xtab <- table(data)
   ratio <- ratio %||% rep(1 / length(xtab), length(xtab))
 
-  # non-Bayesian ---------------------------------------
-
-  if (type != "bayes" && test == "2way") {
-    if (paired) {
-      .f <- stats::mcnemar.test
-      .f.es <- effectsize::cohens_g
-    }
-    if (!paired) {
-      .f <- stats::chisq.test
-      .f.es <- effectsize::cramers_v
-    }
-    .f.args <- list(x = xtab, correct = FALSE)
+  if (type == "bayes" && one_way) {
+    return(.one_way_bayesian_table(xtab, prior.concentration, ratio, digits))
   }
 
-  if (type != "bayes" && test == "1way") {
-    .f <- stats::chisq.test
-    .f.es <- effectsize::pearsons_c
-    .f.args <- list(x = xtab, p = ratio, correct = FALSE)
-  }
-
-  if (type != "bayes") {
-    stats_df <- bind_cols(
-      tidy_model_parameters(exec(.f, !!!.f.args)),
-      tidy_model_effectsize(exec(
-        .f.es,
-        !!!.f.args,
-        ci = conf.level,
-        alternative = alternative
-      ))
-    )
-  }
-
-  # Bayesian ---------------------------------------
-
-  if (type == "bayes" && test == "2way") {
+  if (type == "bayes") {
     stats_df <- BayesFactor::contingencyTableBF(
       xtab,
       sampleType = sampling.plan,
@@ -136,37 +106,55 @@ contingency_table <- function(
         es_type = "cramers_v",
         alternative = alternative
       )
-  }
+  } else {
+    if (one_way) {
+      .f <- stats::chisq.test
+      .f.es <- effectsize::pearsons_c
+      .f.args <- list(x = xtab, p = ratio, correct = FALSE)
+    } else if (paired) {
+      .f <- stats::mcnemar.test
+      .f.es <- effectsize::cohens_g
+      .f.args <- list(x = xtab, correct = FALSE)
+    } else {
+      .f <- stats::chisq.test
+      .f.es <- effectsize::cramers_v
+      .f.args <- list(x = xtab, correct = FALSE)
+    }
 
-  if (type == "bayes" && test == "1way") {
-    return(.one_way_bayesian_table(xtab, prior.concentration, ratio, digits))
+    stats_df <- bind_cols(
+      tidy_model_parameters(exec(.f, !!!.f.args)),
+      tidy_model_effectsize(exec(
+        .f.es,
+        !!!.f.args,
+        ci = conf.level,
+        alternative = alternative
+      ))
+    )
   }
 
   add_expression_col(stats_df, paired = paired, n = nrow(data), digits = digits)
 }
 
-
 .one_way_bayesian_table <- function(xtab, prior.concentration, ratio, digits) {
   # nocov start
   # a one-cell table is a degenerate case for this computation
-  if (length(as.vector(xtab)) == 1L) {
+  if (length(xtab) == 1L) {
     return(NULL)
   }
   # nocov end
 
-  p1s <- rdirichlet(n = 100000L, alpha = prior.concentration * ratio)
+  n_draws <- 100000L
+  counts <- as.matrix(xtab)
+  p1s <- rdirichlet(n = n_draws, alpha = prior.concentration * ratio)
   pr_h1 <- map_dbl(
-    1:100000L,
-    ~ stats::dmultinom(as.matrix(xtab), prob = p1s[.x, ], log = TRUE)
+    seq_len(n_draws),
+    \(i) stats::dmultinom(counts, prob = p1s[i, ], log = TRUE)
   )
+  pr_h0 <- stats::dmultinom(counts, prob = ratio, log = TRUE)
 
   # BF = (log) prob of data under alternative - (log) prob of data under null
-  # computing Bayes Factor and formatting the results
   tibble(
-    bf10 = exp(
-      BayesFactor::logMeanExpLogs(pr_h1) -
-        stats::dmultinom(as.matrix(xtab), NULL, ratio, TRUE)
-    ),
+    bf10 = exp(BayesFactor::logMeanExpLogs(pr_h1) - pr_h0),
     prior.scale = prior.concentration,
     method = "Bayesian one-way contingency table analysis"
   ) |>
@@ -200,7 +188,7 @@ contingency_table <- function(
   data
 }
 
-#' @title estimate log prob of data under null with Monte Carlo
+#' @title Random draws from a Dirichlet distribution
 #' @note `rdirichlet()` function from `{MCMCpack}`
 #' @noRd
 rdirichlet <- function(n, alpha) {

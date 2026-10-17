@@ -42,98 +42,11 @@
 #'
 #' @autoglobal
 #'
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true")
-#' # for reproducibility
-#' set.seed(123)
-#' library(statsExpressions)
-#'
-#' # ----------------------- parametric -------------------------------------
-#'
-#' # between-subjects
-#' oneway_anova(
-#'   data = mtcars,
-#'   x    = cyl,
-#'   y    = wt
-#' )
-#'
-#' # biased (partial eta-squared) effect size
-#' oneway_anova(
-#'   data         = mtcars,
-#'   x            = cyl,
-#'   y            = wt,
-#'   effsize.type = "eta"
-#' )
-#'
-#' # within-subjects design
-#' oneway_anova(
-#'   data       = iris_long,
-#'   x          = condition,
-#'   y          = value,
-#'   subject.id = id,
-#'   paired     = TRUE
-#' )
-#'
-#' # ----------------------- non-parametric ----------------------------------
-#'
-#' # between-subjects
-#' oneway_anova(
-#'   data = mtcars,
-#'   x    = cyl,
-#'   y    = wt,
-#'   type = "np"
-#' )
-#'
-#' # within-subjects design
-#' oneway_anova(
-#'   data       = iris_long,
-#'   x          = condition,
-#'   y          = value,
-#'   subject.id = id,
-#'   paired     = TRUE,
-#'   type       = "np"
-#' )
-#'
-#' # ----------------------- robust -------------------------------------
-#'
-#' # between-subjects
-#' oneway_anova(
-#'   data = mtcars,
-#'   x    = cyl,
-#'   y    = wt,
-#'   type = "r"
-#' )
-#'
-#' # within-subjects design
-#' oneway_anova(
-#'   data       = iris_long,
-#'   x          = condition,
-#'   y          = value,
-#'   subject.id = id,
-#'   paired     = TRUE,
-#'   type       = "r"
-#' )
-#'
-#' @examplesIf identical(Sys.getenv("NOT_CRAN"), "true") && requireNamespace("rstantools")
-#'
-#' # ----------------------- Bayesian -------------------------------------
-#'
-#' # between-subjects
-#' oneway_anova(
-#'   data = mtcars,
-#'   x    = cyl,
-#'   y    = wt,
-#'   type = "bayes"
-#' )
-#'
-#' # within-subjects design
-#' oneway_anova(
-#'   data       = iris_long,
-#'   x          = condition,
-#'   y          = value,
-#'   subject.id = id,
-#'   paired     = TRUE,
-#'   type       = "bayes"
-#' )
+#' @examples
+#' \dontshow{if (identical(Sys.getenv("NOT_CRAN"), "true")) withAutoprint(\{ # examplesIf}
+#' @example man/examples/examples-oneway-anova.R
+#' @examples
+#' \dontshow{\}) # examplesIf}
 #'
 #' @template citation
 #'
@@ -170,11 +83,11 @@ oneway_anova <- function(
   ) |>
     mutate(.rowid = as.factor(.rowid))
 
-  #  parametric ---------------------------------------
+  # parametric ---------------------------------------
 
   if (type == "parametric") {
-    digits.df <- ifelse(paired, digits, 0L)
-    digits.df.error <- ifelse(!paired && var.equal, 0L, digits)
+    digits.df <- if (paired) digits else 0L
+    digits.df.error <- if (!paired && var.equal) 0L else digits
 
     .f.es <- switch(
       match.arg(effsize.type, c("omega", "eta", "unbiased", "biased")),
@@ -192,9 +105,7 @@ oneway_anova <- function(
         within = as_string(x),
         include_aov = TRUE
       )
-    }
-
-    if (!paired) {
+    } else {
       mod <- stats::oneway.test(new_formula(y, x), data, var.equal = var.equal)
     }
 
@@ -214,39 +125,34 @@ oneway_anova <- function(
     digits.df.error <- 0L
 
     if (paired) {
-      test_formula <- new_formula(enexpr(y), expr(!!enexpr(x) | .rowid))
-      test_model <- stats::friedman.test(test_formula, data = data)
-      effect_model <- effectsize::kendalls_w(
-        x = test_formula,
-        data = data,
-        ci = conf.level,
-        iterations = nboot,
-        verbose = FALSE
-      )
-    }
-
-    if (!paired) {
+      test_formula <- new_formula(y, expr(!!x | .rowid))
+      .f <- stats::friedman.test
+      .f.es <- effectsize::kendalls_w
+    } else {
       test_formula <- new_formula(y, x)
-      test_model <- stats::kruskal.test(test_formula, data = data)
-      effect_model <- effectsize::rank_epsilon_squared(
-        x = test_formula,
-        data = data,
-        ci = conf.level,
-        iterations = nboot,
-        verbose = FALSE
-      )
+      .f <- stats::kruskal.test
+      .f.es <- effectsize::rank_epsilon_squared
     }
 
-    stats_df <- tidy_model_parameters(test_model)
-    ez_df <- tidy_model_effectsize(effect_model)
+    test_model <- .f(test_formula, data = data)
+    effect_model <- .f.es(
+      x = test_formula,
+      data = data,
+      ci = conf.level,
+      iterations = nboot,
+      verbose = FALSE
+    )
 
-    stats_df <- bind_cols(stats_df, ez_df)
+    stats_df <- bind_cols(
+      tidy_model_parameters(test_model),
+      tidy_model_effectsize(effect_model)
+    )
   }
 
   # robust ---------------------------------------
 
   if (type == "robust") {
-    digits.df <- ifelse(paired, digits, 0L)
+    digits.df <- if (paired) digits else 0L
     digits.df.error <- digits
 
     if (paired) {
@@ -256,42 +162,37 @@ oneway_anova <- function(
         blocks = data[[".rowid"]],
         tr = tr
       )
-    }
 
-    if (!paired) {
-      mod <- WRS2::t1way(
+      ez_df <- long_to_wide_converter(data, {{ x }}, {{ y }}) |>
+        select(-.rowid) |>
+        WRS2::wmcpAKP(tr = tr, nboot = nboot) |>
+        tidy_model_parameters()
+
+      stats_df <- bind_cols(tidy_model_parameters(mod), ez_df)
+    } else {
+      stats_df <- WRS2::t1way(
         formula = new_formula(y, x),
         data = data,
         tr = tr,
         alpha = 1.0 - conf.level,
         nboot = nboot
-      )
-    }
-
-    stats_df <- tidy_model_parameters(mod)
-
-    if (paired) {
-      ez_df <- long_to_wide_converter(data, {{ x }}, {{ y }}) |>
-        WRS2::wmcpAKP(select(-.rowid), tr = tr, nboot = nboot) |>
+      ) |>
         tidy_model_parameters()
-
-      stats_df <- bind_cols(stats_df, ez_df)
     }
   }
 
   # Bayesian ---------------------------------------
 
   if (type == "bayes") {
-    if (!paired) {
-      .f.args <- list(formula = new_formula(y, x), rscaleFixed = bf.prior)
-    }
     if (paired) {
       .f.args <- list(
-        formula = new_formula(enexpr(y), expr(!!enexpr(x) + .rowid)),
+        formula = new_formula(y, expr(!!x + .rowid)),
         rscaleFixed = bf.prior,
         whichRandom = ".rowid",
         rscaleRandom = 1.0
       )
+    } else {
+      .f.args <- list(formula = new_formula(y, x), rscaleFixed = bf.prior)
     }
 
     stats_df <- exec(

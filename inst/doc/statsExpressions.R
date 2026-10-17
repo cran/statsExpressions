@@ -13,9 +13,6 @@ if (can_evaluate) {
 }
 
 ## -----------------------------------------------------------------------------
-citation("statsExpressions")
-
-## -----------------------------------------------------------------------------
 oneway_anova(mtcars, cyl, wt, type = "nonparametric")
 
 oneway_anova(mtcars, cyl, wt, type = "robust")
@@ -48,29 +45,6 @@ multi_test_results <- dplyr::bind_rows(
 dplyr::select(multi_test_results, method, effectsize, estimate, p.value)
 
 ## -----------------------------------------------------------------------------
-# suppose you have run your own statistical test
-custom_stats <- cbind.data.frame(
-  statistic  = 2.18,
-  df         = 18,
-  p.value    = 0.041,
-  estimate   = 0.65,
-  conf.level = 0.95,
-  conf.low   = 0.03,
-  conf.high  = 1.27,
-  method     = "Student's t-test"
-)
-
-# generate a formatted expression
-add_expression_col(
-  data           = custom_stats,
-  statistic.text = list(quote(italic("t"))),
-  effsize.text   = list(quote(italic("d")["Cohen"])),
-  n              = 20L,
-  digits         = 2L,
-  digits.df      = 0L
-)$expression[[1]]
-
-## -----------------------------------------------------------------------------
 knitr::include_graphics("stats_reporting_format.png")
 
 ## -----------------------------------------------------------------------------
@@ -101,4 +75,7 @@ ggplot(iris, aes(x = Sepal.Length, y = Species)) +
     title = "Kruskal-Wallis Rank Sum Test",
     subtitle = res_anova$expression[[1]]
   )
+
+## ----citation, echo = FALSE, comment = ""-------------------------------------
+citation("statsExpressions")
 

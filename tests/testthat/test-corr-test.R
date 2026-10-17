@@ -2,7 +2,6 @@
 
 test_that(desc = "corr_test works - parametric", code = {
   # with NA
-  set.seed(123)
   df1 <- corr_test(
     data = msleep,
     x = brainwt,
@@ -12,12 +11,10 @@ test_that(desc = "corr_test works - parametric", code = {
     conf.level = 0.90
   )
 
-  set.seed(123)
   expect_snapshot(select(df1, -expression))
   expect_snapshot(df1[["expression"]])
 
   # without NA
-  set.seed(123)
   df2 <- corr_test(
     data = mtcars,
     x = wt,
@@ -26,7 +23,6 @@ test_that(desc = "corr_test works - parametric", code = {
     digits = 3L
   )
 
-  set.seed(123)
   expect_snapshot(select(df2, -expression))
   expect_snapshot(df2[["expression"]])
 })
@@ -35,7 +31,6 @@ test_that(desc = "corr_test works - parametric", code = {
 
 test_that(desc = "corr_test works - robust", code = {
   # with NA
-  set.seed(123)
   df1 <- corr_test(
     data = msleep,
     x = brainwt,
@@ -45,12 +40,10 @@ test_that(desc = "corr_test works - robust", code = {
     conf.level = 0.50
   )
 
-  set.seed(123)
   expect_snapshot(select(df1, -expression))
   expect_snapshot(df1[["expression"]])
 
   # without NA
-  set.seed(123)
   df2 <- corr_test(
     data = mtcars,
     x = wt,
@@ -58,7 +51,6 @@ test_that(desc = "corr_test works - robust", code = {
     type = "r"
   )
 
-  set.seed(123)
   expect_snapshot(select(df2, -expression))
   expect_snapshot(df2[["expression"]])
 })
@@ -67,7 +59,6 @@ test_that(desc = "corr_test works - robust", code = {
 
 test_that(desc = "corr_test works - nonparametric", code = {
   # with NA
-  set.seed(123)
   df1 <- corr_test(
     data = msleep,
     x = brainwt,
@@ -77,12 +68,10 @@ test_that(desc = "corr_test works - nonparametric", code = {
     conf.level = 0.50
   )
 
-  set.seed(123)
   expect_snapshot(select(df1, -expression))
   expect_snapshot(df1[["expression"]])
 
   # without NA
-  set.seed(123)
   df2 <- corr_test(
     data = mtcars,
     x = wt,
@@ -91,7 +80,6 @@ test_that(desc = "corr_test works - nonparametric", code = {
     digits = 4L
   )
 
-  set.seed(123)
   expect_snapshot(select(df2, -expression))
   expect_snapshot(df2[["expression"]])
 })

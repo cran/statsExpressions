@@ -75,9 +75,8 @@ pairwise_contingency_table <- function(
   x <- ensym(x)
   y <- ensym(y)
 
-  data <- .untable_by_counts(data, {{ x }}, {{ y }}, {{ counts }})
-
-  data <- mutate(data, {{ x }} := droplevels(as.factor({{ x }})))
+  data <- .untable_by_counts(data, {{ x }}, {{ y }}, {{ counts }}) |>
+    mutate({{ x }} := droplevels(as.factor({{ x }})))
 
   # pairwise comparisons -------------------------------------------
 
@@ -85,7 +84,7 @@ pairwise_contingency_table <- function(
   pair_list <- utils::combn(x_levels, 2L, simplify = FALSE)
 
   df_pair <- map_vec(pair_list, function(pair) {
-    data_sub <- filter(data, {{ x }} %in% pair) |>
+    data_sub <- filter(data, {{ x }} %in% .env$pair) |>
       mutate(across(where(is.factor), droplevels))
 
     xtab <- table(data_sub)
@@ -109,18 +108,9 @@ pairwise_contingency_table <- function(
 
   # p-value adjustment and expression -------------------------------------------
 
-  df_pair <- df_pair |>
+  df_pair |>
     arrange(group1, group2) |>
-    .pairwise_p_adjust_expr(p.adjust.method, digits, "Fisher's exact test")
-
-  select(
-    df_pair,
-    group1,
-    group2,
-    p.value,
-    p.value.adj,
-    everything(),
-    -matches("^method$")
-  ) |>
+    .pairwise_p_adjust_expr(p.adjust.method, digits, "Fisher's exact test") |>
+    relocate(p.value.adj, .after = p.value) |>
     .glue_to_expression()
 }

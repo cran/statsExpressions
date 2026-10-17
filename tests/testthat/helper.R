@@ -1,12 +1,10 @@
 # nolint start: indentation_linter, commas_linter.
 
-# styler: off
-
 # load hard dependencies used in tests
 library(dplyr, warn.conflicts = FALSE)
 options(lifecycle_verbosity = "warning")
 
-# Same as a smaller subset of `ggplot2::msleep` dataset
+# A smaller subset of the `ggplot2::msleep` dataset
 # datapasta::dpasta(dplyr::select(ggplot2::msleep, brainwt, vore, conservation, sleep_total, sleep_rem))
 
 msleep <- dplyr::tribble(
@@ -165,6 +163,7 @@ data_meta <- dplyr::tribble(
   "ISIS-4"       ,  0.05759  , 0.03164
 )
 
-# styler: on
-
 # nolint end
+
+# two-condition subset of `data_with_subid` for paired two-sample tests
+data_with_subid_two_groups <- filter(data_with_subid, condition %in% c(1, 5))

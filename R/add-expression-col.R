@@ -89,10 +89,8 @@ add_expression_col <- function(
   effsize.text = NULL,
   prior.type = NULL,
   n = NULL,
-  n.text = ifelse(
-    paired,
-    list(quote(italic("n")["pairs"])),
-    list(quote(italic("n")["obs"]))
+  n.text = list(
+    if (paired) quote(italic("n")["pairs"]) else quote(italic("n")["obs"])
   ),
   digits = 2L,
   digits.df = 0L,
@@ -100,15 +98,15 @@ add_expression_col <- function(
   ...
 ) {
   if (!"n.obs" %in% colnames(data)) {
-    data <- mutate(data, n.obs = n)
+    data <- mutate(data, n.obs = .env$n)
   }
   if (!"effectsize" %in% colnames(data)) {
     data <- mutate(data, effectsize = method)
   }
   data <- rename(data, any_of(c(bf10 = "bayes.factor")))
 
-  bayesian <- any("bf10" == colnames(data))
-  no.parameters <- sum("df.error" %in% names(data) + "df" %in% names(data))
+  bayesian <- "bf10" %in% colnames(data)
+  n_df_cols <- sum(c("df", "df.error") %in% colnames(data))
 
   # special case for Bayesian contingency table analysis
   if (bayesian && grepl("contingency", data$method[[1L]], fixed = TRUE)) {
@@ -117,16 +115,21 @@ add_expression_col <- function(
 
   # dealing with exactly 0 p-values
   if ("p.value" %in% colnames(data)) {
-    data <- data |>
-      mutate(p.value = if_else(p.value == 0, .Machine$double.xmin, p.value))
+    data <- mutate(
+      data,
+      p.value = if_else(p.value == 0, .Machine$double.xmin, p.value)
+    )
   }
 
+  # arguments are referenced with `.env$` so that columns in `data` with the
+  # same names can't shadow them
   df_expr <- data |> # convert needed columns to character type
     .data_to_char(digits, digits.df, digits.df.error) |>
     mutate(
-      statistic.text = statistic.text %||%
+      statistic.text = .env$statistic.text %||%
         extract_statistic_text(tolower(method)),
-      es.text = effsize.text %||% extract_estimate_type(tolower(effectsize)),
+      es.text = .env$effsize.text %||%
+        extract_estimate_type(tolower(effectsize)),
       prior.distribution = prior_switch(tolower(method)),
       n.obs = .prettyNum(n.obs)
     )
@@ -134,30 +137,28 @@ add_expression_col <- function(
   # Bayesian analysis ------------------------------
 
   if (bayesian) {
-    df_expr <- df_expr |>
-      mutate(
-        expression = glue(
-          "list(
-            log[e]*(BF['01'])=='{format_value(-log(bf10), digits)}',
+    df_expr <- mutate(
+      df_expr,
+      expression = glue(
+        "list(
+            log[e]*(BF['01'])=='{format_value(-log(bf10), .env$digits)}',
             {es.text}^'posterior'=='{estimate}',
             CI['{conf.level}']^{conf.method}~'['*'{conf.low}', '{conf.high}'*']',
             {prior.distribution}=='{prior.scale}')"
-        )
       )
-  }
+    )
+  } else {
+    # frequentist analysis (0, 1, or 2 degrees of freedom) ------------------
 
-  # frequentist analysis (0, 1, or 2 degrees of freedom) --------------------
-
-  if (!bayesian) {
     # for chi-squared statistic, the degrees of freedom live in the `df` column
-    if (no.parameters == 1L && "df" %in% colnames(df_expr)) {
+    if (n_df_cols == 1L && "df" %in% colnames(df_expr)) {
       df_expr <- mutate(df_expr, df.error = df)
     }
 
     # the statistic term is the only part that varies with the number of
     # degrees of freedom; the rest of the expression is shared
     statistic_part <- switch(
-      as.character(no.parameters),
+      as.character(n_df_cols),
       "0" = "{statistic.text}=='{statistic}'",
       "1" = "{statistic.text}*'('*{df.error}*')'=='{statistic}'",
       "2" = "{statistic.text}({df}, {df.error})=='{statistic}'"
@@ -167,7 +168,7 @@ add_expression_col <- function(
       "list(",
       statistic_part,
       ", italic(p)=='{p.value}', {es.text}=='{estimate}', ",
-      "CI['{conf.level}']~'['*'{conf.low}', '{conf.high}'*']', {n.text}=='{n.obs}')"
+      "CI['{conf.level}']~'['*'{conf.low}', '{conf.high}'*']', {.env$n.text}=='{n.obs}')"
     )
 
     df_expr <- mutate(df_expr, expression = glue(expr_template))
@@ -193,25 +194,27 @@ add_expression_col <- function(
   digits.df = 0L,
   digits.df.error = 0L
 ) {
-  data |>
-    mutate(
-      across(
-        .cols = matches("^est|^sta|p.value|.scale$|.low$|.high$|^log"),
-        .fns = \(x) .to_char(x, digits)
-      ),
-      across(.cols = matches("^df$"), .fns = \(x) .to_char(x, digits.df)),
-      across(.cols = matches("^df.error$"), .fns = \(x) {
-        .to_char(x, digits.df.error)
-      }),
-      across(.cols = matches("^conf.level$"), .fns = \(x) paste0(x * 100L, "%"))
-    )
+  mutate(
+    data,
+    across(
+      matches("^est|^sta|p.value|.scale$|.low$|.high$|^log"),
+      \(x) .to_char(x, .env$digits)
+    ),
+    across(matches("^df$"), \(x) .to_char(x, .env$digits.df)),
+    across(matches("^df.error$"), \(x) .to_char(x, .env$digits.df.error)),
+    across(matches("^conf.level$"), \(x) paste0(x * 100L, "%"))
+  )
 }
 
-#' @note `decimal.mark` is pinned to `"."` to avoid a clash with `big.mark`
-#'   when users set `options(OutDec = ",")`.
+#' @note `OutDec` is pinned to `"."` to avoid a clash with `big_mark` when
+#'   users set `options(OutDec = ",")`; `format_value()` applies `big_mark` via
+#'   `prettyNum()`, whose `decimal.mark` follows `OutDec`.
 #' @noRd
 .prettyNum <- function(x) {
-  format_value(x, digits = 0, big_mark = ",", decimal_point = ".")
+  withr::with_options(
+    list(OutDec = "."),
+    format_value(x, digits = 0, big_mark = ",")
+  )
 }
 
 #' @note `decimal_point` is pinned to `"."` because plotmath parses `,` as a

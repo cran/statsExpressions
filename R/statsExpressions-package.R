@@ -1,5 +1,3 @@
-#' \code{statsExpressions}
-#'
 #' @title statsExpressions: Tidy Dataframes and Expressions with Statistical Details
 #'
 #' @description
@@ -8,9 +6,6 @@
 #'
 #' ```
 #'
-#' @docType package
-#' @aliases statsExpressions statsExpressions-package
-#' @name statsExpressions-package
 #' @keywords internal
 "_PACKAGE"
 

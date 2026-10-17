@@ -2,8 +2,8 @@
 % Please edit documentation in R/statsExpressions-package.R
 \docType{package}
 \name{statsExpressions-package}
-\alias{statsExpressions-package}
 \alias{statsExpressions}
+\alias{statsExpressions-package}
 \title{statsExpressions: Tidy Dataframes and Expressions with Statistical Details}
 \description{
 The \code{{statsExpressions}} package has two key aims:
@@ -31,9 +31,6 @@ be accessed, with a simpler interface and no requirement to change data format.
 This package forms the statistical processing backend for \href{https://www.indrapatil.com/ggstatsplot/}{\code{ggstatsplot}} package.
 
 For more documentation, see the dedicated \href{https://www.indrapatil.com/statsExpressions/}{website}.
-}
-\details{
-\code{statsExpressions}
 }
 \seealso{
 Useful links:

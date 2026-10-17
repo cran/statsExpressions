@@ -6,192 +6,132 @@ test_that(desc = "long_to_wide_converter works - spread true", code = {
     "Skipping on R-devel due to summary() format changes"
   )
 
-  # data without NAs ------------------------------
+  dfs <- convert_example_data(spread = TRUE)
 
-  # within-subjects
-  set.seed(123)
-  df1 <- long_to_wide_converter(
-    data = iris_long,
-    x = condition,
-    y = value
-  )
-
-  # between-subjects
-  set.seed(123)
-  df2 <- long_to_wide_converter(
-    data = mtcars,
-    x = am,
-    y = wt,
-    paired = FALSE
-  )
-
-  # data with NAs ------------------------------
-
-  # within-subjects
-  set.seed(123)
-  df3 <- long_to_wide_converter(
-    data = bugs_long,
-    x = condition,
-    y = desire,
-    paired = TRUE
-  )
-
-  # between-subjects
-  set.seed(123)
-  df4 <- long_to_wide_converter(
-    data = msleep,
-    x = vore,
-    y = brainwt,
-    paired = FALSE
-  )
-
-  # checking datasets
-  set.seed(123)
-  expect_snapshot(purrr::walk(list(df1, df2, df3, df4), dplyr::glimpse))
+  expect_snapshot(purrr::walk(dfs, dplyr::glimpse))
   skip_if(
     getRversion() < "4.6.0",
     "Skipping on R < 4.6.0: summary() changed NA label from 'NA\\'s' to 'NAs' in 4.6.0"
   )
-  expect_snapshot(purrr::map(list(df1, df2, df3, df4), summary))
+  expect_snapshot(purrr::map(dfs, summary))
 })
 
-
 test_that(desc = "long_to_wide_converter works - spread false", code = {
-  # ----------------------- data without NAs ------------------------------
+  dfs <- convert_example_data(spread = FALSE)
 
-  # within-subjects
-  set.seed(123)
-  df1 <- long_to_wide_converter(
-    data = iris_long,
-    x = condition,
-    y = value,
-    spread = FALSE
-  )
-
-  # between-subjects
-  set.seed(123)
-  df2 <- long_to_wide_converter(
-    data = mtcars,
-    x = am,
-    y = wt,
-    paired = FALSE,
-    spread = FALSE
-  )
-
-  # -------------------------- data with NAs ------------------------------
-
-  # within-subjects
-  set.seed(123)
-  df3 <- long_to_wide_converter(
-    data = bugs_long,
-    x = condition,
-    y = desire,
-    paired = TRUE,
-    spread = FALSE
-  )
-
-  # between-subjects
-  set.seed(123)
-  df4 <- long_to_wide_converter(
-    data = msleep,
-    x = vore,
-    y = brainwt,
-    paired = FALSE,
-    spread = FALSE
-  )
-
-  set.seed(123)
-  expect_snapshot(purrr::walk(list(df1, df2, df3, df4), dplyr::glimpse))
-  expect_snapshot(purrr::map(list(df1, df2, df3, df4), summary))
+  expect_snapshot(purrr::walk(dfs, dplyr::glimpse))
+  expect_snapshot(purrr::map(dfs, summary))
 })
 
 # with .rowid - without NA ---------------------------------------------
 
 test_that(desc = "with .rowid - without NA", code = {
-  df_original <- structure(
-    list(
-      score = c(90, 90, 72.5, 45),
-      condition = structure(
-        c(1L, 2L, 2L, 1L),
-        levels = c("4", "5"),
-        class = "factor"
-      ),
-      id = c(1L, 2L, 1L, 2L)
-    ),
-    row.names = c(NA, -4L),
-    class = c("tbl_df", "tbl", "data.frame")
+  data <- dplyr::tibble(
+    score = c(90, 90, 72.5, 45),
+    condition = factor(c("4", "5", "5", "4")),
+    id = c(1L, 2L, 1L, 2L)
   )
 
-  df_arranged <- arrange(df_original, id)
-
-  expect_identical(
-    long_to_wide_converter(df_arranged, condition, score),
-    long_to_wide_converter(df_original, condition, score, id)
-  )
-
-  expect_identical(
-    arrange(
-      long_to_wide_converter(df_arranged, condition, score, spread = FALSE),
-      .rowid
-    ),
-    arrange(
-      long_to_wide_converter(df_original, condition, score, id, spread = FALSE),
-      .rowid
-    )
-  )
+  expect_subject_id_invariance(long_to_wide_converter, data)
+  expect_subject_id_invariance(long_to_wide_converter, data, spread = FALSE)
 })
 
 
 # with .rowid - with NA ---------------------------------------------
 
 test_that(desc = "with .rowid - with NA", code = {
-  df_original <- bugs_long
+  convert_without_rowid <- function(...) {
+    select(long_to_wide_converter(...), -.rowid)
+  }
+
   df_arranged <- arrange(bugs_long, subject)
 
-  expect_identical(
-    select(long_to_wide_converter(df_arranged, condition, desire), -.rowid),
-    select(
-      long_to_wide_converter(df_original, condition, desire, subject),
-      -.rowid
-    )
-  )
-
-  expect_identical(
-    select(
-      long_to_wide_converter(df_arranged, condition, desire, spread = FALSE),
-      -.rowid
-    ),
-    select(
-      long_to_wide_converter(
-        df_original,
+  for (spread in c(TRUE, FALSE)) {
+    expect_identical(
+      convert_without_rowid(df_arranged, condition, desire, spread = spread),
+      convert_without_rowid(
+        bugs_long,
         condition,
         desire,
         subject,
-        spread = FALSE
-      ),
-      -.rowid
+        spread = spread
+      )
     )
-  )
+  }
 })
 
 
-# NA in subject.id should not drop rows with complete x/y ----------------
+# NA in subject.id ------------------------------------------------------
 
-test_that("NA in subject.id does not drop rows with complete measurements", {
+test_that("rows with NA subject.id are dropped only for paired designs", {
   df <- dplyr::tibble(
     id = c(1L, 1L, NA_integer_, NA_integer_),
     group = c("a", "b", "a", "b"),
     value = c(10, 20, 30, 40)
   )
 
-  result <- long_to_wide_converter(
-    df,
-    x = group,
-    y = value,
-    subject.id = id,
-    paired = TRUE,
-    spread = FALSE
+  convert <- function(paired) {
+    long_to_wide_converter(
+      df,
+      x = group,
+      y = value,
+      subject.id = id,
+      paired = paired,
+      spread = FALSE
+    )
+  }
+
+  expect_identical(convert(paired = TRUE)$.rowid, c(1L, 1L))
+  expect_shape(convert(paired = FALSE), nrow = 4L)
+})
+
+# incomplete subjects --------------------------------------------------
+
+test_that("paired designs keep only subjects observed in every condition", {
+  df <- dplyr::tibble(
+    id = c(1L, 1L, 2L, 2L, 3L, 4L, 4L, 4L),
+    group = c("a", "b", "a", "b", "a", "a", "b", NA),
+    value = c(1, 2, 3, NA, 5, 6, 7, 8)
   )
 
-  expect_shape(result, nrow = 4L)
+  expect_identical(
+    long_to_wide_converter(df, group, value, subject.id = id)$.rowid,
+    c(1L, 4L)
+  )
+
+  # without `subject.id`, a condition with fewer rows leaves subjects unpaired
+  expect_identical(
+    long_to_wide_converter(
+      dplyr::tibble(group = c("a", "a", "a", "b", "b"), value = 1:5),
+      group,
+      value
+    )$.rowid,
+    c(1L, 2L)
+  )
+})
+
+# duplicated subjects --------------------------------------------------
+
+test_that("paired designs need at most one row per subject and condition", {
+  df <- dplyr::tibble(
+    id = c(1L, 1L, 1L, 2L, 2L),
+    group = c("a", "a", "b", "a", "b"),
+    value = c(1, 2, 3, 4, 5)
+  )
+
+  expect_snapshot_error(long_to_wide_converter(df, group, value, id))
+  expect_snapshot_error(
+    two_sample_test(df, group, value, subject.id = id, paired = TRUE)
+  )
+  expect_shape(
+    long_to_wide_converter(
+      df,
+      group,
+      value,
+      id,
+      paired = FALSE,
+      spread = FALSE
+    ),
+    nrow = 5L
+  )
 })

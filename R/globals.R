@@ -3,12 +3,15 @@
 utils::globalVariables(c(
   # <.untable_by_counts>
   ".counts",
+  # <complete_subjects>
   # <long_to_wide_converter>
   # <oneway_anova>
   # <pairwise_comparisons>
   ".rowid",
   # <add_expression_col>
   "df",
+  # <tidy_model_expressions>
+  "df.error",
   # <add_expression_col>
   "effectsize",
   # <centrality_description>

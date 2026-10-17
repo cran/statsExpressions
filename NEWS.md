@@ -1,3 +1,49 @@
+# statsExpressions 2.2.0
+
+- New helper `complete_subjects()` prepares long-format repeated-measures
+  data the same way the paired tests do. It drops rows that cannot be paired,
+  validates the subject identifier, and keeps only subjects observed in every
+  condition. Packages that plot or summarize repeated-measures data (such as
+  `{ggstatsplot}`) can use it so that they work on the same observations as
+  the statistical tests.
+
+- Repeated-measures analyses (`paired = TRUE`) now validate the subject
+  identifier via `complete_subjects()`, and thus in
+  `long_to_wide_converter()`, `two_sample_test()`, `oneway_anova()`, and
+  `pairwise_comparisons()`:
+
+  - A subject with more than one row in a level of `x` now gives an
+    informative error. Previously, depending on `type`, this produced
+    list-column warnings, cryptic errors, or results that silently averaged or
+    discarded the duplicated observations.
+  - Rows with a missing `subject.id` are dropped. Previously they were treated
+    as observations of a single shared subject.
+  - Subjects without a row for every level of `x` are dropped, just like
+    subjects with a missing response. Previously they were counted in the
+    reported sample size, and the Bayesian two-sample test failed.
+  - A row with a missing `x` value now removes only that row rather than every
+    row of the subject.
+
+- `oneway_anova()` with `type = "robust"` and `paired = TRUE` now reports the
+  correct Algina-Keselman-Penfield effect size and confidence interval.
+  Previously the internal row identifier was treated as an extra condition,
+  which inflated the estimate (e.g., 0.66 instead of 0.32 for `bugs_long`).
+
+- Columns in the input data that share a name with a function argument or an
+  internal variable no longer change the results. For example, a column named
+  `digits` or `n.text` in `add_expression_col()` input, a grouping variable
+  named `digits` or `centrality` in `centrality_description()`, `a` or `b` in
+  Bayesian `pairwise_comparisons()`, `pair` in `pairwise_contingency_table()`,
+  or `es.text` in `tidy_model_expressions()` input could previously produce
+  wrong expressions or errors.
+
+- Functions that report a sample size no longer warn that `'big.mark' and
+  'decimal.mark' are both ','` when `options(OutDec = ",")` is set (#146).
+
+- Corrected the documentation of Bayesian correlation columns, missing-value
+  counts in `centrality_description()`, degrees of freedom, paired sample
+  sizes, and adjusting p-values after expressions have been generated.
+
 # statsExpressions 2.1.2
 
 This patch release contains documentation fixes only; there are no changes to

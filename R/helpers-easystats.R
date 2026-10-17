@@ -29,9 +29,9 @@ tidy_model_parameters <- function(model, ...) {
     select(-matches("Difference")) |>
     standardize_names(style = "broom") |>
     rename_with(\(x) gsub("cramers.|omega2.|eta2.", "", x)) |>
-    rename_with(\(x) replace(x, x == "bayes.factor", "bf10")) |>
+    rename(any_of(c(bf10 = "bayes.factor"))) |>
     tidyr::fill(matches("^prior|^bf"), .direction = "updown") |>
-    mutate(across(matches("bf10"), \(x) log(x), .names = "log_e_{.col}"))
+    mutate(across(matches("bf10"), log, .names = "log_e_{.col}"))
 
   if (!"estimate" %in% colnames(stats_df)) {
     stats_df <- select(stats_df, -matches("^conf"))
@@ -39,27 +39,23 @@ tidy_model_parameters <- function(model, ...) {
 
   # Bayesian ANOVA designs -----------------------------------
 
-  if (
-    "method" %in%
-      names(stats_df) &&
-      stats_df$method[[1]] == "Bayes factors for linear models"
-  ) {
+  if (isTRUE(stats_df[["method"]][1L] == "Bayes factors for linear models")) {
     # for within-subjects design, retain only conditional component
     df_r2 <- performance::r2_bayes(
       model,
       average = TRUE,
       verbose = FALSE,
-      ci = stats_df$conf.level[[1]]
+      ci = stats_df$conf.level[[1L]]
     ) |>
       as_tibble() |>
       standardize_names(style = "broom") |>
       rename(estimate = r.squared) |>
-      filter(if_all(matches("component"), ~ (.x == "conditional")))
+      filter(if_all(matches("component"), \(x) x == "conditional"))
 
     # remove estimates and CIs and use R2 data frame instead
     stats_df <- stats_df |>
       select(-matches("^est|^conf|^comp")) |>
-      filter(if_all(matches("effect"), ~ (.x == "fixed")))
+      filter(if_all(matches("effect"), \(x) x == "fixed"))
 
     # replicate df_r2 to match stats_df rows for bind_cols
     df_r2 <- df_r2[rep(1L, nrow(stats_df)), ]
@@ -84,15 +80,15 @@ tidy_model_parameters <- function(model, ...) {
 #' tidy_model_effectsize(df)
 #' @noRd
 tidy_model_effectsize <- function(data, ...) {
+  effectsize_labels <- effectsize::get_effectsize_label(colnames(data))
+  ci_method <- rename_with(
+    as_tibble(attr(data, "ci_method")),
+    \(x) paste0("conf.", x)
+  )
+
   data |>
-    mutate(
-      effectsize = stats::na.omit(effectsize::get_effectsize_label(colnames(
-        data
-      )))
-    ) |>
+    mutate(effectsize = stats::na.omit(effectsize_labels)) |>
     standardize_names(style = "broom") |>
     select(-contains("term")) |>
-    bind_cols(rename_with(as_tibble(attr(data, "ci_method")), \(x) {
-      paste0("conf.", x)
-    }))
+    bind_cols(ci_method)
 }

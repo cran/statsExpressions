@@ -1,7 +1,7 @@
 # long_to_wide_converter works - spread true
 
     Code
-      purrr::walk(list(df1, df2, df3, df4), dplyr::glimpse)
+      purrr::walk(dfs, dplyr::glimpse)
     Output
       Rows: 150
       Columns: 5
@@ -33,7 +33,7 @@
 ---
 
     Code
-      purrr::map(list(df1, df2, df3, df4), summary)
+      purrr::map(dfs, summary)
     Output
       [[1]]
            .rowid        Petal.Length    Petal.Width     Sepal.Length  
@@ -99,7 +99,7 @@
 # long_to_wide_converter works - spread false
 
     Code
-      purrr::walk(list(df1, df2, df3, df4), dplyr::glimpse)
+      purrr::walk(dfs, dplyr::glimpse)
     Output
       Rows: 600
       Columns: 3
@@ -125,7 +125,7 @@
 ---
 
     Code
-      purrr::map(list(df1, df2, df3, df4), summary)
+      purrr::map(dfs, summary)
     Output
       [[1]]
            .rowid             condition       value      
@@ -163,4 +163,14 @@
        3rd Qu.:61.50                3rd Qu.:0.16300  
        Max.   :76.00                Max.   :5.71200  
       
+
+# paired designs need at most one row per subject and condition
+
+    Each `id` value must appear at most once per level of `group`.
+    i Aggregate repeated observations within each condition first.
+
+---
+
+    Each `id` value must appear at most once per level of `group`.
+    i Aggregate repeated observations within each condition first.
 

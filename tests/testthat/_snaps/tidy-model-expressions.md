@@ -27,34 +27,6 @@
           italic(p) == "1.29e-10")
       
 
----
-
-    Code
-      df_t_na[["expression"]]
-    Output
-      [[1]]
-      list(widehat(italic(beta)) == "6.05", italic(t) == "19.59", italic(p) == 
-          "1.20e-18")
-      
-      [[2]]
-      list(widehat(italic(beta)) == "-0.14", italic(t) == "-9.56", 
-          italic(p) == "1.29e-10")
-      
-
----
-
-    Code
-      df_t_inf[["expression"]]
-    Output
-      [[1]]
-      list(widehat(italic(beta)) == "6.05", italic(t) == "19.59", italic(p) == 
-          "1.20e-18")
-      
-      [[2]]
-      list(widehat(italic(beta)) == "-0.14", italic(t) == "-9.56", 
-          italic(p) == "1.29e-10")
-      
-
 # tidy_model_expressions works - chi2
 
     Code
@@ -192,5 +164,140 @@
       [[3]]
       list(widehat(italic(eta)[p]^2) == "0.06", italic(F)("1", "15") == 
           "1.02", italic(p) == "0.33")
+      
+
+# tidy_model_expressions() builds the expected expression: t
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.50", italic(t)("10") == "2.35", 
+          italic(p) == "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: t, missing df.error
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.50", italic(t) == "2.35", italic(p) == 
+          "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: t, infinite df.error
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.50", italic(t) == "2.35", italic(p) == 
+          "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: t, upper case, 3 digits
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.500", italic(t)("10") == "2.346", 
+          italic(p) == "0.031")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: z
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.50", italic(z) == "2.35", italic(p) == 
+          "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: chi
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.50", italic(chi)^2 * ("10") == 
+          "2.35", italic(p) == "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: F, omega
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(omega)[p]^2) == "0.50", italic(F)("2", "10") == 
+          "2.35", italic(p) == "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: F, eta
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(eta)[p]^2) == "0.50", italic(F)("2", "10") == 
+          "2.35", italic(p) == "0.03")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() builds the expected expression: F, upper case, 3 digits
+
+    Code
+      res[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(omega)[p]^2) == "0.500", italic(F)("2", "10") == 
+          "2.346", italic(p) == "0.031")
+      
+      [[2]]
+      NULL
+      
+
+# tidy_model_expressions() drops the t degrees of freedom per row
+
+    Code
+      tidy_model_expressions(df, statistic = "t")[["expression"]]
+    Output
+      [[1]]
+      list(widehat(italic(beta)) == "0.50", italic(t)("10") == "2.35", 
+          italic(p) == "0.03")
+      
+      [[2]]
+      list(widehat(italic(beta)) == "0.50", italic(t) == "2.35", italic(p) == 
+          "0.03")
+      
+      [[3]]
+      list(widehat(italic(beta)) == "0.50", italic(t) == "2.35", italic(p) == 
+          "0.03")
       
 

@@ -65,19 +65,19 @@ two_sample_test <- function(
     y = {{ y }},
     subject.id = {{ subject.id }},
     paired = paired,
-    spread = ifelse(type %in% c("bayes", "robust"), paired, TRUE)
+    spread = if (type %in% c("bayes", "robust")) paired else TRUE
   )
+  y_by_x <- new_formula(y, x)
+
+  # only Welch's and Yuen's between-subjects tests have fractional df
+  fractional_df <- !paired &&
+    (type == "robust" || (type == "parametric" && !var.equal))
+  digits.df <- if (fractional_df) digits else 0L
 
   # parametric & non-parametric ------------------------------------
 
-  if (type == "parametric") {
-    digits.df <- ifelse(paired || var.equal, 0L, digits)
-  }
-
   if (type %in% c("parametric", "nonparametric")) {
     fns <- .mean_difference_fns(type, effsize.type)
-    .f <- fns$test
-    .f.es <- fns$es
 
     .f.args <- list(
       x = data[[2L]],
@@ -85,10 +85,15 @@ two_sample_test <- function(
       paired = paired,
       alternative = alternative
     )
-    stats_df <- exec(.f, !!!.f.args, var.equal = var.equal, exact = exact) |>
+    stats_df <- exec(
+      fns$test,
+      !!!.f.args,
+      var.equal = var.equal,
+      exact = exact
+    ) |>
       tidy_model_parameters()
     ez_df <- exec(
-      .f.es,
+      fns$es,
       !!!.f.args,
       pooled_sd = FALSE,
       ci = conf.level,
@@ -100,8 +105,6 @@ two_sample_test <- function(
   # robust ---------------------------------------
 
   if (type == "robust") {
-    digits.df <- ifelse(paired, 0L, digits)
-
     if (paired) {
       effect_model <- WRS2::dep.effect(
         x = data[[2L]],
@@ -112,14 +115,14 @@ two_sample_test <- function(
       test_model <- WRS2::yuend(x = data[[2L]], y = data[[3L]], tr = tr)
     } else {
       effect_model <- WRS2::akp.effect(
-        formula = new_formula(y, x),
+        formula = y_by_x,
         data = data,
         EQVAR = FALSE,
         tr = tr,
         nboot = nboot,
         alpha = 1.0 - conf.level
       )
-      test_model <- WRS2::yuen(new_formula(y, x), data, tr = tr)
+      test_model <- WRS2::yuen(y_by_x, data, tr = tr)
     }
 
     ez_df <- tidy_model_parameters(effect_model, keep = "AKP")
@@ -130,37 +133,32 @@ two_sample_test <- function(
     stats_df <- bind_cols(
       select(stats_df, -matches("^est|^eff|conf|^ci")),
       select(ez_df, -matches("term"))
-    )
+    ) |>
+      .standardize_two_sample_terms(as_name(x), as_name(y))
   }
 
   # Bayesian ---------------------------------------
 
   if (type == "bayes") {
-    # styler: off
-    if (!paired) {
-      .f.args <- list(
-        formula = new_formula(y, x),
-        data = as.data.frame(data),
-        paired = paired
-      )
-    }
     if (paired) {
-      .f.args <- list(x = data[[2L]], y = data[[3L]], paired = paired)
+      .f.args <- list(x = data[[2L]], y = data[[3L]])
+    } else {
+      .f.args <- list(formula = y_by_x, data = as.data.frame(data))
     }
-    # styler: on
 
-    stats_df <- exec(BayesFactor::ttestBF, rscale = bf.prior, !!!.f.args) |>
+    stats_df <- exec(
+      BayesFactor::ttestBF,
+      !!!.f.args,
+      paired = paired,
+      rscale = bf.prior
+    ) |>
       tidy_model_parameters(ci = conf.level)
   }
 
   # expression ---------------------------------------
 
   add_expression_col(
-    data = if (type == "bayes") {
-      stats_df
-    } else {
-      .standardize_two_sample_terms(stats_df, as_name(x), as_name(y))
-    },
+    data = stats_df,
     paired = paired,
     n = .n_obs(data, paired),
     digits = digits,
@@ -170,9 +168,9 @@ two_sample_test <- function(
 
 #' @noRd
 .standardize_two_sample_terms <- function(data, x_name, y_name) {
-  data |>
-    mutate(
-      across(matches("^parameter1$|^term$"), \(x) y_name),
-      across(matches("^parameter2$|^group$"), \(x) x_name)
-    )
+  mutate(
+    data,
+    across(matches("^parameter1$|^term$"), \(x) y_name),
+    across(matches("^parameter2$|^group$"), \(x) x_name)
+  )
 }

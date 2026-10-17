@@ -46,7 +46,6 @@ centrality_description <- function(
   digits = 2L,
   ...
 ) {
-  # styler: off
   centrality <- recode_values(
     extract_stats_type(type),
     "parametric" ~ "mean",
@@ -54,19 +53,17 @@ centrality_description <- function(
     "robust" ~ "trimmed",
     "bayes" ~ "MAP"
   )
-  # styler: on
 
   x <- ensym(x)
   y <- ensym(y)
   x_name <- as_name(x)
   y_name <- as_name(y)
-  group_name <- make.unique(c(names(data), ".group"))[[ncol(data) + 1L]]
-  response_name <- make.unique(c(names(data), group_name, ".response"))[[
-    ncol(data) + 2L
-  ]]
+  # temporary column names that cannot clash with existing columns
+  temp_names <- make.unique(c(names(data), ".group", ".response"))
+  group_name <- temp_names[[ncol(data) + 1L]]
+  response_name <- temp_names[[ncol(data) + 2L]]
 
-  select(data, {{ x }}, {{ y }}) |>
-    rename(!!group_name := {{ x }}, !!response_name := {{ y }}) |>
+  select(data, !!group_name := {{ x }}, !!response_name := {{ y }}) |>
     tidyr::drop_na() |>
     datawizard::describe_distribution(
       select = response_name,
@@ -79,10 +76,10 @@ centrality_description <- function(
     standardize_names(style = "broom") |>
     select(-all_of("variable")) |>
     rename(!!x_name := all_of(group_name)) |>
-    rename_with(\(x) gsub(".mean|.median|.trimmed|.map", "", x)) |>
+    rename_with(\(name) gsub(".mean|.median|.trimmed|.map", "", name)) |>
     mutate(
       expression = glue(
-        "list(widehat(mu)[{centrality}]=='{format_value(estimate, digits)}')"
+        "list(widehat(mu)[{.env$centrality}]=='{format_value(estimate, .env$digits)}')"
       ),
       n.expression = paste0({{ x }}, "\n(n = ", .prettyNum(n.obs), ")")
     ) |>
